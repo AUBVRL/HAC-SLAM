@@ -28,7 +28,6 @@
 ##        configure their own git environement.
 ##        To do this, just open a git console and run:
 ##            git config --global diff.lfstext.textconv cat
- 
 #### Unity ####
 *.cs                                text eol=lf diff=csharp
 *.cginc                             text eol=lf
@@ -147,6 +146,7 @@ LightingData.asset                  binary uselfs
 *.meta                              linguist-generated
 *.prefab                            linguist-generated
 *.unity                             linguist-generated
+Packages/com.ptc.vuforia.engine-10.15.4.tgz filter=lfs diff=lfs merge=lfs -text
 *.fbx filter=lfs diff=lfs merge=lfs -text
 *.tgz filter=lfs diff=lfs merge=lfs -text
 *.jpg filter=lfs diff=lfs merge=lfs -text
