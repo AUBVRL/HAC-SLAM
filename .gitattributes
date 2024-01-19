@@ -29,7 +29,7 @@
 *.mov filter=lfs diff=lfs merge=lfs -text
 #3D Object
 *.FBX filter=lfs diff=lfs merge=lfs -text
-#*.fbx filter=lfs diff=lfs merge=lfs -text
+*.fbx filter=lfs diff=lfs merge=lfs -text
 *.blend filter=lfs diff=lfs merge=lfs -text
 *.obj filter=lfs diff=lfs merge=lfs -text
 #ETC
@@ -46,4 +46,3 @@
 *.rns filter=lfs diff=lfs merge=lfs -text
 *.reason filter=lfs diff=lfs merge=lfs -text
 *.lxo filter=lfs diff=lfs merge=lfs -text
-*.fbx filter=lfs diff=lfs merge=lfs -text
