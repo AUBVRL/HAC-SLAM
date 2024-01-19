@@ -18,17 +18,19 @@ public class HoloKeyboard : MonoBehaviour
     public void OpenKeyboard()
     {
         MRkeyboard.ShowKeyboard(MRkeyboard.Text, false);
-        
     }
     
     void Start()
     {
         MRkeyboard = gameObject.AddComponent<MixedRealityKeyboard>();
+        //texty = "heyooooooo";
     }
 
     // Update is called once per frame
     void Update()
     {
+        //texty = "hey";
+        //Debug.Log(texty);
         if (MRkeyboard.Visible)
         {
             if (msg != null)

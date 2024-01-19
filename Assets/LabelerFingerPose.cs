@@ -18,13 +18,13 @@ public class LabelerFingerPose : MonoBehaviour
     Vector3Int InitialPose_incubes, FinalPose_incubes, minbound_inCubes, maxbound_inCubes;
     public MinecraftBuilder _minecraftbuilder;
     public RosPublisherExample Pub;
-    GameObject Selector;
+    GameObject Selector, tool;
     public GameObject appBar, Prism, tooltip;
     MeshCollider _meshCollider;
     Renderer selectorMesh;
     Collider[] overlaps;
-    ToolTip tooltipText;
-    ToolTipConnector tooltipconnector;
+    ToolTip tooltipText; //just now
+    //ToolTipConnector tooltipconnector;  //just now
     int counterForVoxels;
     public Material SelectedMaterial;
     MeshRenderer VoxelMeshRenderer;
@@ -43,8 +43,8 @@ public class LabelerFingerPose : MonoBehaviour
         counterForVoxels = 0;
         labelerOn = true;
         doneInstantiation = false;
-        tooltipText = tooltip.GetComponent<ToolTip>();
-        tooltipconnector = tooltip.GetComponent<ToolTipConnector>();
+        //tooltipText = tooltip.GetComponent<ToolTip>();  //just now
+        //tooltipconnector = tooltip.GetComponent<ToolTipConnector>();
     }
 
     // Update is called once per frame
@@ -215,12 +215,13 @@ public class LabelerFingerPose : MonoBehaviour
 
         /////ToolTipAnchor = ToolTipAnchor / counterForVoxels; //center of mass for the selcted voxels to become the anchor for the tooltip
         //key.debugMessage.text = tooltipText.ToolTipText;
-        tooltipText.ToolTipText = "Chair";
-        tooltipconnector.Target = Selector; //The ToolTipAchor value should go here
-        Instantiate(tooltip, Selector.transform.position + new Vector3(0, (Selector.transform.localScale.y)/2,0), Quaternion.identity);
+        //tooltipText.ToolTipText = "Chair";
+        //tooltipconnector.Target = Selector; //The ToolTipAchor value should go here
+        tool = Instantiate(tooltip, Selector.transform.position + new Vector3(0, (Selector.transform.localScale.y)/2,0), Quaternion.identity);
+        tooltipText = tool.GetComponent<ToolTip>();
         //Destroy(Selector);
         //Pub.LabelPublisher();
-        
+
     }
 
     public void abortSelector()
@@ -241,6 +242,7 @@ public class LabelerFingerPose : MonoBehaviour
 
     public void adjustSelector()
     {
+        Selector.GetComponent<ObjectManipulator>().enabled = true;
         Selector.GetComponent<BoxCollider>().enabled = true;
         Selector.GetComponent<BoundsControl>().enabled = true;
     }
