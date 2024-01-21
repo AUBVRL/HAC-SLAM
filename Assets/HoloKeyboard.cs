@@ -18,6 +18,7 @@ public class HoloKeyboard : MonoBehaviour
     public void OpenKeyboard()
     {
         MRkeyboard.ShowKeyboard(MRkeyboard.Text, false);
+        // MRkeyboard.OnCommitText.AddListener(OpenKeyboard); Mhemme
     }
     
     void Start()
@@ -41,6 +42,7 @@ public class HoloKeyboard : MonoBehaviour
         }
         else
         {
+            MRkeyboard.ClearKeyboardText();
             var keyboardText = MRkeyboard.Text;
 
             if (string.IsNullOrEmpty(keyboardText))
@@ -59,4 +61,7 @@ public class HoloKeyboard : MonoBehaviour
             }
         }
     }
+
+
+    //Add function for MRkeyboard.ClearKeyboardText();
 }

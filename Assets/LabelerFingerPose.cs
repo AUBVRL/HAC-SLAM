@@ -6,10 +6,11 @@ using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using UnityEngine.InputSystem;
 using Microsoft.MixedReality.Toolkit.Examples.Demos;
+using Unity.VisualScripting;
 
 public class LabelerFingerPose : MonoBehaviour
 {
-    bool labelerOn, doneInstantiation, trackingLost, selectorInstantiated, fingersClosed;
+    bool labelerOn, doneInstantiation, trackingLost, selectorInstantiated, fingersClosed,ToolTextBool;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeft;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftIndex;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftThumb;
@@ -30,6 +31,10 @@ public class LabelerFingerPose : MonoBehaviour
     MeshRenderer VoxelMeshRenderer;
     SystemKeyboardExample key;
     public HoloKeyboard holoKey;
+    byte[] InstanceCounter = new byte[6]; //Should be dynamic but here it's a proof of concept
+    public GameObject[] Buttons = new GameObject[6];
+    ButtonConfigHelper ButtonText;
+    byte label;
 
     // Start is called before the first frame update
     void Start()
@@ -43,14 +48,17 @@ public class LabelerFingerPose : MonoBehaviour
         counterForVoxels = 0;
         labelerOn = true;
         doneInstantiation = false;
+        ToolTextBool = false;
+        label = 0;
         //tooltipText = tooltip.GetComponent<ToolTip>();  //just now
         //tooltipconnector = tooltip.GetComponent<ToolTipConnector>();
+        //Debug.Log(InstanceCounter[1]); prints 0
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        Debug.Log(InstanceCounter[1]);
         if (labelerOn)
         {
             if (!doneInstantiation)
@@ -156,10 +164,15 @@ public class LabelerFingerPose : MonoBehaviour
             {
                 selectorInstantiated = false;
             }
+            
+            if (ToolTextBool)
+            {
+                tooltipText.ToolTipText = holoKey.texty;
+            }
         }
     }
 
-    public void labelVoxelizer()
+    public void labelVoxelizer(byte label, byte instance)
     {
 
         selectorMesh = Selector.GetComponent<Renderer>();
@@ -201,7 +214,7 @@ public class LabelerFingerPose : MonoBehaviour
                                         overlap2.gameObject.name = "Labeled";
                                         //ToolTipAnchor += overlap2.gameObject.transform.position;
                                         //counterForVoxels++;
-                                        //Pub.LabeledPointCloudPopulater(overlap2.gameObject.transform.position, 77 , 66);
+                                        Pub.LabeledPointCloudPopulater(overlap2.gameObject.transform.position, label , instance);
                                         break;
                                         //Destroy(overlap2.gameObject);   //this works
                                     }
@@ -217,10 +230,13 @@ public class LabelerFingerPose : MonoBehaviour
         //key.debugMessage.text = tooltipText.ToolTipText;
         //tooltipText.ToolTipText = "Chair";
         //tooltipconnector.Target = Selector; //The ToolTipAchor value should go here
-        tool = Instantiate(tooltip, Selector.transform.position + new Vector3(0, (Selector.transform.localScale.y)/2,0), Quaternion.identity);
-        tooltipText = tool.GetComponent<ToolTip>();
+
+
+        /*tool = Instantiate(tooltip, Selector.transform.position + new Vector3(0, (Selector.transform.localScale.y)/2,0), Quaternion.identity);
+        tooltipText = tool.GetComponent<ToolTip>();*/   //Commented this and added it to the label selector
+
         //Destroy(Selector);
-        //Pub.LabelPublisher();
+        Pub.LabelPublisher();
 
     }
 
@@ -232,10 +248,17 @@ public class LabelerFingerPose : MonoBehaviour
     }
 
     public void confirmSelector()
+
     {
         //labelVoxelizer(); commented this for testing
         //Destroy(Selector);
-        tooltipText.ToolTipText = holoKey.texty;
+        //tooltipText.ToolTipText = holoKey.texty;
+        ToolTextBool = false;
+        Buttons[label].gameObject.SetActive(true);
+        Buttons[label].GetComponent<ButtonConfigHelper>().MainLabelText = tooltipText.ToolTipText;
+        label++;
+        labelVoxelizer(label, 0);
+        Destroy(Selector);
         appBar.SetActive(false);
         doneInstantiation = false;
     }
@@ -252,10 +275,34 @@ public class LabelerFingerPose : MonoBehaviour
         Selector.GetComponent<BoxCollider>().enabled = false;
         Selector.GetComponent<BoundsControl>().enabled = false;
     }
-    public void labelSelector()
+
+    public void NewLabelSelector()
     {
-        labelVoxelizer();
-        Destroy(Selector);
+        // TODO: pressing back and then pressing label again will create 2 tooltips
+        // TODO: after pressing add new label, the abort will not delete the changes and tooltips
+        tool = Instantiate(tooltip, Selector.transform.position + new Vector3(0, (Selector.transform.localScale.y) / 2, 0), Quaternion.identity);
+        tooltipText = tool.GetComponent<ToolTip>();
+        //labelVoxelizer();
+        
         holoKey.OpenKeyboard();
+        ToolTextBool = true;
+        
     }
+
+    public void PreviouslyLabeled(int i)
+    {
+        byte b = (byte)i;   
+        tool = Instantiate(tooltip, Selector.transform.position + new Vector3(0, (Selector.transform.localScale.y) / 2, 0), Quaternion.identity);
+        tooltipText = tool.GetComponent<ToolTip>();
+        ButtonText = Buttons[b].GetComponent<ButtonConfigHelper>();
+        tooltipText.ToolTipText = ButtonText.MainLabelText;
+        InstanceCounter[b]++;
+        b++;
+        labelVoxelizer(b, InstanceCounter[b]);
+        Destroy(Selector);
+        appBar.SetActive(false);
+        doneInstantiation = false;
+
+    }
+
 }

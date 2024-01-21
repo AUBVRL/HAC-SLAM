@@ -91,7 +91,7 @@ public class MinecraftBuilder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(MappingSwitch == true)
+        if(MappingSwitch == true)  //Haha lesh
         {
             Vector3 Gaze_direction = Camera.main.transform.forward;
             Vector3 Gaze_position = Camera.main.transform.position;
