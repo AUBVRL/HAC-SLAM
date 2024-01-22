@@ -31,7 +31,7 @@ public class LabelerFingerPose : MonoBehaviour
     MeshRenderer VoxelMeshRenderer;
     SystemKeyboardExample key;
     public HoloKeyboard holoKey;
-    byte[] InstanceCounter = new byte[6]; //Should be dynamic but here it's a proof of concept
+    byte[] InstanceCounter; //Should be dynamic but here it's a proof of concept
     public GameObject[] Buttons = new GameObject[6];
     ButtonConfigHelper ButtonText;
     byte label;
@@ -50,6 +50,7 @@ public class LabelerFingerPose : MonoBehaviour
         doneInstantiation = false;
         ToolTextBool = false;
         label = 0;
+        InstanceCounter = new byte[] { 0, 0, 0, 0, 0, 0 };
         //tooltipText = tooltip.GetComponent<ToolTip>();  //just now
         //tooltipconnector = tooltip.GetComponent<ToolTipConnector>();
         //Debug.Log(InstanceCounter[1]); prints 0
@@ -58,7 +59,7 @@ public class LabelerFingerPose : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(InstanceCounter[1]);
+        //Debug.Log(InstanceCounter[1]);
         if (labelerOn)
         {
             if (!doneInstantiation)
@@ -172,7 +173,7 @@ public class LabelerFingerPose : MonoBehaviour
         }
     }
 
-    public void labelVoxelizer(byte label, byte instance)
+    public void labelVoxelizer(byte labely, byte instancey)
     {
 
         selectorMesh = Selector.GetComponent<Renderer>();
@@ -214,7 +215,7 @@ public class LabelerFingerPose : MonoBehaviour
                                         overlap2.gameObject.name = "Labeled";
                                         //ToolTipAnchor += overlap2.gameObject.transform.position;
                                         //counterForVoxels++;
-                                        Pub.LabeledPointCloudPopulater(overlap2.gameObject.transform.position, label , instance);
+                                        Pub.LabeledPointCloudPopulater(overlap2.gameObject.transform.position, labely , instancey);
                                         break;
                                         //Destroy(overlap2.gameObject);   //this works
                                     }
@@ -253,10 +254,19 @@ public class LabelerFingerPose : MonoBehaviour
         //labelVoxelizer(); commented this for testing
         //Destroy(Selector);
         //tooltipText.ToolTipText = holoKey.texty;
-        ToolTextBool = false;
+
+
+        /////Enable when deploying to hololens:
+        ///ToolTextBool = false;
         Buttons[label].gameObject.SetActive(true);
-        Buttons[label].GetComponent<ButtonConfigHelper>().MainLabelText = tooltipText.ToolTipText;
+
+
+        ////Buttons[label].GetComponent<ButtonConfigHelper>().MainLabelText = tooltipText.ToolTipText;
+        
+        ////comment the below for Hololens deployment
+        Buttons[label].GetComponent<ButtonConfigHelper>().MainLabelText = "Test " + label;
         label++;
+        //Debug.Log("Label: " + label);
         labelVoxelizer(label, 0);
         Destroy(Selector);
         appBar.SetActive(false);
@@ -284,21 +294,26 @@ public class LabelerFingerPose : MonoBehaviour
         tooltipText = tool.GetComponent<ToolTip>();
         //labelVoxelizer();
         
-        holoKey.OpenKeyboard();
-        ToolTextBool = true;
+
+        //////// Enable when deploying to HoloLens
+        ////holoKey.OpenKeyboard();
+        ////ToolTextBool = true;
         
     }
 
     public void PreviouslyLabeled(int i)
     {
-        byte b = (byte)i;   
+        byte b = (byte)i;
+        //Debug.Log("hay lbyte: " + b);
         tool = Instantiate(tooltip, Selector.transform.position + new Vector3(0, (Selector.transform.localScale.y) / 2, 0), Quaternion.identity);
         tooltipText = tool.GetComponent<ToolTip>();
         ButtonText = Buttons[b].GetComponent<ButtonConfigHelper>();
         tooltipText.ToolTipText = ButtonText.MainLabelText;
         InstanceCounter[b]++;
+        Debug.Log("Hay linstance: " + InstanceCounter[b]);
         b++;
-        labelVoxelizer(b, InstanceCounter[b]);
+        labelVoxelizer(b, InstanceCounter[b-1]);
+        //Debug.Log("Insta: " + InstanceCounter[b]);
         Destroy(Selector);
         appBar.SetActive(false);
         doneInstantiation = false;

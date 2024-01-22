@@ -74,7 +74,9 @@ public class RosPublisherExample : MonoBehaviour
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName5);
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName6);
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName7);
-        ros.RegisterPublisher<transformer.TransformationMsg>(topicName8);
+
+        // This is not initialized on ros tcp. Wait for malak
+        //ros.RegisterPublisher<transformer.TransformationMsg>(topicName8); 
         ros.RegisterPublisher<_int.Int16Msg>(topicName10); //For Minimap requests
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName11);
 
@@ -354,7 +356,11 @@ public class RosPublisherExample : MonoBehaviour
         twist.angular.z = (global.transform.rotation.eulerAngles.y - local.transform.rotation.eulerAngles.y) * Mathf.Deg2Rad;*/
 
         //ros.Publish(topicName, twist);
-        ros.Publish(topicName8, newTwist);
+        
+        //Not initialized for ros tcp . wait for malak
+        //ros.Publish(topicName8, newTwist);
+        
+        
         //PublishTwist = !PublishTwist;
     }
 
@@ -396,7 +402,8 @@ public class RosPublisherExample : MonoBehaviour
 
     public void LabeledPointCloudPopulater(Vector3 point, byte Label, byte Instance)
     {
-
+        byte[] laabel = new byte[] { Label };
+        byte[] iinstance = new byte[] { Instance };
         tempData = new byte[pc2l.data.Length];
         tempData = pc2l.data;
         pc2l.data = new byte[pc2l.data.Length + 32];
@@ -408,8 +415,14 @@ public class RosPublisherExample : MonoBehaviour
         byte[] yBytes = System.BitConverter.GetBytes(point.z);
         byte[] zBytes = System.BitConverter.GetBytes(point.y);
         byte[] probaBytes = System.BitConverter.GetBytes(0);
-        byte[] labelBytes = System.BitConverter.GetBytes(Label);
-        byte[] instanceBytes = System.BitConverter.GetBytes(Instance);
+        
+
+        
+        
+        Debug.Log("iinstance: " + iinstance[0]);
+        /*byte[] labelBytes = System.BitConverter.GetBytes(77);
+        byte[] instanceBytes = System.BitConverter.GetBytes(66)*/;
+
         byte[] one = System.BitConverter.GetBytes(1f);
         byte[] byteArrayZeros = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -418,8 +431,12 @@ public class RosPublisherExample : MonoBehaviour
         System.Buffer.BlockCopy(yBytes, 0, pc2l.data, offset + 4, 4);
         System.Buffer.BlockCopy(zBytes, 0, pc2l.data, offset + 8, 4);
         System.Buffer.BlockCopy(one, 0, pc2l.data, offset + 12, 4);
-        System.Buffer.BlockCopy(instanceBytes, 0, pc2l.data, offset + 16, 1);
-        System.Buffer.BlockCopy(labelBytes, 0, pc2l.data, offset + 17, 1);
+        /*System.Buffer.BlockCopy(instanceBytes, 0, pc2l.data, offset + 16, 1);
+        System.Buffer.BlockCopy(labelBytes, 0, pc2l.data, offset + 17, 1);*/
+
+        System.Buffer.BlockCopy(iinstance, 0, pc2l.data, offset + 16, 1);
+        System.Buffer.BlockCopy(laabel, 0, pc2l.data, offset + 17, 1);
+
         System.Buffer.BlockCopy(probaBytes, 0, pc2l.data, offset + 18, 1);
         System.Buffer.BlockCopy(byteArrayZeros, 0, pc2l.data, offset + 19, 13);
 
@@ -433,6 +450,7 @@ public class RosPublisherExample : MonoBehaviour
     public void LabelPublisher()
     {
         ros.Publish(topicName11, pc2l);
+        //pc2l.data = new byte[0];
     }
 
 }

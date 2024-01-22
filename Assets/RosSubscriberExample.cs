@@ -112,7 +112,7 @@ public class RosSubscriberExample : MonoBehaviour
     }
     public void pointCloudDownsampledTest(pc2m label)
     {
-        Debug.Log(label.data.Length);
+        //Debug.Log(label.data.Length);
         //Debug.Log(label.data[13]+" "+label.data[14]);
         /*for (int i = 0; i < 32; i++)
         {
