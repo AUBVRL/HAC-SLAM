@@ -38,7 +38,7 @@ public class RosPublisherExample : MonoBehaviour
     // Used to determine how much time has elapsed since the last message was published
     float timeElapsed;
     
-    bool PublishTwist;
+    bool PublishTwist, FirstAlignment;
 
     octom.OctomapMsg octo; //ktir new (3D)
     [NonSerialized]
@@ -221,6 +221,7 @@ public class RosPublisherExample : MonoBehaviour
         twist = new GeometryMsgs.TwistMsg();
 
         intRequest = new _int.Int16Msg();
+        FirstAlignment = true;
 
     }
 
@@ -357,7 +358,7 @@ public class RosPublisherExample : MonoBehaviour
 
         //ros.Publish(topicName, twist);
         
-        //Not initialized for ros tcp . wait for malak
+        /////////Not initialized for ros tcp now. wait for malak
         //ros.Publish(topicName8, newTwist);
         
         
@@ -394,10 +395,22 @@ public class RosPublisherExample : MonoBehaviour
         pc2m.width = (uint)mcb.Papa.transform.childCount;
     }
 
-    public void PublishRequest3(int x)
+    public void RequestDownsampledMap(int x)
     {
         intRequest.data = (short)x;
         ros.Publish(topicName10, intRequest);
+
+        
+        if (FirstAlignment)
+        {
+            intRequest.data = 0;
+            ros.Publish(topicName10, intRequest);
+        }
+        else
+        {
+            intRequest.data = 1;
+            ros.Publish(topicName10, intRequest);
+        }
     }
 
     public void LabeledPointCloudPopulater(Vector3 point, byte Label, byte Instance)
