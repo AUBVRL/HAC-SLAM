@@ -37,8 +37,9 @@ public class RosPublisherExample : MonoBehaviour
 
     // Used to determine how much time has elapsed since the last message was published
     float timeElapsed;
-    
-    bool PublishTwist, FirstAlignment;
+
+    bool PublishTwist;
+    public bool FirstAlignment;
 
     octom.OctomapMsg octo; //ktir new (3D)
     [NonSerialized]
@@ -96,6 +97,7 @@ public class RosPublisherExample : MonoBehaviour
         //for point cloud 2:
         pc2m = new pc2.PointCloud2Msg();
         pc2m.header.frame_id = "map";
+        pc2m.header.stamp.nanosec = 2;
         pc2m.fields = new pc2.PointFieldMsg[]
         {
             new pc2.PointFieldMsg { name = "x", offset = 0, datatype = pc2.PointFieldMsg.FLOAT32, count = 1 },
@@ -115,6 +117,7 @@ public class RosPublisherExample : MonoBehaviour
         //For edited point clouds
         pc2e = new pc2.PointCloud2Msg();
         pc2e.header.frame_id = "map";
+        pc2e.header.stamp.nanosec = 2;
         pc2e.fields = new pc2.PointFieldMsg[]
         {
             new pc2.PointFieldMsg { name = "x", offset = 0, datatype = pc2.PointFieldMsg.FLOAT32, count = 1 },
@@ -135,6 +138,7 @@ public class RosPublisherExample : MonoBehaviour
         //For deleted point clouds:
         pc2d = new pc2.PointCloud2Msg();
         pc2d.header.frame_id = "map";
+        pc2d.header.stamp.nanosec = 2;
         pc2d.fields = new pc2.PointFieldMsg[]
         {
             new pc2.PointFieldMsg { name = "x", offset = 0, datatype = pc2.PointFieldMsg.FLOAT32, count = 1 },
@@ -340,7 +344,10 @@ public class RosPublisherExample : MonoBehaviour
         newTwist.tf.angular.x = (global.transform.rotation.eulerAngles.z - local.transform.rotation.eulerAngles.z) * Mathf.Deg2Rad;
         newTwist.tf.angular.y = (local.transform.rotation.eulerAngles.x - global.transform.rotation.eulerAngles.x) * Mathf.Deg2Rad;
         newTwist.tf.angular.z = (global.transform.rotation.eulerAngles.y - local.transform.rotation.eulerAngles.y) * Mathf.Deg2Rad;
-
+        
+        
+        FirstAlignment = false;
+        
 
         /* twist.linear.x = -1 * (global.transform.position.x - local.transform.position.x) / global.transform.localScale.x; //(global.transform.position.z - local.transform.position.z) / global.transform.localScale.z;
          twist.linear.y = -1 * (global.transform.position.z - local.transform.position.z) / global.transform.localScale.z;
@@ -465,5 +472,7 @@ public class RosPublisherExample : MonoBehaviour
         ros.Publish(topicName11, pc2l);
         //pc2l.data = new byte[0];
     }
+
+    
 
 }

@@ -257,14 +257,14 @@ public class LabelerFingerPose : MonoBehaviour
 
 
         /////Enable when deploying to hololens:
-        ///ToolTextBool = false;
+        ToolTextBool = false;
         Buttons[label].gameObject.SetActive(true);
 
 
-        ////Buttons[label].GetComponent<ButtonConfigHelper>().MainLabelText = tooltipText.ToolTipText;
+        Buttons[label].GetComponent<ButtonConfigHelper>().MainLabelText = tooltipText.ToolTipText;
         
         ////comment the below for Hololens deployment
-        Buttons[label].GetComponent<ButtonConfigHelper>().MainLabelText = "Test " + label;
+        ///Buttons[label].GetComponent<ButtonConfigHelper>().MainLabelText = "Test " + label;
         label++;
         //Debug.Log("Label: " + label);
         labelVoxelizer(label, 0);
@@ -296,8 +296,8 @@ public class LabelerFingerPose : MonoBehaviour
         
 
         //////// Enable when deploying to HoloLens
-        ////holoKey.OpenKeyboard();
-        ////ToolTextBool = true;
+        holoKey.OpenKeyboard();
+        ToolTextBool = true;
         
     }
 
@@ -310,7 +310,7 @@ public class LabelerFingerPose : MonoBehaviour
         ButtonText = Buttons[b].GetComponent<ButtonConfigHelper>();
         tooltipText.ToolTipText = ButtonText.MainLabelText;
         InstanceCounter[b]++;
-        Debug.Log("Hay linstance: " + InstanceCounter[b]);
+        //Debug.Log("Hay linstance: " + InstanceCounter[b]);
         b++;
         labelVoxelizer(b, InstanceCounter[b-1]);
         //Debug.Log("Insta: " + InstanceCounter[b]);

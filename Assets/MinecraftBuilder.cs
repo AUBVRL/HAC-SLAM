@@ -14,7 +14,7 @@ public class MinecraftBuilder : MonoBehaviour
     [NonSerialized]
     public float cubesize;
     static int Hor_angle_window = 90; //90; //36
-    static int Ver_angle_window = 46;//46; //16
+    static int Ver_angle_window = 46; //46; //16
     static float angle_size = 2f;
     float Hor_angle_min = -((float)Hor_angle_window / 2);
     float Ver_angle_min = -((float)Ver_angle_window / 2);
@@ -91,7 +91,7 @@ public class MinecraftBuilder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(MappingSwitch == true)  //Haha lesh
+        if(MappingSwitch)  
         {
             Vector3 Gaze_direction = Camera.main.transform.forward;
             Vector3 Gaze_position = Camera.main.transform.position;
@@ -116,6 +116,7 @@ public class MinecraftBuilder : MonoBehaviour
                         nearest_pt2 = new Vector3(distx_in_cubes, disty_in_cubes, distz_in_cubes);
                         if (Mathf.Abs(distx_in_cubes) < xSize / 2 && Mathf.Abs(disty_in_cubes) < ySize / 2 && Mathf.Abs(distz_in_cubes) < zSize / 2)
                         {
+                            // Construction area for the List optimization:
                             Instantiator(hit.point);
                             Rasterizer(Gaze_position, hit.point);
                         }

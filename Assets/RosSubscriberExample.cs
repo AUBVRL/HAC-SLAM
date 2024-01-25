@@ -5,6 +5,7 @@ using OGGM = RosMessageTypes.Nav.OccupancyGridMsg;
 using Posemsg = RosMessageTypes.Geometry.PoseMsg;
 using pc2m = RosMessageTypes.Sensor.PointCloud2Msg;
 using twist = RosMessageTypes.Geometry.TwistMsg;
+using TMPro;
 
 public class RosSubscriberExample : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class RosSubscriberExample : MonoBehaviour
     public double x, y, z, rx, ry, rz;
     public MiniMapIncoming mmincom;
     public MiniMap miniMap;
+    public TextMeshPro MenuText;
     
     void Start()
     {
@@ -97,7 +99,7 @@ public class RosSubscriberExample : MonoBehaviour
 
     public void pointCloudDownsampled(pc2m downsampled)
     {
-        if (downsampled.header.stamp.nanosec == 1)
+        if (downsampled.header.stamp.nanosec <= 1)
         {
             pub.IDto = (int)downsampled.header.stamp.nanosec;
             mmincom.Clean();
@@ -108,6 +110,7 @@ public class RosSubscriberExample : MonoBehaviour
             pub.IDfrom = (int)downsampled.header.stamp.nanosec;
             miniMap.Clean();
             miniMap.FillLocal(downsampled);
+            MenuText.text = "Maps received";
         }
     }
     public void pointCloudDownsampledTest(pc2m label)
@@ -121,4 +124,6 @@ public class RosSubscriberExample : MonoBehaviour
         
 
     }
+
+    
 }

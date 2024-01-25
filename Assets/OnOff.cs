@@ -5,6 +5,7 @@ using UnityEngine;
 public class OnOff : MonoBehaviour
 {
     List<Vector3> vec;
+    Vector3 Pose;
     private void Start()
     {
         vec = new List<Vector3>();
@@ -21,9 +22,12 @@ public class OnOff : MonoBehaviour
         Debug.Log(fff[1]);
     }
 
-    private void Update()
+    private void OnEnable()
     {
-        
+        /*Pose.x = Camera.main.transform.localPosition.x + Mathf.Sin(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+        Pose.y = Camera.main.transform.localPosition.y - 0.5f;
+        Pose.z = Camera.main.transform.localPosition.z + Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+        gameObject.transform.position = Pose;*/
     }
 
 }
