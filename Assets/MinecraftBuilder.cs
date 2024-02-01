@@ -2,13 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using System.Drawing;
+using Unity.VisualScripting;
 
 
 public class MinecraftBuilder : MonoBehaviour
 {
 
     public MiniMap miniMap;
-    public GameObject cube, holder, Papa;
+    public GameObject cube, holder, Papa, cube222;
     public RosPublisherExample pub;
     public TextWriter txtwrtr;
     [NonSerialized]
@@ -62,11 +64,11 @@ public class MinecraftBuilder : MonoBehaviour
         //Debug.Log(cubesize);
         xSize = 800; //800; //300; //yamin shmel
         ySize = 100; //100; // lafo2 latahet
-        zSize = 500; //400; // edem lawara
+        zSize = 500; //500; // edem lawara
         //nearest_pt = new Vector3(0, 0, 0);
-        grid_arr = new float[xSize * ySize * zSize];
+        //grid_arr = new float[xSize * ySize * zSize];
         //timeRemaining = 2;
-        Taj = new GameObject[xSize][][];
+        /*Taj = new GameObject[xSize][][];
         for (int i = 0; i < xSize; i++)
         {
             Taj[i] = new GameObject[ySize][];
@@ -74,7 +76,7 @@ public class MinecraftBuilder : MonoBehaviour
             {
                 Taj[i][j] = new GameObject[zSize];
             }
-        }
+        }*/
 
         MappingSwitch = true;
 
@@ -97,7 +99,7 @@ public class MinecraftBuilder : MonoBehaviour
             Vector3 Gaze_position = Camera.main.transform.position;
             RaycastHit hit;
             bool raycastHit;
-            raycastHit = Physics.Raycast(Gaze_position, Gaze_direction, out hit, 10f); //distance was 2f
+            //raycastHit = Physics.Raycast(Gaze_position, Gaze_direction, out hit, 10f); //distance was 2f
             for (int i = 0; i < (Hor_angle_window / angle_size); i++)
             {
                 Hor_Ray_direction = Quaternion.Euler(0, (Hor_angle_min + (angle_size * i)), 0) * Gaze_direction;
@@ -110,16 +112,19 @@ public class MinecraftBuilder : MonoBehaviour
                     if (raycastHit && hit.transform.name.StartsWith("SpatialMesh")) //The second condition ensures that only the spatial mesh is mapped
                     {
                         //txtwrtr.meshName = hit.collider.name;
-                        distx_in_cubes = Mathf.RoundToInt(hit.point.x / cubesize);
+                        /*distx_in_cubes = Mathf.RoundToInt(hit.point.x / cubesize);
                         disty_in_cubes = Mathf.RoundToInt(hit.point.y / cubesize);
                         distz_in_cubes = Mathf.RoundToInt(hit.point.z / cubesize);
                         nearest_pt2 = new Vector3(distx_in_cubes, disty_in_cubes, distz_in_cubes);
                         if (Mathf.Abs(distx_in_cubes) < xSize / 2 && Mathf.Abs(disty_in_cubes) < ySize / 2 && Mathf.Abs(distz_in_cubes) < zSize / 2)
                         {
                             // Construction area for the List optimization:
-                            Instantiator(hit.point);
-                            Rasterizer(Gaze_position, hit.point);
-                        }
+                            // VoxelInstantiator(hit.point);
+                            // Instantiator(hit.point);
+                            // Rasterizer(Gaze_position, hit.point);
+                        }*/
+                        VoxelInstantiator(hit.point);
+                        Rasterizer(Gaze_position, hit.point);
                     }
                 }
             }
@@ -207,8 +212,14 @@ public class MinecraftBuilder : MonoBehaviour
                     startcm.y = startcm.y + sy * cubesize;
                 } 
             }
-            
-            indexo = (startcuby.x - 1 + xSize / 2) + (startcuby.y- 1 + ySize / 2) * xSize + (startcuby.z - 1 + zSize / 2) * xSize * ySize;
+            //Debug.Log("Before: " + startcm);
+            VoxelDestroyer(startcm);
+            //Instantiate(cube222, startcm, Quaternion.identity);
+
+
+            // Recently edited:
+
+            /*indexo = (startcuby.x - 1 + xSize / 2) + (startcuby.y- 1 + ySize / 2) * xSize + (startcuby.z - 1 + zSize / 2) * xSize * ySize;
             if (grid_arr[indexo] > 0)// && grid_arr[indexo] < 1)
             {
                 grid_arr[indexo] = grid_arr[indexo] - 0.001f;
@@ -218,7 +229,9 @@ public class MinecraftBuilder : MonoBehaviour
             if (Taj[startcuby.x - 1 + xSize / 2][startcuby.y - 1 + ySize / 2][startcuby.z - 1 + zSize / 2] != null && grid_arr[indexo] < 0.6f)
             {
                 Destroy(Taj[startcuby.x - 1 + xSize / 2][startcuby.y - 1 + ySize / 2][startcuby.z - 1 + zSize / 2]);
-            }
+            }*/
+
+
         }
     }
 
@@ -366,8 +379,6 @@ public class MinecraftBuilder : MonoBehaviour
         pub.PublishDeletedPointCloudMsg();
     }*/
 
-
-
     public void DestroyEditor(Vector3Int MaxDist, Vector3Int RecentDist)
     {
 
@@ -404,6 +415,10 @@ public class MinecraftBuilder : MonoBehaviour
 
     public void VoxelInstantiator(Vector3 point)
     {
+        distx_in_cm = Mathf.RoundToInt(point.x / cubesize) * cubesize;
+        disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
+        distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
+        point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
         if (VoxelPose.Contains(point))
         {
             if (VoxelProba[VoxelPose.IndexOf(point)] < 1)
@@ -417,11 +432,11 @@ public class MinecraftBuilder : MonoBehaviour
 
                 VoxelExists[VoxelPose.IndexOf(point)] = true;
 
-                VoxelByteMap.Add(VoxelPose.IndexOf(point));
+                /*VoxelByteMap.Add(VoxelPose.IndexOf(point));
 
                 VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
                 VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
+                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));*/
 
             }
         }
@@ -436,7 +451,79 @@ public class MinecraftBuilder : MonoBehaviour
 
     public void VoxelDestroyer(Vector3 point)
     {
+
+        distx_in_cm = Mathf.RoundToInt(point.x / cubesize) * cubesize;
+        disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
+        distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
+        point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
+        //Debug.Log("After: " + point);
+        //Instantiate(cube222, point, Quaternion.identity);
         if (VoxelPose.Contains(point))
+        {
+            //Debug.Log("Why" + point);
+            //Instantiate(cube222, point, Quaternion.identity);
+            if (VoxelProba[VoxelPose.IndexOf(point)] > 0 && VoxelProba[VoxelPose.IndexOf(point)] < 1.1)
+            {
+                VoxelProba[VoxelPose.IndexOf(point)] = VoxelProba[VoxelPose.IndexOf(point)] - 0.01f;
+            }
+
+            if (VoxelExists[VoxelPose.IndexOf(point)] && VoxelProba[VoxelPose.IndexOf(point)] < 0.6f)
+            {
+
+                overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
+                if (overlaps != null)
+                {
+                    foreach (Collider overlap in overlaps)
+                    {
+                        if (overlap.gameObject.name.StartsWith("Voxel"))
+                        {
+
+                            Destroy(overlap.gameObject);
+                            break;
+                        }
+                    }
+                }
+
+                VoxelExists[VoxelPose.IndexOf(point)] = false;
+            }
+        /*if (VoxelProba[VoxelPose.IndexOf(point)] > 0 && VoxelProba[VoxelPose.IndexOf(point)] < 1.1)
+        {
+            VoxelProba[VoxelPose.IndexOf(point)] = VoxelProba[VoxelPose.IndexOf(point)] - 0.001f;
+        }
+
+        if (VoxelExists[VoxelPose.IndexOf(point)] && VoxelProba[VoxelPose.IndexOf(point)] < 0.6f)
+        {
+
+            overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
+            if (overlaps != null)
+            {
+                foreach (Collider overlap in overlaps)
+                {
+                    if (overlap.gameObject.name == "Voxel")
+                    {
+                        Destroy(overlap.gameObject);
+                        break;
+                    }
+                }
+            }
+
+            VoxelExists[VoxelPose.IndexOf(point)] = false;*/
+
+            ///for(int i=VoxelByteMap.IndexOf(VoxelPose.IndexOf(point)); i <)
+
+            /*VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
+            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
+            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
+
+            VoxelByteMap.Remove(VoxelPose.IndexOf(point));*/
+        }
+
+
+
+
+
+        // Old script:
+        /*if (VoxelPose.Contains(point))
         {
             if (VoxelProba[VoxelPose.IndexOf(point)] > 0 && VoxelProba[VoxelPose.IndexOf(point)] < 1.1)
             {
@@ -467,16 +554,16 @@ public class MinecraftBuilder : MonoBehaviour
                 VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
                 VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
 
-                VoxelByteMap.RemoveAt(VoxelPose.IndexOf(point));
+                VoxelByteMap.Remove(VoxelPose.IndexOf(point));
             }
-        }
+        }*/
 
-        else
+        /*else
         {
             VoxelPose.Add(point);
             VoxelProba.Add(0.05f);
             VoxelExists.Add(false);
-        }
+        }*/
     }
 
     ////////////// Backup for Voxel Instantiator

@@ -5,7 +5,10 @@ using OGGM = RosMessageTypes.Nav.OccupancyGridMsg;
 using Posemsg = RosMessageTypes.Geometry.PoseMsg;
 using pc2m = RosMessageTypes.Sensor.PointCloud2Msg;
 using twist = RosMessageTypes.Geometry.TwistMsg;
+using Geo = RosMessageTypes.Geometry;
+using Nav = RosMessageTypes.Nav;
 using TMPro;
+using System.Security.Cryptography;
 
 public class RosSubscriberExample : MonoBehaviour
 {
@@ -22,22 +25,32 @@ public class RosSubscriberExample : MonoBehaviour
     public pc2m incomingPointCloudDownSampled;
     public pc2m localPointCloudDownSampled;
     public pc2m incomingPointCloudLive;
+    //public Geo.PoseStampedMsg GoalPose;
+    //public Nav.PathMsg Path;
+    //Nav.OdometryMsg Odometry;
     public double x, y, z, rx, ry, rz;
     public MiniMapIncoming mmincom;
     public MiniMap miniMap;
     public TextMeshPro MenuText;
-    
+    GameObject PathParent, PathElement;
+    Vector3 Shift = new Vector3();
+    Vector3 FixedShift = new Vector3(0,0,0);
+    Vector3 PathGoal  =new Vector3();
     void Start()
     {
+        
         //ROSConnection.GetOrCreateInstance().Subscribe<RosColor>("color", ColorChange);
         ROSConnection.GetOrCreateInstance().Subscribe<OGGM>("/mapToUnity", Ocupo);
         ROSConnection.GetOrCreateInstance().Subscribe<pc2m>("/robot_map_downsampled", pointCloud); // No need for them anymore
         ROSConnection.GetOrCreateInstance().Subscribe<pc2m>("/local_map_downsampled", localPointCloud);
         ROSConnection.GetOrCreateInstance().Subscribe<pc2m>("/com/semantic_pcl", pointCloudLive);
-        ROSConnection.GetOrCreateInstance().Subscribe<twist>("/trans_topic_merger", twistReceived);
+        ROSConnection.GetOrCreateInstance().Subscribe<twist>("/refined_tf", twistReceived); //This should become the edited message type that has idto idfrom
+        //ROSConnection.GetOrCreateInstance().Subscribe<twist>("/trans_topic_merger", twistReceived);
         ROSConnection.GetOrCreateInstance().Subscribe<pc2m>("/com/downsampled", pointCloudDownsampled);
         ROSConnection.GetOrCreateInstance().Subscribe<pc2m>("/human/human_label", pointCloudDownsampledTest);
         
+        ROSConnection.GetOrCreateInstance().Subscribe<Nav.PathMsg>("/plan", PathDataSub);
+        ROSConnection.GetOrCreateInstance().Subscribe<Nav.OdometryMsg>("/odom", OdomSub);
 
         //new
         //ROSConnection.GetOrCreateInstance().Subscribe<OGGM>("occupancy_map", Ocupo);
@@ -89,6 +102,7 @@ public class RosSubscriberExample : MonoBehaviour
         ry = 1 * Twisty.angular.z * Mathf.Rad2Deg;
         rz = 0; // 1 * Twisty.angular.y * Mathf.Rad2Deg; //was -1
 
+        Debug.Log("Oui");
     }
 
     public void localPointCloud(pc2m localptcld)
@@ -111,10 +125,13 @@ public class RosSubscriberExample : MonoBehaviour
             miniMap.Clean();
             miniMap.FillLocal(downsampled);
             MenuText.text = "Maps received";
+            pub.RequestDownsampledTo();
         }
+        
     }
     public void pointCloudDownsampledTest(pc2m label)
     {
+
         //Debug.Log(label.data.Length);
         //Debug.Log(label.data[13]+" "+label.data[14]);
         /*for (int i = 0; i < 32; i++)
@@ -122,8 +139,57 @@ public class RosSubscriberExample : MonoBehaviour
             Debug.Log(i + ": " + label.data[i]);
         }*/
         
-
     }
 
-    
+    public void PathDataSub(Nav.PathMsg path)
+    {
+        Vector3 posePath = new Vector3();
+        Vector3 posePath2 = new Vector3();
+        Vector3 dir = new Vector3();
+        Quaternion quaternion = new Quaternion();
+        //Debug.Log(path.poses[path.poses.Length  - 1].pose.position);
+        // Check if we got a new goal from Rviz
+        posePath.Set((float)path.poses[path.poses.Length - 1].pose.position.x, (float)path.poses[path.poses.Length - 1].pose.position.z, (float)path.poses[path.poses.Length - 1].pose.position.y);
+
+        if (PathGoal != posePath)
+        {
+            PathGoal = posePath;
+            FixedShift = Shift;
+        }
+
+
+        //Delete old path points
+        if (PathParent != null) Destroy(PathParent);
+
+
+        //Instantiate new path objects (arrows)
+        PathParent = new GameObject("PathParent");
+        for (int i = 0; i < path.poses.Length - 1; i++)
+        {
+            posePath.Set((float) path.poses[i].pose.position.x, (float) path.poses[i].pose.position.z, (float) path.poses[i].pose.position.y);
+
+            posePath -= FixedShift;
+
+            posePath2.Set((float)path.poses[i+1].pose.position.x, (float)path.poses[i+1].pose.position.z, (float)path.poses[i+1].pose.position.y);
+            posePath2 -= FixedShift;
+
+
+            dir = posePath2 - posePath;
+
+            quaternion.SetFromToRotation(Vector3.forward, dir);
+            
+            PathElement = Instantiate(objectToEnable, posePath, quaternion);
+            PathElement.transform.SetParent(PathParent.transform, false);
+
+        }
+    }
+
+    public void OdomSub(Nav.OdometryMsg odom)
+    {
+        //When Vuforia is able to localize the robot, please add the transform that vuforia returns to the shift.
+        // Also don't forget to account for the rotation of the robot
+
+        Shift.Set((float)odom.pose.pose.position.x, (float)odom.pose.pose.position.z, (float)odom.pose.pose.position.y);
+
+    }
 }

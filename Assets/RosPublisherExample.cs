@@ -77,7 +77,7 @@ public class RosPublisherExample : MonoBehaviour
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName7);
 
         // This is not initialized on ros tcp. Wait for malak
-        //ros.RegisterPublisher<transformer.TransformationMsg>(topicName8); 
+        ros.RegisterPublisher<transformer.TransformationMsg>(topicName8); 
         ros.RegisterPublisher<_int.Int16Msg>(topicName10); //For Minimap requests
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName11);
 
@@ -366,7 +366,7 @@ public class RosPublisherExample : MonoBehaviour
         //ros.Publish(topicName, twist);
         
         /////////Not initialized for ros tcp now. wait for malak
-        //ros.Publish(topicName8, newTwist);
+        ros.Publish(topicName8, newTwist);
         
         
         //PublishTwist = !PublishTwist;
@@ -408,16 +408,16 @@ public class RosPublisherExample : MonoBehaviour
         ros.Publish(topicName10, intRequest);
 
         
-        if (FirstAlignment)
-        {
-            intRequest.data = 0;
-            ros.Publish(topicName10, intRequest);
-        }
-        else
+        /*if (FirstAlignment)
         {
             intRequest.data = 1;
             ros.Publish(topicName10, intRequest);
         }
+        else
+        {
+            intRequest.data = 0;
+            ros.Publish(topicName10, intRequest);
+        }*/
     }
 
     public void LabeledPointCloudPopulater(Vector3 point, byte Label, byte Instance)
@@ -439,7 +439,7 @@ public class RosPublisherExample : MonoBehaviour
 
         
         
-        Debug.Log("iinstance: " + iinstance[0]);
+        //Debug.Log("iinstance: " + iinstance[0]);
         /*byte[] labelBytes = System.BitConverter.GetBytes(77);
         byte[] instanceBytes = System.BitConverter.GetBytes(66)*/;
 
@@ -473,6 +473,18 @@ public class RosPublisherExample : MonoBehaviour
         //pc2l.data = new byte[0];
     }
 
-    
+    public void RequestDownsampledTo()
+    {
+        if (FirstAlignment)
+        {
+            intRequest.data = 1;
+            ros.Publish(topicName10, intRequest);
+        }
+        else
+        {
+            intRequest.data = 0;
+            ros.Publish(topicName10, intRequest);
+        }
+    }
 
 }

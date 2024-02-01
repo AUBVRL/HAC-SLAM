@@ -174,7 +174,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &13472475
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,6 +191,7 @@ MonoBehaviour:
   cube: {fileID: 3855142852996578538, guid: 14eab43a4dbcbac48b2aa122eca392aa, type: 3}
   holder: {fileID: 1761133410061947640, guid: ab23440959ffe554db953ad6b81426fb, type: 3}
   Papa: {fileID: 496043861}
+  cube222: {fileID: 3855142852996578538, guid: 466f6fd6417766e4cbb535246d8da6e5, type: 3}
   pub: {fileID: 22085819}
   txtwrtr: {fileID: 1837906537}
   parenttest: {fileID: 1796931275}
@@ -585,7 +586,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &22085819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64669,7 +64670,7 @@ MonoBehaviour:
   resol: 0.1
   heig: 100
   wid: 100
-  objectToEnable: {fileID: 0}
+  objectToEnable: {fileID: 7053095800313521731, guid: b9635d0eedd637b46beb4693c826e54a, type: 3}
   pcwidth: 0
   incomingPointCloudDownSampled:
     height: 0
@@ -64698,6 +64699,19 @@ MonoBehaviour:
     row_step: 0
     data: 
     is_dense: 0
+  GoalPose:
+    pose:
+      position:
+        x: 0
+        y: 0
+        z: 0
+      orientation:
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+  Path:
+    poses: []
   x: 0
   y: 0
   z: 0
@@ -84506,9 +84520,9 @@ MonoBehaviour:
   OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 22085819}
-        m_TargetAssemblyTypeName: RosPublisherExample, Assembly-CSharp
-        m_MethodName: EducatedGuessForICP
+      - m_Target: {fileID: 264178914}
+        m_TargetAssemblyTypeName: MergedVoxelDisplay, Assembly-CSharp
+        m_MethodName: ShowMergedMap
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -87209,7 +87223,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2124585255
 Transform:
   m_ObjectHideFlags: 0
