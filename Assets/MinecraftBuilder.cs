@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using Vuforia;
 
 
 public class MinecraftBuilder : MonoBehaviour
@@ -479,42 +480,42 @@ public class MinecraftBuilder : MonoBehaviour
     }
 
     ////////////// Backup for Voxel Instantiator
-   /* public void VoxelInstantiator(Vector3 point)
-    {
-        if (VoxelPose.Contains(point))
-        {
-            if (VoxelProba[VoxelPose.IndexOf(point)] < 1)
-            {
-                VoxelProba[VoxelPose.IndexOf(point)] = VoxelProba[VoxelPose.IndexOf(point)] + 0.05f;
-            }
+    /* public void VoxelInstantiator(Vector3 point)
+     {
+         if (VoxelPose.Contains(point))
+         {
+             if (VoxelProba[VoxelPose.IndexOf(point)] < 1)
+             {
+                 VoxelProba[VoxelPose.IndexOf(point)] = VoxelProba[VoxelPose.IndexOf(point)] + 0.05f;
+             }
 
-            overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
-            if (overlaps != null)
-            {
-                foreach (Collider overlap in overlaps)
-                {
-                    if (overlap.gameObject.name == "Prism")
-                    {
+             overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
+             if (overlaps != null)
+             {
+                 foreach (Collider overlap in overlaps)
+                 {
+                     if (overlap.gameObject.name == "Prism")
+                     {
 
-                        foreach (Collider overlap2 in overlaps)
-                        {
-                            if (overlap2.gameObject.name == "Voxel")
-                            {
-                                overlap2.gameObject.name = "Labeled";
-                                //Destroy(overlap2.gameObject);   //this works
-                            }
-                        }
-                    }
-                }
-            }
+                         foreach (Collider overlap2 in overlaps)
+                         {
+                             if (overlap2.gameObject.name == "Voxel")
+                             {
+                                 overlap2.gameObject.name = "Labeled";
+                                 //Destroy(overlap2.gameObject);   //this works
+                             }
+                         }
+                     }
+                 }
+             }
 
-        }
-        else
-        {
-            VoxelPose.Add(point);
-            VoxelProba.Add(0.05f);
-        }
-    }*/
+         }
+         else
+         {
+             VoxelPose.Add(point);
+             VoxelProba.Add(0.05f);
+         }
+     }*/
 
 
 

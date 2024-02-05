@@ -19,6 +19,8 @@ public class RosPublisherExample : MonoBehaviour
 
     ROSConnection ros;
     public MinecraftBuilder mcb;
+    public GameObject RobotTarget;
+    public RosSubscriberExample sub;
 
     string topicName = "/twist"; // It was "/joy_teleop/cmd_vel" when we were publishing to control the robot movement
     string topicName2 = "/occupancy_map"; // For 2D mapping
@@ -31,6 +33,7 @@ public class RosPublisherExample : MonoBehaviour
     string topicName9 = "/labeled_point_cloud"; //For labeled selection of cubes
     string topicName10 = "/human/downsampled_request"; //For request integer
     string topicName11 = "/human/human_label";
+    string localizeHumanTopic = "/human/localize";
     //Texture2D image; //For FSLAM. To be tried later
 
     float publishMessageFrequency = 3f;
@@ -52,6 +55,7 @@ public class RosPublisherExample : MonoBehaviour
     pc2.PointCloud2Msg pc2l;
     GeometryMsgs.TwistMsg twist;
     _int.Int16Msg intRequest;
+    GeometryMsgs.TwistMsg robot_twist;
     
 
     transformer.TransformationMsg newTwist;
@@ -79,6 +83,7 @@ public class RosPublisherExample : MonoBehaviour
         //ros.RegisterPublisher<transformer.TransformationMsg>(topicName8); 
         ros.RegisterPublisher<_int.Int16Msg>(topicName10); //For Minimap requests
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName11);
+        ros.RegisterPublisher<GeometryMsgs.TwistMsg>(localizeHumanTopic);
 
         //The below is for the robot rotation 
         PublishTwist = false;
@@ -453,4 +458,15 @@ public class RosPublisherExample : MonoBehaviour
         //pc2l.data = new byte[0];
     }
 
+    public void HumanLozalizationPublisher()
+    {
+        robot_twist.linear.x = RobotTarget.transform.position.x + sub.x;
+        robot_twist.linear.y = RobotTarget.transform.position.y + sub.y;
+        robot_twist.linear.z = RobotTarget.transform.position.z + sub.z;
+        robot_twist.angular.x = RobotTarget.transform.rotation.x + sub.rx;
+        robot_twist.angular.y = RobotTarget.transform.rotation.y + sub.ry;
+        robot_twist.angular.z = RobotTarget.transform.rotation.z + sub.rz;
+
+        ros.Publish(localizeHumanTopic, robot_twist);
+    }
 }

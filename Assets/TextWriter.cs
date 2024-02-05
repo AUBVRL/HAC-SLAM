@@ -12,6 +12,7 @@ public class TextWriter : MonoBehaviour
     public GameObject pln;
     public ROSConnection ros;
     public RosSubscriberExample sub;
+    public GameObject RT;
 
     [NonSerialized]
     public string meshName;
@@ -27,7 +28,9 @@ public class TextWriter : MonoBehaviour
         //RaycastHit = 
         //texet.text = "Cam:" + Camera.main.transform.position + "\n Tar:" + image.transform.position + "\n MESH:" + meshName; // "\n Pln:" + pln.transform.position;
 
-        texet.text = "Cam:" + Camera.main.transform.position + "\n Tar:" + image.transform.position + "\n ptcld:" + sub.pcarr.Length; // "\n Pln:" + pln.transform.position;
+        //texet.text = "Cam:" + Camera.main.transform.position + "\n Tar:" + image.transform.position + "\n ptcld:" + sub.pcarr.Length; // "\n Pln:" + pln.transform.position;
+
+        texet.text = "Cam:" + Camera.main.transform.position + "\n Robot_Pos:" + RT.transform.position + "\n RT_Rot:" + RT.transform.rotation;
 
     }
 }
