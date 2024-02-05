@@ -10,58 +10,44 @@ public class HoloKeyboard : MonoBehaviour
 {
     // Start is called before the first frame update
     MixedRealityKeyboard MRkeyboard;
-    public TextMeshPro msg;
-
+    public RosPublisherExample Pub;
     [NonSerialized]
     public string texty;
     
-    public void OpenKeyboard()
-    {
-        MRkeyboard.ShowKeyboard(MRkeyboard.Text, false);
-        // MRkeyboard.OnCommitText.AddListener(OpenKeyboard); Mhemme
-    }
-    
+
+
     void Start()
     {
         MRkeyboard = gameObject.AddComponent<MixedRealityKeyboard>();
-        //texty = "heyooooooo";
     }
 
     // Update is called once per frame
     void Update()
     {
-        //texty = "hey";
-        //Debug.Log(texty);
+
         if (MRkeyboard.Visible)
         {
-            if (msg != null)
-            {
-                msg.text = "Typing: " + MRkeyboard.Text;
-            }
             texty = MRkeyboard.Text;
         }
         else
         {
             MRkeyboard.ClearKeyboardText();
-            var keyboardText = MRkeyboard.Text;
-
-            if (string.IsNullOrEmpty(keyboardText))
-            {
-                if (msg != null)
-                {
-                    msg.text = "Open keyboard to type text.";
-                }
-            }
-            else
-            {
-                if (msg != null)
-                {
-                    msg.text = "Typed: " + keyboardText;
-                }
-            }
         }
     }
 
+    public void OpenKeyboard()
+    {
+        MRkeyboard.ShowKeyboard(MRkeyboard.Text, false);
+        // MRkeyboard.OnCommitText.AddListener(OpenKeyboard); Mhemme
+    }
 
-    //Add function for MRkeyboard.ClearKeyboardText();
+    public void SaveName()
+    {
+        Pub.PublishSavedMapName(texty);
+    }
+
+    public void CloseKeyboard() 
+    {
+        MRkeyboard.HideKeyboard();
+    }
 }

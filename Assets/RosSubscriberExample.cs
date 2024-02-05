@@ -7,27 +7,42 @@ using pc2m = RosMessageTypes.Sensor.PointCloud2Msg;
 using twist = RosMessageTypes.Geometry.TwistMsg;
 using Geo = RosMessageTypes.Geometry;
 using Nav = RosMessageTypes.Nav;
+using StringMsg = RosMessageTypes.Std.StringMsg;
 using TMPro;
 using System.Security.Cryptography;
+using System.Collections.Generic;
+using System;
+using Microsoft.MixedReality.Toolkit.Utilities.GameObjectManagement;
+using Microsoft.MixedReality.Toolkit.UI;
 
 public class RosSubscriberExample : MonoBehaviour
 {
     //public GameObject cube;
     public RosPublisherExample pub;
+    [NonSerialized]
     public sbyte[] arr;
+    [NonSerialized]
     public byte[] pcarr;
+
+    public GameObject[] ButtonsForMaps;
+
+    [NonSerialized]
     public float resol;
+    [NonSerialized]
     public float heig;
+    [NonSerialized]
     public float wid;
+
     public GameObject objectToEnable;
     private Posemsg odom;
+    [NonSerialized]
     public uint pcwidth;
-    public pc2m incomingPointCloudDownSampled;
-    public pc2m localPointCloudDownSampled;
-    public pc2m incomingPointCloudLive;
+    [NonSerialized]
+    public pc2m incomingPointCloudDownSampled, localPointCloudDownSampled, incomingPointCloudLive;
     //public Geo.PoseStampedMsg GoalPose;
     //public Nav.PathMsg Path;
     //Nav.OdometryMsg Odometry;
+    [NonSerialized]
     public double x, y, z, rx, ry, rz;
     public MiniMapIncoming mmincom;
     public MiniMap miniMap;
@@ -36,6 +51,7 @@ public class RosSubscriberExample : MonoBehaviour
     Vector3 Shift = new Vector3();
     Vector3 FixedShift = new Vector3(0,0,0);
     Vector3 PathGoal  =new Vector3();
+    List<string> ReceivedMapNames = new List<string>();
     void Start()
     {
         
@@ -51,6 +67,8 @@ public class RosSubscriberExample : MonoBehaviour
         
         ROSConnection.GetOrCreateInstance().Subscribe<Nav.PathMsg>("/plan", PathDataSub);
         ROSConnection.GetOrCreateInstance().Subscribe<Nav.OdometryMsg>("/odom", OdomSub);
+
+        ROSConnection.GetOrCreateInstance().Subscribe<StringMsg>("/com/map_names", MapNames);
 
         //new
         //ROSConnection.GetOrCreateInstance().Subscribe<OGGM>("occupancy_map", Ocupo);
@@ -191,5 +209,15 @@ public class RosSubscriberExample : MonoBehaviour
 
         Shift.Set((float)odom.pose.pose.position.x, (float)odom.pose.pose.position.z, (float)odom.pose.pose.position.y);
 
+    }
+
+    public void MapNames(StringMsg msg)
+    {
+        if (!ReceivedMapNames.Contains(msg.data.ToLower()))
+        {
+            ReceivedMapNames.Add(msg.data.ToLower());
+            ButtonsForMaps[ReceivedMapNames.Count - 1].SetActive(true);
+            ButtonsForMaps[ReceivedMapNames.Count - 1].GetComponent<ButtonConfigHelper>().MainLabelText = msg.data.ToLower();
+        }
     }
 }

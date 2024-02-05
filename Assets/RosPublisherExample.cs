@@ -10,6 +10,7 @@ using transformer = RosMessageTypes.CustomInterfaces; //This is the custom messa
 using _int = RosMessageTypes.Std;
 using System.Runtime.InteropServices;
 using System;
+using Microsoft.MixedReality.Toolkit.UI;
 
 /// <summary>
 /// 
@@ -31,6 +32,9 @@ public class RosPublisherExample : MonoBehaviour
     string topicName9 = "/labeled_point_cloud"; //For labeled selection of cubes
     string topicName10 = "/human/downsampled_request"; //For request integer
     string topicName11 = "/human/human_label";
+    string SaveTopic = "/human/save_map";
+    string RequestNamesTopic = "/human/map_names";
+    string LoadMapTopic = "/human/load_map";
     //Texture2D image; //For FSLAM. To be tried later
 
     float publishMessageFrequency = 3f;
@@ -53,7 +57,9 @@ public class RosPublisherExample : MonoBehaviour
     pc2.PointCloud2Msg pc2l;
     GeometryMsgs.TwistMsg twist;
     _int.Int16Msg intRequest;
-    
+    _int.StringMsg SaveMapName;
+    _int.StringMsg LoadMapName;
+    _int.BoolMsg RequestNames;
 
     transformer.TransformationMsg newTwist;
     //transformer.LabelPCLMsg labeler;
@@ -65,6 +71,8 @@ public class RosPublisherExample : MonoBehaviour
     byte[] incomingpc;
     public GameObject global, local;
     bool yalla;
+    ButtonConfigHelper ButtonName;
+
     void Start()
     {
         // start the ROS connection
@@ -80,6 +88,9 @@ public class RosPublisherExample : MonoBehaviour
         ros.RegisterPublisher<transformer.TransformationMsg>(topicName8); 
         ros.RegisterPublisher<_int.Int16Msg>(topicName10); //For Minimap requests
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName11);
+        ros.RegisterPublisher<_int.StringMsg>(SaveTopic);
+        ros.RegisterPublisher<_int.BoolMsg>(RequestNamesTopic);
+        ros.RegisterPublisher<_int.StringMsg>(LoadMapTopic);
 
         //The below is for the robot rotation 
         PublishTwist = false;
@@ -385,7 +396,7 @@ public class RosPublisherExample : MonoBehaviour
 
     public void PopulatePointCloudMsg()
     {
-        pc2m.data = new byte[mcb.Papa.transform.childCount * 12];
+        /*pc2m.data = new byte[mcb.Papa.transform.childCount * 12];
 
         for (int i = 0; i < mcb.Papa.transform.childCount; i++)
         {
@@ -399,7 +410,10 @@ public class RosPublisherExample : MonoBehaviour
             System.Buffer.BlockCopy(zBytes, 0, pc2m.data, offset + 8, 4);
         }
 
-        pc2m.width = (uint)mcb.Papa.transform.childCount;
+        pc2m.width = (uint)mcb.Papa.transform.childCount;*/
+
+        pc2m.data = mcb.VoxelByte.ToArray();
+        pc2m.width = (uint)(mcb.VoxelByte.Count/12);
     }
 
     public void RequestDownsampledMap(int x)
@@ -485,6 +499,26 @@ public class RosPublisherExample : MonoBehaviour
             intRequest.data = 0;
             ros.Publish(topicName10, intRequest);
         }
+    }
+
+    public void PublishSavedMapName(string name)
+    {
+        name.ToLower();
+        SaveMapName.data = name;
+        ros.Publish(SaveTopic, SaveMapName);
+    }
+
+    public void RequestSavedMapNames()
+    {
+        RequestNames.data = true;
+        ros.Publish(RequestNamesTopic, RequestNames);
+    }
+
+    public void RequestSpecificMap(GameObject gameObject)
+    {
+        ButtonName = gameObject.GetComponent<ButtonConfigHelper>();
+        LoadMapName.data = ButtonName.MainLabelText;
+        ros.Publish(LoadMapTopic, LoadMapName);
     }
 
 }
