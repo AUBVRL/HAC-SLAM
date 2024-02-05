@@ -125,7 +125,7 @@ public class MinecraftBuilder : MonoBehaviour
                             // Rasterizer(Gaze_position, hit.point);
                         }*/
                         VoxelInstantiator(hit.point);
-                        //Rasterizer(Gaze_position, hit.point);
+                        Rasterizer(Gaze_position, hit.point);
                     }
                 }
             }
