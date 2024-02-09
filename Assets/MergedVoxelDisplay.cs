@@ -54,11 +54,11 @@ public class MergedVoxelDisplay : MonoBehaviour
             kuby.transform.SetParent(this.gameObject.transform, false);
             kuby.gameObject.name = "Voxel";
 
-            if (pointcloud.data[j+17] == 77)
+            if (pointcloud.data[j+17] != 0)
             {
                 VoxelMeshRenderer = kuby.gameObject.GetComponent<MeshRenderer>();
                 VoxelMeshRenderer.material = SelectedMaterial;
-                Debug.Log("Oui");
+                //Debug.Log("Oui");
             }
 
         }

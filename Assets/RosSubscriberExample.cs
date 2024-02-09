@@ -91,7 +91,7 @@ public class RosSubscriberExample : MonoBehaviour
     {
         incomingPointCloudLive = ptcldlive;
         Debug.Log("Ejit");
-        Debug.Log(ptcldlive.data[17]);
+        //Debug.Log(ptcldlive.data[17]);    
     }
     public void twistReceived(twist Twisty)
     {

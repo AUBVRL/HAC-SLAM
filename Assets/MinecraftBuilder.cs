@@ -4,6 +4,8 @@ using System;
 using UnityEngine;
 using System.Drawing;
 using Unity.VisualScripting;
+using System.Linq;
+using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 
 
 public class MinecraftBuilder : MonoBehaviour
@@ -15,8 +17,8 @@ public class MinecraftBuilder : MonoBehaviour
     public TextWriter txtwrtr;
     [NonSerialized]
     public float cubesize;
-    static int Hor_angle_window = 90; //90; //36
-    static int Ver_angle_window = 46; //46; //16
+    static int Hor_angle_window = 36; //90; //36
+    static int Ver_angle_window = 16; //46; //16
     static float angle_size = 2f;
     float Hor_angle_min = -((float)Hor_angle_window / 2);
     float Ver_angle_min = -((float)Ver_angle_window / 2);
@@ -43,17 +45,19 @@ public class MinecraftBuilder : MonoBehaviour
 
     //float  for time 
     float[] grid_arr;
-    int indexo;
+    int indexo, ii, ji;
     bool MappingSwitch;
 
     List<Vector3> VoxelPose;
     [NonSerialized]
-    public List<Byte> VoxelByte;
+    public List<Byte> VoxelByte, AddedVoxelByte, DeletedVoxelByte;
     List<float> VoxelProba;
     List<bool> VoxelExists;
     List<int> VoxelByteMap;
     Collider[] overlaps;
     Vector3 cubesizeScale;
+    RaycastHit[] hits;
+    bool spatial;
     //Dictionary<Vector3, float> VoxelProba;
 
 
@@ -83,12 +87,15 @@ public class MinecraftBuilder : MonoBehaviour
 
         VoxelPose = new List<Vector3>();
         VoxelByte = new List<Byte>();
+        AddedVoxelByte = new List<Byte>();
         VoxelProba = new List<float>();
         VoxelExists = new List<bool>();
         VoxelByteMap = new List<int>();
         cubesizeScale = new Vector3(cubesize - 0.001f, cubesize - 0.001f, cubesize - 0.001f);
         //VoxelProba = new Dictionary<Vector3, float>();
-
+        spatial = false;
+        ii = 0;
+        ji = 0;
     }
 
     // Update is called once per frame
@@ -101,6 +108,7 @@ public class MinecraftBuilder : MonoBehaviour
             RaycastHit hit;
             bool raycastHit;
             //raycastHit = Physics.Raycast(Gaze_position, Gaze_direction, out hit, 10f); //distance was 2f
+            
             for (int i = 0; i < (Hor_angle_window / angle_size); i++)
             {
                 Hor_Ray_direction = Quaternion.Euler(0, (Hor_angle_min + (angle_size * i)), 0) * Gaze_direction;
@@ -110,6 +118,7 @@ public class MinecraftBuilder : MonoBehaviour
                     //bool raycastHit = false;
                     Ver_Ray_direction = Quaternion.Euler((Ver_angle_min + (angle_size * j)), 0, 0) * Hor_Ray_direction;
                     raycastHit = Physics.Raycast(Gaze_position, Ver_Ray_direction, out hit, 10f);
+                    
                     if (raycastHit && hit.transform.name.StartsWith("SpatialMesh")) //The second condition ensures that only the spatial mesh is mapped
                     {
                         //txtwrtr.meshName = hit.collider.name;
@@ -125,10 +134,106 @@ public class MinecraftBuilder : MonoBehaviour
                             // Rasterizer(Gaze_position, hit.point);
                         }*/
                         VoxelInstantiator(hit.point);
-                        Rasterizer(Gaze_position, hit.point);
+
+
+
+                        float Gaze_distance = Vector3.Distance(Gaze_position, hit.point);
+
+                        hits = Physics.RaycastAll(Gaze_position, Ver_Ray_direction, Gaze_distance, 4);
+                        foreach (RaycastHit hity in hits)
+                        {
+                            if (hity.transform.name == "Voxel")
+                            {
+                                overlaps = Physics.OverlapBox(hity.transform.position, cubesizeScale / 2);
+                                foreach (Collider overlap in overlaps)
+                                {
+                                    spatial = false;
+                                    if (overlap.gameObject.name.StartsWith("SpatialMesh"))
+                                    {
+                                        spatial = true;
+                                        break;
+                                    }
+                                }
+                                if (spatial) continue;
+                                VoxelDestroyer(hity.transform.position);
+                                //VoxelDestroyer(hity.transform.position);
+                                //Instantiate(cube222, hity.transform.position, Quaternion.identity);
+                                //Debug.Log(Gaze_distance);
+                            }
+                        }
+
+
+                        //Rasterizer(Gaze_position, hit.point);
                     }
                 }
             }
+            
+            
+            
+            
+            
+            
+            /*
+             for (int i = 0; i < (Hor_angle_window / angle_size); i++)
+            {
+                Hor_Ray_direction = Quaternion.Euler(0, (Hor_angle_min + (angle_size * i)), 0) * Gaze_direction;
+                for (int j = 0; j < (int)(Ver_angle_window / angle_size); j++)
+                {
+                    //RaycastHit hit;
+                    //bool raycastHit = false;
+                    Ver_Ray_direction = Quaternion.Euler((Ver_angle_min + (angle_size * j)), 0, 0) * Hor_Ray_direction;
+                    raycastHit = Physics.Raycast(Gaze_position, Ver_Ray_direction, out hit, 10f);
+                    
+                    if (raycastHit && hit.transform.name.StartsWith("SpatialMesh")) //The second condition ensures that only the spatial mesh is mapped
+                    {
+                        //txtwrtr.meshName = hit.collider.name;
+                        /*distx_in_cubes = Mathf.RoundToInt(hit.point.x / cubesize);
+                        disty_in_cubes = Mathf.RoundToInt(hit.point.y / cubesize);
+                        distz_in_cubes = Mathf.RoundToInt(hit.point.z / cubesize);
+                        nearest_pt2 = new Vector3(distx_in_cubes, disty_in_cubes, distz_in_cubes);
+                        if (Mathf.Abs(distx_in_cubes) < xSize / 2 && Mathf.Abs(disty_in_cubes) < ySize / 2 && Mathf.Abs(distz_in_cubes) < zSize / 2)
+                        {
+                            // Construction area for the List optimization:
+                            // VoxelInstantiator(hit.point);
+                            // Instantiator(hit.point);
+                            // Rasterizer(Gaze_position, hit.point);
+                        }*/
+                        /*VoxelInstantiator(hit.point);
+
+
+
+                        float Gaze_distance = Vector3.Distance(Gaze_position, hit.point);
+
+                        hits = Physics.RaycastAll(Gaze_position, Ver_Ray_direction, Gaze_distance, 4);
+                        foreach (RaycastHit hity in hits)
+                        {
+                            if (hity.transform.name == "Voxel")
+                            {
+                                overlaps = Physics.OverlapBox(hity.transform.position, cubesizeScale / 2);
+                                foreach (Collider overlap in overlaps)
+                                {
+                                    spatial = false;
+                                    if (overlap.gameObject.name.StartsWith("SpatialMesh"))
+                                    {
+                                        spatial = true;
+                                        break;
+                                    }
+                                }
+                                if (spatial) continue;
+                                VoxelDestroyer(hity.transform.position);
+                                //VoxelDestroyer(hity.transform.position);
+                                //Instantiate(cube222, hity.transform.position, Quaternion.identity);
+                                //Debug.Log(Gaze_distance);
+                            }
+                        }
+
+
+                        //Rasterizer(Gaze_position, hit.point);
+                    }
+                }
+            }*/
+             
+
         }
     }
 
@@ -268,10 +373,10 @@ public class MinecraftBuilder : MonoBehaviour
                 Taj[distx_in_cubes - 1 + xSize / 2][disty_in_cubes - 1 + ySize / 2][distz_in_cubes - 1 + zSize / 2].transform.SetParent(Papa.gameObject.transform);
                 //miniMap.Fill(nearest_pt);
                 
-                if (fromEditor)
+                /*if (fromEditor)
                 {
                     pub.EditedPointCloudPublisher(nearest_pt);
-                }
+                }*/
                 /*else
                 {
                     pub.AddPointCloudtoROSMessage(nearest_pt);
@@ -422,15 +527,17 @@ public class MinecraftBuilder : MonoBehaviour
         point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
         if (VoxelPose.Contains(point))
         {
-            if (VoxelProba[VoxelPose.IndexOf(point)] < 1)
+            if (VoxelProba[VoxelPose.IndexOf(point)] < 1 && VoxelProba[VoxelPose.IndexOf(point)] >= 0)
             {
                 VoxelProba[VoxelPose.IndexOf(point)] = VoxelProba[VoxelPose.IndexOf(point)] + 0.05f;
             }
 
             if (!VoxelExists[VoxelPose.IndexOf(point)] && VoxelProba[VoxelPose.IndexOf(point)] > 0.6f)
             {
-                Instantiate(cube, point, Quaternion.identity);
-
+                kube = Instantiate(cube, point, Quaternion.identity);
+                kube.gameObject.name = "Voxel";
+                kube.transform.SetParent(Papa.gameObject.transform);
+                
                 VoxelExists[VoxelPose.IndexOf(point)] = true;
 
                 VoxelByteMap.Add(VoxelPose.IndexOf(point));
@@ -459,7 +566,33 @@ public class MinecraftBuilder : MonoBehaviour
         point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
         //Debug.Log("After: " + point);
         //Instantiate(cube222, point, Quaternion.identity);
-        if (VoxelPose.Contains(point))
+
+
+        if (VoxelProba[VoxelPose.IndexOf(point)] > 0 && VoxelProba[VoxelPose.IndexOf(point)] < 1.1)
+        {
+            VoxelProba[VoxelPose.IndexOf(point)] = VoxelProba[VoxelPose.IndexOf(point)] - 0.01f;
+        }
+
+        if (VoxelExists[VoxelPose.IndexOf(point)] && VoxelProba[VoxelPose.IndexOf(point)] < 0.6f)
+        {
+
+            overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
+            foreach (Collider overlap in overlaps)
+            {
+                if (overlap.gameObject.name.StartsWith("Voxel"))
+                {
+                    //Instantiate(cube222, point, Quaternion.identity);
+                    Destroy(overlap.gameObject);
+                    break;
+                }
+
+            }
+            VoxelExists[VoxelPose.IndexOf(point)] = false;
+
+            VoxelByte.RemoveRange(12 * VoxelByteMap.IndexOf(VoxelPose.IndexOf(point)), 12);
+            VoxelByteMap.Remove(VoxelPose.IndexOf(point));
+        }
+            /*if (VoxelPose.Contains(point))
         {
             //Debug.Log("Why" + point);
             //Instantiate(cube222, point, Quaternion.identity);
@@ -472,9 +605,31 @@ public class MinecraftBuilder : MonoBehaviour
             {
 
                 overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
+                
                 if (overlaps != null)
                 {
                     foreach (Collider overlap in overlaps)
+                    {
+                        if (overlap.gameObject.name.StartsWith("SpatialMesh"))
+                        {
+                            spatial = true;
+                            break;
+                        }
+                    }
+                    if (!spatial)
+                    {
+                        foreach (Collider overlap in overlaps)
+                        {
+                            if (overlap.gameObject.name.StartsWith("Voxel"))
+                            {
+                                //Instantiate(cube222, point, Quaternion.identity);
+                                Destroy(overlap.gameObject);
+                                break;
+                            }
+                        }
+                    }
+                    spatial = false;
+                    *//*foreach (Collider overlap in overlaps)
                     {
                         if (overlap.gameObject.name.StartsWith("Voxel"))
                         {
@@ -482,18 +637,53 @@ public class MinecraftBuilder : MonoBehaviour
                             Destroy(overlap.gameObject);
                             break;
                         }
-                    }
+                    }*//*
                 }
 
                 VoxelExists[VoxelPose.IndexOf(point)] = false;
 
                 VoxelByte.RemoveRange(12 * VoxelByteMap.IndexOf(VoxelPose.IndexOf(point)), 12);
                 VoxelByteMap.Remove(VoxelPose.IndexOf(point));
-            }
+            }*/
         }
 
+    public void UserVoxelAddition(Vector3 point)
+    {
+        distx_in_cm = Mathf.RoundToInt(point.x / cubesize) * cubesize;
+        disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
+        distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
+        point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
+        if (VoxelPose.Contains(point))
+        {
+            VoxelProba[VoxelPose.IndexOf(point)] = 2f;
+            if (!VoxelExists[VoxelPose.IndexOf(point)])
+            {
+                VoxelExists[VoxelPose.IndexOf(point)] = true;
+
+                kube = Instantiate(cube, point, Quaternion.identity);
+                kube.gameObject.name = "AddedVoxel";
+                kube.transform.SetParent(Papa.gameObject.transform);
+            }
+            
 
 
+        }
+        else
+        {
+            VoxelPose.Add(point);
+            VoxelProba.Add(2f);
+            VoxelExists.Add(true);
+
+            AddedVoxelByte.AddRange(BitConverter.GetBytes(point.x));
+            AddedVoxelByte.AddRange(BitConverter.GetBytes(point.z));
+            AddedVoxelByte.AddRange(BitConverter.GetBytes(point.y));
+
+            //pub.PublishEditedPointCloudMsg();
+            kube = Instantiate(cube, point, Quaternion.identity);
+            kube.gameObject.name = "AddedVoxel";
+            kube.transform.SetParent(Papa.gameObject.transform);
+        }
+    }
 
 
         // Old script:
@@ -538,7 +728,7 @@ public class MinecraftBuilder : MonoBehaviour
             VoxelProba.Add(0.05f);
             VoxelExists.Add(false);
         }*/
-    }
+    //}
 
     ////////////// Backup for Voxel Instantiator
    /* public void VoxelInstantiator(Vector3 point)

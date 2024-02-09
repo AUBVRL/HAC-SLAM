@@ -19,7 +19,7 @@ public class OnOff : MonoBehaviour
         //Debug.Log(floatValue);
         byte ex = 255;
         byte[] fff = System.BitConverter.GetBytes(ex);
-        Debug.Log(fff[1]);
+        //Debug.Log(fff[1]);
     }
 
     private void OnEnable()
@@ -28,6 +28,11 @@ public class OnOff : MonoBehaviour
         Pose.y = Camera.main.transform.localPosition.y - 0.5f;
         Pose.z = Camera.main.transform.localPosition.z + Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
         gameObject.transform.position = Pose;*/
+    }
+
+    public void lilililililii()
+    {
+        Debug.Log("Hie");
     }
 
 }

@@ -10,11 +10,11 @@ using Unity.VisualScripting;
 
 public class LabelerFingerPose : MonoBehaviour
 {
-    bool labelerOn, doneInstantiation, trackingLost, selectorInstantiated, fingersClosed,ToolTextBool;
+    bool labelerOn, doneInstantiation, trackingLost, selectorInstantiated, fingersClosed, HandAngle,ToolTextBool;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeft;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftIndex;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftThumb;
-    float fingersThreshold, cubesize;
+    float fingersThreshold, HandAngleThreshold, cubesize;
     Vector3 InitialPose, FinalPose, PrismCenter, Scale_incubes, coliderPose, cubesizeScale, ToolTipAnchor;
     Vector3Int InitialPose_incubes, FinalPose_incubes, minbound_inCubes, maxbound_inCubes;
     public MinecraftBuilder _minecraftbuilder;
@@ -40,6 +40,7 @@ public class LabelerFingerPose : MonoBehaviour
     void Start()
     {
         fingersThreshold = 0.04f;
+        HandAngleThreshold = 30;
         cubesize = _minecraftbuilder.cubesize;
         cubesizeScale.Set(cubesize - 0.001f, cubesize - 0.001f, cubesize - 0.001f);
         ToolTipAnchor = Vector3.zero;
@@ -67,7 +68,10 @@ public class LabelerFingerPose : MonoBehaviour
                 if (HandJointUtils.TryGetJointPose(Microsoft.MixedReality.Toolkit.Utilities.TrackedHandJoint.IndexTip, Microsoft.MixedReality.Toolkit.Utilities.Handedness.Right, out poseLeftIndex))
                 {
                     HandJointUtils.TryGetJointPose(Microsoft.MixedReality.Toolkit.Utilities.TrackedHandJoint.ThumbTip, Microsoft.MixedReality.Toolkit.Utilities.Handedness.Right, out poseLeftThumb);
+                    
                     fingersClosed = Vector3.Distance(poseLeftIndex.Position, poseLeftThumb.Position) < fingersThreshold;
+
+                    HandAngle = Vector3.Angle(Camera.main.transform.forward, (poseLeftIndex.Position - Camera.main.transform.position)) < HandAngleThreshold;
                     if (selectorInstantiated)
                     {
                         if (trackingLost)
@@ -132,7 +136,7 @@ public class LabelerFingerPose : MonoBehaviour
                     }
                     else  //here the instantation happens
                     {
-                        if (fingersClosed)
+                        if (fingersClosed & HandAngle)
                         {
                             //selector instantiation
                             InitialPose = poseLeftIndex.Position;
@@ -208,7 +212,7 @@ public class LabelerFingerPose : MonoBehaviour
                                 
                                 foreach (Collider overlap2 in overlaps)
                                 {
-                                    if (overlap2.gameObject.name == "Voxel")
+                                    if (overlap2.gameObject.name.StartsWith("Voxel"))
                                     {
                                         VoxelMeshRenderer = overlap2.gameObject.GetComponent<MeshRenderer>();
                                         VoxelMeshRenderer.material = SelectedMaterial;

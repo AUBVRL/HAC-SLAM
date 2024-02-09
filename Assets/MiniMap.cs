@@ -118,5 +118,6 @@ public class MiniMap : MonoBehaviour
         Pose.y = Camera.main.transform.localPosition.y - 0.5f;
         Pose.z = 0.5f * Camera.main.transform.localPosition.z + Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
         gameObject.transform.position = Pose;
+
     }
 }
