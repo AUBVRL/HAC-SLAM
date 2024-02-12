@@ -14,6 +14,7 @@ public class FingerPose : MonoBehaviour
     public GameObject sfiro;
     
     public MinecraftBuilder _MinecraftBuilder;
+    public RosPublisherExample _RosPublisher;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeft;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftIndex; //new
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftThumb; //new
@@ -281,15 +282,16 @@ public class FingerPose : MonoBehaviour
                         {
                             if(overlap.gameObject.name == "Prism")
                             {
-                                _MinecraftBuilder.Instantiator(coliderPose, true);
-                                //Instantiate(sfiro,)
+                                //_MinecraftBuilder.Instantiator(coliderPose, true);
+                                _MinecraftBuilder.UserVoxelAddition(coliderPose);
+                                
                             }
                         }
                     }
                 }
             }
         }
-
+        
 
 
     }
@@ -303,7 +305,9 @@ public class FingerPose : MonoBehaviour
 
     public void confirmSelector()
     {
+        _MinecraftBuilder.AddedVoxelByte.Clear();
         officialVoxelizer();
+        _RosPublisher.PublishEditedPointCloudMsg();
         Destroy(Selector);
         appBar.SetActive(false);
         doneInstantiation = false;

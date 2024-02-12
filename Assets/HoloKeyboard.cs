@@ -37,6 +37,7 @@ public class HoloKeyboard : MonoBehaviour
 
     public void OpenKeyboard()
     {
+        //Debug.Log("Yow");
         MRkeyboard.ShowKeyboard(MRkeyboard.Text, false);
         // MRkeyboard.OnCommitText.AddListener(OpenKeyboard); Mhemme
     }

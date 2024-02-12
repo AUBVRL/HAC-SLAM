@@ -29,7 +29,7 @@ public class RosPublisherExample : MonoBehaviour
     //string topicName3 = "/sowar"; //For FSLAM. To be tried later
     //string topicName4 = "/octomap"; //To be used to publish Octomaps
     string topicName5 = "/point_cloud"; //For publishing point clouds
-    string topicName6 = "/human_edits"; //For publishing edits
+    string topicName6 = "/human/add"; //For publishing edits
     string topicName7 = "/deleted"; //For publishing deleted
     string topicName8 = "/human/Transformation"; //For ID and twist
     string topicName9 = "/labeled_point_cloud"; //For labeled selection of cubes
@@ -75,7 +75,7 @@ public class RosPublisherExample : MonoBehaviour
     byte[] tempData;
     byte[] incomingpc;
     public GameObject global, local;
-    bool yalla;
+    
     ButtonConfigHelper ButtonName;
 
     void Start()
@@ -100,7 +100,7 @@ public class RosPublisherExample : MonoBehaviour
 
         //The below is for the robot rotation 
         PublishTwist = false;
-        yalla = false;
+        
         //The below is for the Octomap
         /*octo = new octom.OctomapMsg();
         octo.header.frame_id = "map";
@@ -245,6 +245,8 @@ public class RosPublisherExample : MonoBehaviour
         SaveMapName = new _int.StringMsg();
         LoadMapName = new _int.StringMsg();
         RequestNames = new _int.BoolMsg();
+
+
         FirstAlignment = true;
 
     }
@@ -302,10 +304,10 @@ public class RosPublisherExample : MonoBehaviour
 
     }
 
-    public void EditedPointCloudPublisher(Vector3 point)
+    public void EditedPointCloudPublisher() //Vector3 point)
     {
 
-        tempData = new byte[pc2e.data.Length];
+        /*tempData = new byte[pc2e.data.Length];
         tempData = pc2e.data;
         pc2e.data = new byte[pc2e.data.Length + 12];
         for (int i = 0; i < tempData.Length; i++)
@@ -322,7 +324,9 @@ public class RosPublisherExample : MonoBehaviour
         System.Buffer.BlockCopy(zBytes, 0, pc2e.data, offset + 8, 4);
 
         NewWidthforEdited++;
-        pc2e.width = NewWidthforEdited;
+        pc2e.width = NewWidthforEdited;*/
+        pc2e.data = mcb.AddedVoxelByte.ToArray();
+        pc2e.width = (uint)(mcb.AddedVoxelByte.Count / 12);
 
     }
 
@@ -394,7 +398,8 @@ public class RosPublisherExample : MonoBehaviour
 
     public void PublishEditedPointCloudMsg()
     {
-        yalla = true;
+        pc2e.data = mcb.AddedVoxelByte.ToArray();
+        pc2e.width = (uint)(mcb.AddedVoxelByte.Count / 12);
         ros.Publish(topicName6, pc2e);
     }
 
