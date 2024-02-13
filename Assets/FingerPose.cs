@@ -2,17 +2,15 @@ using UnityEngine;
 using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
+using Microsoft.MixedReality.Toolkit.UI;
 
 public class FingerPose : MonoBehaviour
 {
-    Vector3 InitialPose, FinalPose, PrismCenter, Scale_incubes;
+    Vector3 InitialPose, FinalPose, PrismCenter, Scale_incubes, AssetPose, AssetRot;
     Vector3Int InitialPose_incubes, FinalPose_incubes;
     public GameObject Prism;
-    public GameObject Prism1;
-    public GameObject Prism2;
-    public GameObject Prism3;
-    public GameObject sfiro;
-    
+    public GameObject[] Selectors = new GameObject[8];
+    public LabelerFingerPose Labeler;
     public MinecraftBuilder _MinecraftBuilder;
     public RosPublisherExample _RosPublisher;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeft;
@@ -22,32 +20,40 @@ public class FingerPose : MonoBehaviour
     float cubesize;
     float fingersThreshold = 0.04f;
     GameObject Selector;
-    bool EditorActivator, EditorActivatorOld, selectorInstantiated, trackingLost, fingersClosed, doneInstantiation, testingBool;
+    bool EditorActivator, EditorActivatorOld, selectorInstantiated, trackingLost, fingersClosed, doneInstantiation, testingBool, ConvexityState, DeletingVoxels, AddingAssets;
 
     Renderer selectorMesh;
 
-    Vector3 minbound, maxbound; //delete
+    Vector3 minbound, maxbound; //delete 
 
     Vector3Int minbound_inCubes, maxbound_inCubes;
     Vector3 coliderPose, cubesizeScale;
     Collider[] overlaps;
     public GameObject appBar;
+    byte AssetLabel, AssetInstance;
  
     //MixedRealityInputAction selectAction;
     bool EnablePrism;
     MeshCollider _meshCollider;
+    InputActionHandler _inputActionHandler;
+    string AssetName;
     private void Start()
     {
         handJointService = CoreServices.GetInputSystemDataProvider<IMixedRealityHandJointService>();
         cubesize = _MinecraftBuilder.cubesize;
         EnablePrism = false;  //enabled when the user gestures a pinch
-        EditorActivator = true; //enabled from the 'Edit Voxels' button
+        EditorActivator = false; //enabled from the 'Edit Voxels' button
         EditorActivatorOld = false;
         doneInstantiation = false;
         testingBool = true;
+        DeletingVoxels = false;
+        AddingAssets = false;
         cubesizeScale.Set(cubesize, cubesize, cubesize);
         fingersThreshold = 0.04f;
+        Prism = Selectors[3];
         _meshCollider = Prism.GetComponent<MeshCollider>();
+        _inputActionHandler = gameObject.GetComponent<InputActionHandler>();
+        
         //_meshCollider.convex = true;  // We need to make this as a kabse later.
     }
 
@@ -104,10 +110,7 @@ public class FingerPose : MonoBehaviour
                                 Scale_incubes.y = Mathf.Max(Mathf.Abs((InitialPose_incubes.y - FinalPose_incubes.y) * cubesize), cubesize);
                                 Scale_incubes.z = Mathf.Max(Mathf.Abs((InitialPose_incubes.z - FinalPose_incubes.z) * cubesize), cubesize);
 
-                                //with extra cubesize
-                                /*Scale_incubes.x = Mathf.Max(Mathf.Abs((InitialPose_incubes.x - FinalPose_incubes.x) * cubesize) + cubesize, cubesize);
-                                Scale_incubes.y = Mathf.Max(Mathf.Abs((InitialPose_incubes.y - FinalPose_incubes.y) * cubesize) + cubesize, cubesize);
-                                Scale_incubes.z = Mathf.Max(Mathf.Abs((InitialPose_incubes.z - FinalPose_incubes.z) * cubesize) + cubesize, cubesize);*/
+                                
                                 //transform selector
                                 Selector.transform.position = PrismCenter * cubesize / 2;
                                 Selector.transform.localScale = Scale_incubes;
@@ -170,8 +173,11 @@ public class FingerPose : MonoBehaviour
             }
             
         }
-        
 
+        if (DeletingVoxels)
+        {
+            
+        }
 
 
         /////// here is the old part
@@ -233,9 +239,9 @@ public class FingerPose : MonoBehaviour
         
     }
    
-    public void ActivateEditor()
+    public void ActivateEditor(bool state)
     {
-        EditorActivator = !EditorActivator;
+        EditorActivator = state;
     }
 
     public void vertexExtractor()
@@ -284,14 +290,21 @@ public class FingerPose : MonoBehaviour
                             {
                                 //_MinecraftBuilder.Instantiator(coliderPose, true);
                                 _MinecraftBuilder.UserVoxelAddition(coliderPose);
-                                
+                                if (AddingAssets)
+                                {
+                                    _RosPublisher.LabeledPointCloudPopulater(coliderPose, AssetLabel, AssetInstance);
+                                }
+                                break;
                             }
                         }
                     }
                 }
             }
         }
-        
+        if (AddingAssets)
+        {
+            _RosPublisher.LabelPublisher();
+        }
 
 
     }
@@ -301,45 +314,88 @@ public class FingerPose : MonoBehaviour
         Destroy(Selector);
         appBar.SetActive(false);
         doneInstantiation = false;
+        if (AddingAssets)
+        {
+            _inputActionHandler.enabled = true;
+        }
     }
 
     public void confirmSelector()
     {
+        if (AddingAssets)
+        {
+            _inputActionHandler.enabled = true;
+            AssetInstance = Labeler.AssetInstance(AssetLabel);
+            Labeler.AssetToolTip(Selector.transform.position, AssetName);
+        }
         _MinecraftBuilder.AddedVoxelByte.Clear();
         officialVoxelizer();
         _RosPublisher.PublishEditedPointCloudMsg();
+        //_RosPublisher.LabelPublisher();
         Destroy(Selector);
         appBar.SetActive(false);
         doneInstantiation = false;
+
+
     }
 
     public void adjustSelector()
     {
-        Selector.GetComponent<BoxCollider>().enabled = true;
-        Selector.GetComponent<BoundsControl>().enabled = true;
+        //Selector.GetComponent<BoxCollider>().enabled = true;
+        //Selector.GetComponent<BoundsControl>().enabled = true;
+        Selector.GetComponent<ObjectManipulator>().enabled = true;
     }
 
     public void doneSelector()
     {
-        Selector.GetComponent<BoxCollider>().enabled = false;
-        Selector.GetComponent<BoundsControl>().enabled = false;
+        //Selector.GetComponent<BoxCollider>().enabled = false;
+        //Selector.GetComponent<BoundsControl>().enabled = false;
+        Selector.GetComponent<ObjectManipulator>().enabled = false;
     }
 
-    public void request1()
+    public void requestSelectorShape(int index)
     {
-        Prism = Prism1;
-        _meshCollider = Prism1.GetComponent<MeshCollider>();
+        Prism = Selectors[index];
+        _meshCollider = Selectors[index].GetComponent<MeshCollider>();
+        _meshCollider.convex = ConvexityState;
     }
-    
-    public void request2()
+
+    public void Convexity(bool state)
     {
-        Prism = Prism2;
-        _meshCollider = Prism2.GetComponent<MeshCollider>();
+        _meshCollider.convex = state;
+        ConvexityState = state;
     }
-    
-    public void request3()
+
+    public void AssetInstantiator()
     {
-        Prism = Prism3;
-        _meshCollider = Prism3.GetComponent<MeshCollider>();
+        if (Selector != null) Destroy(Selector);
+        AssetPose.x = Camera.main.transform.localPosition.x + 2 * Mathf.Sin(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+        AssetPose.y = Camera.main.transform.localPosition.y - 0.5f;
+        AssetPose.z = Camera.main.transform.localPosition.z + 2 * Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+        
+        AssetRot.Set(0, Camera.main.transform.localRotation.eulerAngles.y, 0);
+        
+        Selector = Instantiate(Prism, AssetPose, Quaternion.Euler(AssetRot));
+        Selector.name = "Prism";
+        appBar.SetActive(true);
+        _inputActionHandler.enabled = false;
     }
+
+    public void EnableAssetAddition(bool state)
+    {
+        AddingAssets = state;
+        _inputActionHandler.enabled = state;
+    }
+
+    public void AssetLabelNumber(int label)
+    {
+        AssetLabel = (byte)label;
+    }
+
+    public void AssetNameForTooltip(string name)
+    {
+        AssetName = name;
+    }
+
+
 }

@@ -7,6 +7,7 @@ using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using UnityEngine.InputSystem;
 using Microsoft.MixedReality.Toolkit.Examples.Demos;
 using Unity.VisualScripting;
+using System;
 
 public class LabelerFingerPose : MonoBehaviour
 {
@@ -31,7 +32,7 @@ public class LabelerFingerPose : MonoBehaviour
     MeshRenderer VoxelMeshRenderer;
     SystemKeyboardExample key;
     public HoloKeyboard holoKey;
-    byte[] InstanceCounter; //Should be dynamic but here it's a proof of concept
+    byte[] InstanceCounter = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; //Should be dynamic but here it's just a proof of the concept
     public GameObject[] Buttons = new GameObject[6];
     ButtonConfigHelper ButtonText;
     byte label;
@@ -50,8 +51,8 @@ public class LabelerFingerPose : MonoBehaviour
         labelerOn = true;
         doneInstantiation = false;
         ToolTextBool = false;
-        label = 0;
-        InstanceCounter = new byte[] { 0, 0, 0, 0, 0, 0 };
+        label = 5;
+        //InstanceCounter = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         //tooltipText = tooltip.GetComponent<ToolTip>();  //just now
         //tooltipconnector = tooltip.GetComponent<ToolTipConnector>();
         //Debug.Log(InstanceCounter[1]); prints 0
@@ -172,7 +173,11 @@ public class LabelerFingerPose : MonoBehaviour
             
             if (ToolTextBool)
             {
-                tooltipText.ToolTipText = holoKey.texty;
+                //////Enable when deploying to HL
+                //tooltipText.ToolTipText = holoKey.texty;
+                
+                //////Enable when trying in editor
+                tooltipText.ToolTipText = "Akal";
             }
         }
     }
@@ -262,10 +267,10 @@ public class LabelerFingerPose : MonoBehaviour
 
         /////Enable when deploying to hololens:
         ToolTextBool = false;
-        Buttons[label].gameObject.SetActive(true);
+        Buttons[label-5].gameObject.SetActive(true);
 
 
-        Buttons[label].GetComponent<ButtonConfigHelper>().MainLabelText = tooltipText.ToolTipText;
+        Buttons[label-5].GetComponent<ButtonConfigHelper>().MainLabelText = tooltipText.ToolTipText;
         
         ////comment the below for Hololens deployment
         ///Buttons[label].GetComponent<ButtonConfigHelper>().MainLabelText = "Test " + label;
@@ -300,9 +305,17 @@ public class LabelerFingerPose : MonoBehaviour
         
 
         //////// Enable when deploying to HoloLens
-        holoKey.OpenKeyboard();
+        //holoKey.OpenKeyboard();
+
         ToolTextBool = true;
         
+    }
+
+    public void AssetToolTip(Vector3 pose, string name)
+    {
+        tool = Instantiate(tooltip, pose + new Vector3(0, 0.2f, 0), Quaternion.identity);
+        tooltipText = tool.GetComponent<ToolTip>();
+        tooltipText.ToolTipText = name;
     }
 
     public void PreviouslyLabeled(int i)
@@ -311,7 +324,7 @@ public class LabelerFingerPose : MonoBehaviour
         //Debug.Log("hay lbyte: " + b);
         tool = Instantiate(tooltip, Selector.transform.position + new Vector3(0, (Selector.transform.localScale.y) / 2, 0), Quaternion.identity);
         tooltipText = tool.GetComponent<ToolTip>();
-        ButtonText = Buttons[b].GetComponent<ButtonConfigHelper>();
+        ButtonText = Buttons[b-5].GetComponent<ButtonConfigHelper>();
         tooltipText.ToolTipText = ButtonText.MainLabelText;
         InstanceCounter[b]++;
         //Debug.Log("Hay linstance: " + InstanceCounter[b]);
@@ -322,6 +335,18 @@ public class LabelerFingerPose : MonoBehaviour
         appBar.SetActive(false);
         doneInstantiation = false;
 
+    }
+
+    public byte AssetInstance(byte labelo)
+    {
+        
+        labelo = (byte) (labelo - 1);
+        
+        byte CurrentInstance = InstanceCounter[labelo];
+        Debug.Log(InstanceCounter[labelo]);
+        InstanceCounter[labelo]++;
+        return CurrentInstance;
+        
     }
 
 }

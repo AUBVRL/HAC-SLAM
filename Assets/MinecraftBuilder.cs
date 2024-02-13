@@ -45,7 +45,7 @@ public class MinecraftBuilder : MonoBehaviour
 
     //float  for time 
     float[] grid_arr;
-    int indexo, ii, ji;
+    int indexo;
     bool MappingSwitch;
 
     List<Vector3> VoxelPose;
@@ -94,8 +94,7 @@ public class MinecraftBuilder : MonoBehaviour
         cubesizeScale = new Vector3(cubesize - 0.001f, cubesize - 0.001f, cubesize - 0.001f);
         //VoxelProba = new Dictionary<Vector3, float>();
         spatial = false;
-        ii = 0;
-        ji = 0;
+
     }
 
     // Update is called once per frame
@@ -117,7 +116,7 @@ public class MinecraftBuilder : MonoBehaviour
                     //RaycastHit hit;
                     //bool raycastHit = false;
                     Ver_Ray_direction = Quaternion.Euler((Ver_angle_min + (angle_size * j)), 0, 0) * Hor_Ray_direction;
-                    raycastHit = Physics.Raycast(Gaze_position, Ver_Ray_direction, out hit, 10f);
+                    raycastHit = Physics.Raycast(Gaze_position, Ver_Ray_direction, out hit, 1.7f);
                     
                     if (raycastHit && hit.transform.name.StartsWith("SpatialMesh")) //The second condition ensures that only the spatial mesh is mapped
                     {
@@ -167,73 +166,6 @@ public class MinecraftBuilder : MonoBehaviour
                     }
                 }
             }
-            
-            
-            
-            
-            
-            
-            /*
-             for (int i = 0; i < (Hor_angle_window / angle_size); i++)
-            {
-                Hor_Ray_direction = Quaternion.Euler(0, (Hor_angle_min + (angle_size * i)), 0) * Gaze_direction;
-                for (int j = 0; j < (int)(Ver_angle_window / angle_size); j++)
-                {
-                    //RaycastHit hit;
-                    //bool raycastHit = false;
-                    Ver_Ray_direction = Quaternion.Euler((Ver_angle_min + (angle_size * j)), 0, 0) * Hor_Ray_direction;
-                    raycastHit = Physics.Raycast(Gaze_position, Ver_Ray_direction, out hit, 10f);
-                    
-                    if (raycastHit && hit.transform.name.StartsWith("SpatialMesh")) //The second condition ensures that only the spatial mesh is mapped
-                    {
-                        //txtwrtr.meshName = hit.collider.name;
-                        /*distx_in_cubes = Mathf.RoundToInt(hit.point.x / cubesize);
-                        disty_in_cubes = Mathf.RoundToInt(hit.point.y / cubesize);
-                        distz_in_cubes = Mathf.RoundToInt(hit.point.z / cubesize);
-                        nearest_pt2 = new Vector3(distx_in_cubes, disty_in_cubes, distz_in_cubes);
-                        if (Mathf.Abs(distx_in_cubes) < xSize / 2 && Mathf.Abs(disty_in_cubes) < ySize / 2 && Mathf.Abs(distz_in_cubes) < zSize / 2)
-                        {
-                            // Construction area for the List optimization:
-                            // VoxelInstantiator(hit.point);
-                            // Instantiator(hit.point);
-                            // Rasterizer(Gaze_position, hit.point);
-                        }*/
-                        /*VoxelInstantiator(hit.point);
-
-
-
-                        float Gaze_distance = Vector3.Distance(Gaze_position, hit.point);
-
-                        hits = Physics.RaycastAll(Gaze_position, Ver_Ray_direction, Gaze_distance, 4);
-                        foreach (RaycastHit hity in hits)
-                        {
-                            if (hity.transform.name == "Voxel")
-                            {
-                                overlaps = Physics.OverlapBox(hity.transform.position, cubesizeScale / 2);
-                                foreach (Collider overlap in overlaps)
-                                {
-                                    spatial = false;
-                                    if (overlap.gameObject.name.StartsWith("SpatialMesh"))
-                                    {
-                                        spatial = true;
-                                        break;
-                                    }
-                                }
-                                if (spatial) continue;
-                                VoxelDestroyer(hity.transform.position);
-                                //VoxelDestroyer(hity.transform.position);
-                                //Instantiate(cube222, hity.transform.position, Quaternion.identity);
-                                //Debug.Log(Gaze_distance);
-                            }
-                        }
-
-
-                        //Rasterizer(Gaze_position, hit.point);
-                    }
-                }
-            }*/
-             
-
         }
     }
 
