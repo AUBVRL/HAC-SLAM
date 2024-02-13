@@ -5,7 +5,7 @@ using UnityEngine;
 public class OnOff : MonoBehaviour
 {
     List<Vector3> vec;
-    Vector3 Pose;
+    Vector3 Pose,Rota;
     private void Start()
     {
         vec = new List<Vector3>();
@@ -22,17 +22,20 @@ public class OnOff : MonoBehaviour
         //Debug.Log(fff[1]);
     }
 
-    private void OnEnable()
+    /*private void Update()
     {
-        /*Pose.x = Camera.main.transform.localPosition.x + Mathf.Sin(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+        Pose.x = Camera.main.transform.localPosition.x + 2*Mathf.Sin(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
         Pose.y = Camera.main.transform.localPosition.y - 0.5f;
-        Pose.z = Camera.main.transform.localPosition.z + Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
-        gameObject.transform.position = Pose;*/
-    }
+        Pose.z = Camera.main.transform.localPosition.z + 2*Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+        gameObject.transform.position = Pose;
+        Rota.Set(0, Camera.main.transform.localRotation.eulerAngles.y, 0);
+        gameObject.transform.localEulerAngles = Rota;
+        
+    }*/
 
     public void lilililililii()
     {
-        Debug.Log("Hie");
+        Debug.Log("Oops");
     }
 
 }

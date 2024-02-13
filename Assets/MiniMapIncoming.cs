@@ -6,7 +6,7 @@ using pc2 = RosMessageTypes.Sensor.PointCloud2Msg;
 public class MiniMapIncoming : MonoBehaviour
 {
     public BoxCollider box;
-    Vector3 min, max, zeros, Pose;
+    Vector3 min, max, zeros, Pose, Rot;
     GameObject kuby;
     public GameObject cubz;
     public RosSubscriberExample Sub;
@@ -17,6 +17,7 @@ public class MiniMapIncoming : MonoBehaviour
     {
         min = new Vector3(1f, 1f, 1f);
         zeros = new Vector3(0f, 0f, 0f);
+        Rot = new Vector3(0f, 0f, 0f);
         //Debug.Log(max);
     }
 
@@ -80,9 +81,12 @@ public class MiniMapIncoming : MonoBehaviour
 
     public void ResetPose()
     {
-        Pose.x = 0.5f * Camera.main.transform.localPosition.x + Mathf.Sin(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+        Pose.x = Camera.main.transform.localPosition.x + Mathf.Sin(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
         Pose.y = Camera.main.transform.localPosition.y - 0.5f;
-        Pose.z = 0.5f * Camera.main.transform.localPosition.z + Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+        Pose.z = Camera.main.transform.localPosition.z + Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
         gameObject.transform.position = Pose;
+
+        Rot.Set(0, Camera.main.transform.localRotation.eulerAngles.y, 0);
+        gameObject.transform.rotation = Quaternion.Euler(Rot);
     }
 }

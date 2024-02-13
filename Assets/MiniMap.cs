@@ -11,7 +11,7 @@ public class MiniMap : MonoBehaviour
     // Start is called before the first frame update
     public BoxCollider box;
     int numberOfChildren;
-    Vector3 min, max, Pose;
+    Vector3 min, max, Pose, Rot;
     GameObject kuby;
     public GameObject cubz;
     public RosPublisherExample pub;
@@ -24,14 +24,13 @@ public class MiniMap : MonoBehaviour
         min = new Vector3(0.15f, 0.15f, 0.15f);
         timeElapsed = 0f;
         Pose = new Vector3(0, 0, 0);
-        
+        Rot = new Vector3(0, 0, 0);
     }
 
     // Update is called once per frame
     void Update()
     {
         box.size = max * 2 + min;
-
         /*timeElapsed += Time.deltaTime;
         if (timeElapsed > publishMessageFrequency)
         {
@@ -114,10 +113,13 @@ public class MiniMap : MonoBehaviour
     
     public void ResetPose()
     {
-        Pose.x = 0.5f * Camera.main.transform.localPosition.x + Mathf.Sin(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+        Pose.x = Camera.main.transform.localPosition.x + Mathf.Sin(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
         Pose.y = Camera.main.transform.localPosition.y - 0.5f;
-        Pose.z = 0.5f * Camera.main.transform.localPosition.z + Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
-        gameObject.transform.position = Pose;
+        Pose.z = Camera.main.transform.localPosition.z + Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+        gameObject.transform.localPosition = Pose;
+
+        Rot.Set(0, Camera.main.transform.localRotation.eulerAngles.y, 0);
+        gameObject.transform.rotation = Quaternion.Euler(Rot);
 
     }
 }
