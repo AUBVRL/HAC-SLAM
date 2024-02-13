@@ -44,7 +44,8 @@ public class HoloKeyboard : MonoBehaviour
 
     public void SaveName()
     {
-        Pub.PublishSavedMapName(texty);
+        //Pub.PublishSavedMapName(texty);
+        Pub.PublishSavedMapName("HelloMalakkkk");
     }
 
     public void CloseKeyboard() 
