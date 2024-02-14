@@ -270,7 +270,7 @@ public class FingerPose : MonoBehaviour
                              Mathf.RoundToInt(selectorMesh.bounds.max.y / cubesize),
                              Mathf.RoundToInt(selectorMesh.bounds.max.z / cubesize));
 
-
+        //useless comment
         //Loop from min to max bound:
         for(int i = minbound_inCubes.x; i <= maxbound_inCubes.x; i++)
         {
