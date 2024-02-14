@@ -274,6 +274,7 @@ public class FingerPose : MonoBehaviour
         //Loop from min to max bound:
         for(int i = minbound_inCubes.x; i <= maxbound_inCubes.x; i++)
         {
+            //test
             for (int j = minbound_inCubes.y; j <= maxbound_inCubes.y; j++)
             {
                 for (int k = minbound_inCubes.z; k <= maxbound_inCubes.z; k++)

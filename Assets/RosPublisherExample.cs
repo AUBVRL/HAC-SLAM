@@ -11,6 +11,7 @@ using _int = RosMessageTypes.Std;
 using System.Runtime.InteropServices;
 using System;
 using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.Examples.Demos;
 
 /// <summary>
 /// 
@@ -20,6 +21,8 @@ public class RosPublisherExample : MonoBehaviour
 
     ROSConnection ros;
     public MinecraftBuilder mcb;
+    public GameObject RobotTarget;
+    public RosSubscriberExample sub;
 
     string topicName = "/twist"; // It was "/joy_teleop/cmd_vel" when we were publishing to control the robot movement
     string topicName2 = "/occupancy_map"; // For 2D mapping
@@ -35,6 +38,7 @@ public class RosPublisherExample : MonoBehaviour
     string SaveTopic = "/human/save_map";
     string RequestNamesTopic = "/human/map_names";
     string LoadMapTopic = "/human/load_map";
+    string localizeHumanTopic = "/human/localize";
     //Texture2D image; //For FSLAM. To be tried later
 
     float publishMessageFrequency = 3f;
@@ -56,6 +60,7 @@ public class RosPublisherExample : MonoBehaviour
     pc2.PointCloud2Msg pc2d;
     pc2.PointCloud2Msg pc2l;
     GeometryMsgs.TwistMsg twist;
+    GeometryMsgs.TwistMsg robot_twist;
     _int.Int16Msg intRequest;
     _int.StringMsg SaveMapName;
     _int.StringMsg LoadMapName;
@@ -85,12 +90,13 @@ public class RosPublisherExample : MonoBehaviour
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName7);
 
         // This is not initialized on ros tcp. Wait for malak
-        ros.RegisterPublisher<transformer.TransformationMsg>(topicName8); 
+        ros.RegisterPublisher<transformer.TransformationMsg>(topicName8);
         ros.RegisterPublisher<_int.Int16Msg>(topicName10); //For Minimap requests
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName11);
         ros.RegisterPublisher<_int.StringMsg>(SaveTopic);
         ros.RegisterPublisher<_int.BoolMsg>(RequestNamesTopic);
         ros.RegisterPublisher<_int.StringMsg>(LoadMapTopic);
+        ros.RegisterPublisher<GeometryMsgs.TwistMsg>(localizeHumanTopic);
 
         //The below is for the robot rotation 
         PublishTwist = false;
@@ -203,7 +209,7 @@ public class RosPublisherExample : MonoBehaviour
         pc2l.height = 1;
         pc2l.data = new byte[0];
 
-        
+
 
         /*pc2l = new pc2.PointCloud2Msg();
         pc2l.header.frame_id = "map";
@@ -249,7 +255,7 @@ public class RosPublisherExample : MonoBehaviour
     {
 
         timeElapsed += Time.deltaTime;
-        
+
         if (timeElapsed > publishMessageFrequency) // && yalla == true) //new
         {
             ros.Publish(topicName5, pc2m);
@@ -272,7 +278,7 @@ public class RosPublisherExample : MonoBehaviour
             PublishTwist = false;
         }*/
 
-        
+
     }
 
     public void AddPointCloudtoROSMessage(Vector3 point)
@@ -295,7 +301,7 @@ public class RosPublisherExample : MonoBehaviour
 
         NewWidth++;
         pc2m.width = NewWidth;
-        
+
     }
 
     public void EditedPointCloudPublisher() //Vector3 point)
@@ -345,7 +351,7 @@ public class RosPublisherExample : MonoBehaviour
         NewWidthforDeleted++;
         pc2d.width = NewWidthforDeleted;
     }
-    
+
     public void EducatedGuessForICP()
     {
         newTwist.idfrom = IDfrom;
@@ -362,10 +368,10 @@ public class RosPublisherExample : MonoBehaviour
         newTwist.tf.angular.x = (global.transform.rotation.eulerAngles.z - local.transform.rotation.eulerAngles.z) * Mathf.Deg2Rad;
         newTwist.tf.angular.y = (local.transform.rotation.eulerAngles.x - global.transform.rotation.eulerAngles.x) * Mathf.Deg2Rad;
         newTwist.tf.angular.z = (global.transform.rotation.eulerAngles.y - local.transform.rotation.eulerAngles.y) * Mathf.Deg2Rad;
-        
-        
+
+
         FirstAlignment = false;
-        
+
 
         /* twist.linear.x = -1 * (global.transform.position.x - local.transform.position.x) / global.transform.localScale.x; //(global.transform.position.z - local.transform.position.z) / global.transform.localScale.z;
          twist.linear.y = -1 * (global.transform.position.z - local.transform.position.z) / global.transform.localScale.z;
@@ -382,11 +388,11 @@ public class RosPublisherExample : MonoBehaviour
         twist.angular.z = (global.transform.rotation.eulerAngles.y - local.transform.rotation.eulerAngles.y) * Mathf.Deg2Rad;*/
 
         //ros.Publish(topicName, twist);
-        
+
         /////////Not initialized for ros tcp now. wait for malak
         ros.Publish(topicName8, newTwist);
-        
-        
+
+
         //PublishTwist = !PublishTwist;
     }
 
@@ -421,7 +427,7 @@ public class RosPublisherExample : MonoBehaviour
         pc2m.width = (uint)mcb.Papa.transform.childCount;*/
 
         pc2m.data = mcb.VoxelByte.ToArray();
-        pc2m.width = (uint)(mcb.VoxelByte.Count/12);
+        pc2m.width = (uint)(mcb.VoxelByte.Count / 12);
     }
 
     public void RequestDownsampledMap(int x)
@@ -429,7 +435,7 @@ public class RosPublisherExample : MonoBehaviour
         intRequest.data = (short)x;
         ros.Publish(topicName10, intRequest);
 
-        
+
         /*if (FirstAlignment)
         {
             intRequest.data = 1;
@@ -457,16 +463,17 @@ public class RosPublisherExample : MonoBehaviour
         byte[] yBytes = System.BitConverter.GetBytes(point.z);
         byte[] zBytes = System.BitConverter.GetBytes(point.y);
         byte[] probaBytes = System.BitConverter.GetBytes(0);
-        
 
-        
-        
+
+
+
         //Debug.Log("iinstance: " + iinstance[0]);
         /*byte[] labelBytes = System.BitConverter.GetBytes(77);
-        byte[] instanceBytes = System.BitConverter.GetBytes(66)*/;
+        byte[] instanceBytes = System.BitConverter.GetBytes(66)*/
+        ;
 
         byte[] one = System.BitConverter.GetBytes(1f);
-        byte[] byteArrayZeros = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        byte[] byteArrayZeros = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
         int offset = tempData.Length;
         System.Buffer.BlockCopy(xBytes, 0, pc2l.data, offset, 4);
@@ -485,7 +492,7 @@ public class RosPublisherExample : MonoBehaviour
 
         NewWidthforEdited++;
         pc2l.width = NewWidthforEdited;
-        pc2l.row_step = (uint) pc2l.data.Length;
+        pc2l.row_step = (uint)pc2l.data.Length;
 
     }
 
@@ -527,6 +534,20 @@ public class RosPublisherExample : MonoBehaviour
         ButtonName = gameObject.GetComponent<ButtonConfigHelper>();
         LoadMapName.data = ButtonName.MainLabelText;
         ros.Publish(LoadMapTopic, LoadMapName);
+    }
+
+    public void HumanLozalizationPublisher()
+    {
+        robot_twist = new GeometryMsgs.TwistMsg();
+        robot_twist.linear.x = RobotTarget.transform.position.x + sub.x;
+        robot_twist.linear.y = RobotTarget.transform.position.y + sub.y;
+        robot_twist.linear.z = RobotTarget.transform.position.z + sub.z;
+        robot_twist.angular.x = RobotTarget.transform.rotation.x + sub.rx;
+        robot_twist.angular.y = RobotTarget.transform.rotation.y + sub.ry;
+        robot_twist.angular.z = RobotTarget.transform.rotation.z + sub.rz;
+
+        ros.Publish(localizeHumanTopic, robot_twist);
+        Debug.Log(robot_twist);
     }
 
 }

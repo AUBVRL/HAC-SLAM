@@ -49,12 +49,12 @@ public class RosSubscriberExample : MonoBehaviour
     public TextMeshPro MenuText;
     GameObject PathParent, PathElement;
     Vector3 Shift = new Vector3();
-    Vector3 FixedShift = new Vector3(0,0,0);
-    Vector3 PathGoal  =new Vector3();
+    Vector3 FixedShift = new Vector3(0, 0, 0);
+    Vector3 PathGoal = new Vector3();
     List<string> ReceivedMapNames = new List<string>();
     void Start()
     {
-        
+
         //ROSConnection.GetOrCreateInstance().Subscribe<RosColor>("color", ColorChange);
         ROSConnection.GetOrCreateInstance().Subscribe<OGGM>("/mapToUnity", Ocupo);
         ROSConnection.GetOrCreateInstance().Subscribe<pc2m>("/robot_map_downsampled", pointCloud); // No need for them anymore
@@ -64,7 +64,7 @@ public class RosSubscriberExample : MonoBehaviour
         //ROSConnection.GetOrCreateInstance().Subscribe<twist>("/trans_topic_merger", twistReceived);
         ROSConnection.GetOrCreateInstance().Subscribe<pc2m>("/com/downsampled", pointCloudDownsampled);
         ROSConnection.GetOrCreateInstance().Subscribe<pc2m>("/human/human_label", pointCloudDownsampledTest);
-        
+
         ROSConnection.GetOrCreateInstance().Subscribe<Nav.PathMsg>("/plan", PathDataSub);
         ROSConnection.GetOrCreateInstance().Subscribe<Nav.OdometryMsg>("/odom", OdomSub);
 
@@ -137,7 +137,7 @@ public class RosSubscriberExample : MonoBehaviour
             mmincom.Clean();
             mmincom.FillIncoming(downsampled);
         }
-        else 
+        else
         {
             pub.IDfrom = (int)downsampled.header.stamp.nanosec;
             miniMap.Clean();
@@ -145,7 +145,7 @@ public class RosSubscriberExample : MonoBehaviour
             MenuText.text = "Maps received";
             pub.RequestDownsampledTo();
         }
-        
+
     }
     public void pointCloudDownsampledTest(pc2m label)
     {
@@ -156,7 +156,7 @@ public class RosSubscriberExample : MonoBehaviour
         {
             Debug.Log(i + ": " + label.data[i]);
         }*/
-        
+
     }
 
     public void PathDataSub(Nav.PathMsg path)
@@ -184,18 +184,18 @@ public class RosSubscriberExample : MonoBehaviour
         PathParent = new GameObject("PathParent");
         for (int i = 0; i < path.poses.Length - 1; i++)
         {
-            posePath.Set((float) path.poses[i].pose.position.x, (float) path.poses[i].pose.position.z, (float) path.poses[i].pose.position.y);
+            posePath.Set((float)path.poses[i].pose.position.x, (float)path.poses[i].pose.position.z, (float)path.poses[i].pose.position.y);
 
             posePath -= FixedShift;
 
-            posePath2.Set((float)path.poses[i+1].pose.position.x, (float)path.poses[i+1].pose.position.z, (float)path.poses[i+1].pose.position.y);
+            posePath2.Set((float)path.poses[i + 1].pose.position.x, (float)path.poses[i + 1].pose.position.z, (float)path.poses[i + 1].pose.position.y);
             posePath2 -= FixedShift;
 
 
             dir = posePath2 - posePath;
 
             quaternion.SetFromToRotation(Vector3.forward, dir);
-            
+
             PathElement = Instantiate(objectToEnable, posePath, quaternion);
             PathElement.transform.SetParent(PathParent.transform, false);
 
