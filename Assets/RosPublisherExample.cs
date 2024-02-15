@@ -30,7 +30,7 @@ public class RosPublisherExample : MonoBehaviour
     //string topicName4 = "/octomap"; //To be used to publish Octomaps
     string topicName5 = "/point_cloud"; //For publishing point clouds
     string topicName6 = "/human/add"; //For publishing edits
-    string topicName7 = "/deleted"; //For publishing deleted
+    string topicName7 = "human/delete"; //For publishing deleted
     string topicName8 = "/human/Transformation"; //For ID and twist
     string topicName9 = "/labeled_point_cloud"; //For labeled selection of cubes
     string topicName10 = "/human/downsampled_request"; //For request integer
@@ -362,6 +362,7 @@ public class RosPublisherExample : MonoBehaviour
         newTwist.tf.angular.x = 4;
         newTwist.tf.angular.y = 5;
         newTwist.tf.angular.z = 6;*/
+
         newTwist.tf.linear.x = -1 * (global.transform.position.x - local.transform.position.x) / global.transform.localScale.x;
         newTwist.tf.linear.y = -1 * (global.transform.position.z - local.transform.position.z) / global.transform.localScale.z;
         newTwist.tf.linear.z = -1 * (global.transform.position.y - local.transform.position.y) / global.transform.localScale.y;
@@ -369,9 +370,7 @@ public class RosPublisherExample : MonoBehaviour
         newTwist.tf.angular.y = (local.transform.rotation.eulerAngles.x - global.transform.rotation.eulerAngles.x) * Mathf.Deg2Rad;
         newTwist.tf.angular.z = (global.transform.rotation.eulerAngles.y - local.transform.rotation.eulerAngles.y) * Mathf.Deg2Rad;
 
-
         FirstAlignment = false;
-
 
         /* twist.linear.x = -1 * (global.transform.position.x - local.transform.position.x) / global.transform.localScale.x; //(global.transform.position.z - local.transform.position.z) / global.transform.localScale.z;
          twist.linear.y = -1 * (global.transform.position.z - local.transform.position.z) / global.transform.localScale.z;
@@ -401,6 +400,13 @@ public class RosPublisherExample : MonoBehaviour
         pc2e.data = mcb.AddedVoxelByte.ToArray();
         pc2e.width = (uint)(mcb.AddedVoxelByte.Count / 12);
         ros.Publish(topicName6, pc2e);
+    }
+
+    public void PublishDeletedVoxels()
+    {
+        pc2d.data = mcb.DeletedVoxelByte.ToArray();
+        pc2d.width = (uint)(mcb.DeletedVoxelByte.Count / 12);
+        ros.Publish(topicName7, pc2d);
     }
 
     public void PublishDeletedPointCloudMsg()
@@ -495,7 +501,7 @@ public class RosPublisherExample : MonoBehaviour
         pc2l.row_step = (uint)pc2l.data.Length;
 
     }
-
+    
     public void LabelPublisher()
     {
         ros.Publish(topicName11, pc2l);

@@ -88,6 +88,7 @@ public class MinecraftBuilder : MonoBehaviour
         VoxelPose = new List<Vector3>();
         VoxelByte = new List<Byte>();
         AddedVoxelByte = new List<Byte>();
+        DeletedVoxelByte = new List<Byte>();
         VoxelProba = new List<float>();
         VoxelExists = new List<bool>();
         VoxelByteMap = new List<int>();
@@ -593,12 +594,15 @@ public class MinecraftBuilder : MonoBehaviour
                 VoxelExists[VoxelPose.IndexOf(point)] = true;
 
                 kube = Instantiate(cube, point, Quaternion.identity);
-                kube.gameObject.name = "AddedVoxel";
+                kube.gameObject.name = "VoxelAdded";
                 kube.transform.SetParent(Papa.gameObject.transform);
+
+                VoxelByteMap.Add(VoxelPose.IndexOf(point));
+
+                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
+                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
+                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
             }
-            
-
-
         }
         else
         {
@@ -606,99 +610,145 @@ public class MinecraftBuilder : MonoBehaviour
             VoxelProba.Add(2f);
             VoxelExists.Add(true);
 
-            AddedVoxelByte.AddRange(BitConverter.GetBytes(point.x));
-            AddedVoxelByte.AddRange(BitConverter.GetBytes(point.z));
-            AddedVoxelByte.AddRange(BitConverter.GetBytes(point.y));
+            VoxelByteMap.Add(VoxelPose.IndexOf(point));
+
+            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
+            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
+            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
 
             //pub.PublishEditedPointCloudMsg();
             kube = Instantiate(cube, point, Quaternion.identity);
-            kube.gameObject.name = "AddedVoxel";
+            kube.gameObject.name = "VoxelAdded";
             kube.transform.SetParent(Papa.gameObject.transform);
         }
+        AddedVoxelByte.AddRange(BitConverter.GetBytes(point.x));
+        AddedVoxelByte.AddRange(BitConverter.GetBytes(point.z));
+        AddedVoxelByte.AddRange(BitConverter.GetBytes(point.y));
+    }
+
+    public void UserVoxelDeletion(Vector3 point)
+    {
+
+        distx_in_cm = Mathf.RoundToInt(point.x / cubesize) * cubesize;
+        disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
+        distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
+        point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
+        if (VoxelPose.Contains(point))
+        {
+            VoxelProba[VoxelPose.IndexOf(point)] = 2f;
+            
+            if (VoxelExists[VoxelPose.IndexOf(point)])
+            {
+                overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
+                foreach (Collider overlap in overlaps)
+                {
+                    if (overlap.gameObject.name.StartsWith("Voxel"))
+                    {
+                        //Instantiate(cube222, point, Quaternion.identity);
+                        Destroy(overlap.gameObject);
+                        break;
+                    }
+
+                }
+                VoxelByte.RemoveRange(12 * VoxelByteMap.IndexOf(VoxelPose.IndexOf(point)), 12);
+                VoxelByteMap.Remove(VoxelPose.IndexOf(point));
+            }
+        }
+        else
+        {
+            VoxelPose.Add(point);
+            VoxelProba.Add(2f);
+            VoxelExists.Add(false);
+
+            
+        }
+        DeletedVoxelByte.AddRange(BitConverter.GetBytes(point.x));
+        DeletedVoxelByte.AddRange(BitConverter.GetBytes(point.z));
+        DeletedVoxelByte.AddRange(BitConverter.GetBytes(point.y));
     }
 
 
         // Old script:
-        /*if (VoxelPose.Contains(point))
-        {
-            if (VoxelProba[VoxelPose.IndexOf(point)] > 0 && VoxelProba[VoxelPose.IndexOf(point)] < 1.1)
-            {
-                VoxelProba[VoxelPose.IndexOf(point)] = VoxelProba[VoxelPose.IndexOf(point)] - 0.001f;
-            }
-
-            if (VoxelExists[VoxelPose.IndexOf(point)] && VoxelProba[VoxelPose.IndexOf(point)] < 0.6f)
-            {
-
-                overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
-                if (overlaps != null)
-                {
-                    foreach (Collider overlap in overlaps)
-                    {
-                        if (overlap.gameObject.name == "Voxel")
-                        {
-                            Destroy(overlap.gameObject);
-                            break;
-                        }
-                    }
-                }
-
-                VoxelExists[VoxelPose.IndexOf(point)] = false;
-
-                ///for(int i=VoxelByteMap.IndexOf(VoxelPose.IndexOf(point)); i <)
-
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
-
-                VoxelByteMap.Remove(VoxelPose.IndexOf(point));
-            }
-        }*/
-
-        /*else
-        {
-            VoxelPose.Add(point);
-            VoxelProba.Add(0.05f);
-            VoxelExists.Add(false);
-        }*/
-    //}
-
-    ////////////// Backup for Voxel Instantiator
-   /* public void VoxelInstantiator(Vector3 point)
+    /*if (VoxelPose.Contains(point))
     {
-        if (VoxelPose.Contains(point))
+        if (VoxelProba[VoxelPose.IndexOf(point)] > 0 && VoxelProba[VoxelPose.IndexOf(point)] < 1.1)
         {
-            if (VoxelProba[VoxelPose.IndexOf(point)] < 1)
-            {
-                VoxelProba[VoxelPose.IndexOf(point)] = VoxelProba[VoxelPose.IndexOf(point)] + 0.05f;
-            }
+            VoxelProba[VoxelPose.IndexOf(point)] = VoxelProba[VoxelPose.IndexOf(point)] - 0.001f;
+        }
+
+        if (VoxelExists[VoxelPose.IndexOf(point)] && VoxelProba[VoxelPose.IndexOf(point)] < 0.6f)
+        {
 
             overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
             if (overlaps != null)
             {
                 foreach (Collider overlap in overlaps)
                 {
-                    if (overlap.gameObject.name == "Prism")
+                    if (overlap.gameObject.name == "Voxel")
                     {
-
-                        foreach (Collider overlap2 in overlaps)
-                        {
-                            if (overlap2.gameObject.name == "Voxel")
-                            {
-                                overlap2.gameObject.name = "Labeled";
-                                //Destroy(overlap2.gameObject);   //this works
-                            }
-                        }
+                        Destroy(overlap.gameObject);
+                        break;
                     }
                 }
             }
 
-        }
-        else
-        {
-            VoxelPose.Add(point);
-            VoxelProba.Add(0.05f);
+            VoxelExists[VoxelPose.IndexOf(point)] = false;
+
+            ///for(int i=VoxelByteMap.IndexOf(VoxelPose.IndexOf(point)); i <)
+
+            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
+            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
+            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
+
+            VoxelByteMap.Remove(VoxelPose.IndexOf(point));
         }
     }*/
+
+    /*else
+    {
+        VoxelPose.Add(point);
+        VoxelProba.Add(0.05f);
+        VoxelExists.Add(false);
+    }*/
+    //}
+
+    ////////////// Backup for Voxel Instantiator
+    /* public void VoxelInstantiator(Vector3 point)
+     {
+         if (VoxelPose.Contains(point))
+         {
+             if (VoxelProba[VoxelPose.IndexOf(point)] < 1)
+             {
+                 VoxelProba[VoxelPose.IndexOf(point)] = VoxelProba[VoxelPose.IndexOf(point)] + 0.05f;
+             }
+
+             overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
+             if (overlaps != null)
+             {
+                 foreach (Collider overlap in overlaps)
+                 {
+                     if (overlap.gameObject.name == "Prism")
+                     {
+
+                         foreach (Collider overlap2 in overlaps)
+                         {
+                             if (overlap2.gameObject.name == "Voxel")
+                             {
+                                 overlap2.gameObject.name = "Labeled";
+                                 //Destroy(overlap2.gameObject);   //this works
+                             }
+                         }
+                     }
+                 }
+             }
+
+         }
+         else
+         {
+             VoxelPose.Add(point);
+             VoxelProba.Add(0.05f);
+         }
+     }*/
 
 
 

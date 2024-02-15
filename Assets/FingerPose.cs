@@ -290,10 +290,18 @@ public class FingerPose : MonoBehaviour
                             if(overlap.gameObject.name == "Prism")
                             {
                                 //_MinecraftBuilder.Instantiator(coliderPose, true);
-                                _MinecraftBuilder.UserVoxelAddition(coliderPose);
                                 if (AddingAssets)
                                 {
+                                    _MinecraftBuilder.UserVoxelAddition(coliderPose);
                                     _RosPublisher.LabeledPointCloudPopulater(coliderPose, AssetLabel, AssetInstance);
+                                }
+                                else if (DeletingVoxels)
+                                {
+                                    _MinecraftBuilder.UserVoxelDeletion(coliderPose);
+                                }
+                                else
+                                {
+                                    _MinecraftBuilder.UserVoxelAddition(coliderPose);
                                 }
                                 break;
                             }
@@ -301,10 +309,6 @@ public class FingerPose : MonoBehaviour
                     }
                 }
             }
-        }
-        if (AddingAssets)
-        {
-            _RosPublisher.LabelPublisher();
         }
 
 
@@ -328,14 +332,34 @@ public class FingerPose : MonoBehaviour
             _inputActionHandler.enabled = true;
             AssetInstance = Labeler.AssetInstance(AssetLabel);
             Labeler.AssetToolTip(Selector.transform.position, AssetName);
+            _MinecraftBuilder.AddedVoxelByte.Clear();
+            officialVoxelizer();
+            _RosPublisher.PublishEditedPointCloudMsg();
+            _RosPublisher.LabelPublisher();
+
         }
-        _MinecraftBuilder.AddedVoxelByte.Clear();
-        officialVoxelizer();
-        _RosPublisher.PublishEditedPointCloudMsg();
-        //_RosPublisher.LabelPublisher();
+        else if (DeletingVoxels)
+        {
+            _MinecraftBuilder.DeletedVoxelByte.Clear();
+            officialVoxelizer();
+            _RosPublisher.PublishDeletedVoxels();
+            doneInstantiation = false;
+
+        }
+        else
+        {
+            _MinecraftBuilder.AddedVoxelByte.Clear();
+            officialVoxelizer();
+            _RosPublisher.PublishEditedPointCloudMsg();
+            doneInstantiation = false;
+        }
+        
+        
+        
+        
         Destroy(Selector);
         appBar.SetActive(false);
-        doneInstantiation = false;
+        
 
 
     }
@@ -396,6 +420,10 @@ public class FingerPose : MonoBehaviour
     public void AssetNameForTooltip(string name)
     {
         AssetName = name;
+    }
+    public void EnableDeletion(bool state)
+    {
+        DeletingVoxels = state;
     }
 
 

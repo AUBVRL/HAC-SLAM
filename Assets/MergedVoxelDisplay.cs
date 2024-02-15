@@ -52,7 +52,7 @@ public class MergedVoxelDisplay : MonoBehaviour
 
             kuby = Instantiate(cubz, cubePose, Quaternion.identity);
             kuby.transform.SetParent(this.gameObject.transform, false);
-            kuby.gameObject.name = "Voxel";
+            kuby.gameObject.name = "VoxelMerged";
 
             if (pointcloud.data[j+17] != 0)
             {
