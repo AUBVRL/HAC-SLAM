@@ -8,6 +8,7 @@ public class MergedVoxelDisplay : MonoBehaviour
 {
     public GameObject cubz;
     public RosSubscriberExample Sub;
+    public GameObject Parent;
     [NonSerialized]
     public float x, y, z, rx, ry, rz;
     bool once = true;
@@ -51,8 +52,8 @@ public class MergedVoxelDisplay : MonoBehaviour
             cubePose.y = System.BitConverter.ToSingle(pointcloud.data, j + 8);
 
             kuby = Instantiate(cubz, cubePose, Quaternion.identity);
-            kuby.transform.SetParent(this.gameObject.transform, false);
-            kuby.gameObject.name = "VoxelMerged";
+            kuby.transform.SetParent(Parent.transform, false);
+            kuby.gameObject.name = "MergedVoxel";
 
             if (pointcloud.data[j+17] != 0)
             {

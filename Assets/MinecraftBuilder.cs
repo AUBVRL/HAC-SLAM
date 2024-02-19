@@ -12,13 +12,15 @@ public class MinecraftBuilder : MonoBehaviour
 {
 
     public MiniMap miniMap;
-    public GameObject cube, holder, Papa, cube222;
+    public GameObject cube, holder, VoxelsParent, AdditonParent, DeletionParent, cube222;
+    public Material[] materials;
     public RosPublisherExample pub;
+    public RosSubscriberExample sub;
     public TextWriter txtwrtr;
     [NonSerialized]
     public float cubesize;
-    static int Hor_angle_window = 36; //90; //36
-    static int Ver_angle_window = 16; //46; //16
+    static int Hor_angle_window = 18; //90; //36
+    static int Ver_angle_window = 8; //46; //16
     static float angle_size = 2f;
     float Hor_angle_min = -((float)Hor_angle_window / 2);
     float Ver_angle_min = -((float)Ver_angle_window / 2);
@@ -58,6 +60,7 @@ public class MinecraftBuilder : MonoBehaviour
     Vector3 cubesizeScale;
     RaycastHit[] hits;
     bool spatial;
+    MeshRenderer VoxelMeshRenderer;
     //Dictionary<Vector3, float> VoxelProba;
 
 
@@ -117,9 +120,9 @@ public class MinecraftBuilder : MonoBehaviour
                     //RaycastHit hit;
                     //bool raycastHit = false;
                     Ver_Ray_direction = Quaternion.Euler((Ver_angle_min + (angle_size * j)), 0, 0) * Hor_Ray_direction;
-                    raycastHit = Physics.Raycast(Gaze_position, Ver_Ray_direction, out hit, 1.7f);
+                    raycastHit = Physics.Raycast(Gaze_position, Ver_Ray_direction, out hit, 10f);
                     
-                    if (raycastHit && hit.transform.name.StartsWith("SpatialMesh")) //The second condition ensures that only the spatial mesh is mapped
+                    if (raycastHit && hit.transform.name.Contains("SpatialMesh")) //The second condition ensures that only the spatial mesh is mapped
                     {
                         //txtwrtr.meshName = hit.collider.name;
                         /*distx_in_cubes = Mathf.RoundToInt(hit.point.x / cubesize);
@@ -136,7 +139,7 @@ public class MinecraftBuilder : MonoBehaviour
                         VoxelInstantiator(hit.point);
 
 
-
+                        ///////For deleting
                         float Gaze_distance = Vector3.Distance(Gaze_position, hit.point);
 
                         hits = Physics.RaycastAll(Gaze_position, Ver_Ray_direction, Gaze_distance, 4);
@@ -148,7 +151,7 @@ public class MinecraftBuilder : MonoBehaviour
                                 foreach (Collider overlap in overlaps)
                                 {
                                     spatial = false;
-                                    if (overlap.gameObject.name.StartsWith("SpatialMesh"))
+                                    if (overlap.gameObject.name.Contains("SpatialMesh"))
                                     {
                                         spatial = true;
                                         break;
@@ -156,12 +159,14 @@ public class MinecraftBuilder : MonoBehaviour
                                 }
                                 if (spatial) continue;
                                 VoxelDestroyer(hity.transform.position);
+
+
                                 //VoxelDestroyer(hity.transform.position);
                                 //Instantiate(cube222, hity.transform.position, Quaternion.identity);
                                 //Debug.Log(Gaze_distance);
                             }
                         }
-
+                        //////////////////////////// For deleting
 
                         //Rasterizer(Gaze_position, hit.point);
                     }
@@ -240,6 +245,7 @@ public class MinecraftBuilder : MonoBehaviour
             }
             else
             {
+
                 if (startcuby.y == temp_yz_int)
                 {
                     startcuby.z = startcuby.z + sz;
@@ -303,7 +309,7 @@ public class MinecraftBuilder : MonoBehaviour
             {
                 Taj[distx_in_cubes - 1 + xSize / 2][disty_in_cubes - 1 + ySize / 2][distz_in_cubes - 1 + zSize / 2] = Instantiate(cube, nearest_pt, Quaternion.identity);
                 Taj[distx_in_cubes - 1 + xSize / 2][disty_in_cubes - 1 + ySize / 2][distz_in_cubes - 1 + zSize / 2].gameObject.name = "Voxel";
-                Taj[distx_in_cubes - 1 + xSize / 2][disty_in_cubes - 1 + ySize / 2][distz_in_cubes - 1 + zSize / 2].transform.SetParent(Papa.gameObject.transform);
+                Taj[distx_in_cubes - 1 + xSize / 2][disty_in_cubes - 1 + ySize / 2][distz_in_cubes - 1 + zSize / 2].transform.SetParent(VoxelsParent.gameObject.transform);
                 //miniMap.Fill(nearest_pt);
                 
                 /*if (fromEditor)
@@ -457,19 +463,22 @@ public class MinecraftBuilder : MonoBehaviour
         distx_in_cm = Mathf.RoundToInt(point.x / cubesize) * cubesize;
         disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
         distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
-        point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
+        point.Set(distx_in_cm, disty_in_cm, distz_in_cm);
+
         if (VoxelPose.Contains(point))
         {
             if (VoxelProba[VoxelPose.IndexOf(point)] < 1 && VoxelProba[VoxelPose.IndexOf(point)] >= 0)
             {
-                VoxelProba[VoxelPose.IndexOf(point)] = VoxelProba[VoxelPose.IndexOf(point)] + 0.05f;
+                VoxelProba[VoxelPose.IndexOf(point)] = VoxelProba[VoxelPose.IndexOf(point)] + 0.15f;
             }
 
             if (!VoxelExists[VoxelPose.IndexOf(point)] && VoxelProba[VoxelPose.IndexOf(point)] > 0.6f)
             {
                 kube = Instantiate(cube, point, Quaternion.identity);
                 kube.gameObject.name = "Voxel";
-                kube.transform.SetParent(Papa.gameObject.transform);
+                VoxelMeshRenderer = kube.GetComponent<MeshRenderer>();
+                VoxelMeshRenderer.material = materials[0];
+                kube.transform.SetParent(VoxelsParent.transform);
                 
                 VoxelExists[VoxelPose.IndexOf(point)] = true;
 
@@ -478,7 +487,7 @@ public class MinecraftBuilder : MonoBehaviour
                 VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
                 VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
                 VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
-
+                
             }
         }
 
@@ -586,22 +595,41 @@ public class MinecraftBuilder : MonoBehaviour
         disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
         distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
         point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
+        Vector3 TransformedPoints;
+        
         if (VoxelPose.Contains(point))
         {
             VoxelProba[VoxelPose.IndexOf(point)] = 2f;
-            if (!VoxelExists[VoxelPose.IndexOf(point)])
+            if (!VoxelExists[VoxelPose.IndexOf(point)]) //Fix to include if the voxel already exists
             {
                 VoxelExists[VoxelPose.IndexOf(point)] = true;
 
                 kube = Instantiate(cube, point, Quaternion.identity);
-                kube.gameObject.name = "VoxelAdded";
-                kube.transform.SetParent(Papa.gameObject.transform);
+                kube.name = "VoxelAdded";
+                VoxelMeshRenderer = kube.GetComponent<MeshRenderer>();
+                VoxelMeshRenderer.material = materials[1];
+                kube.transform.SetParent(AdditonParent.gameObject.transform);
 
                 VoxelByteMap.Add(VoxelPose.IndexOf(point));
 
                 VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
                 VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
                 VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
+            }
+            else
+            {
+                overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
+                foreach (Collider overlap in overlaps)
+                {
+                    if (overlap.gameObject.name.Contains("Voxel"))
+                    {
+                        overlap.gameObject.name = "VoxelAdded";
+                        VoxelMeshRenderer = overlap.gameObject.GetComponent<MeshRenderer>();
+                        VoxelMeshRenderer.material = materials[1];
+                        overlap.gameObject.transform.SetParent(AdditonParent.gameObject.transform);
+                    }
+
+                }
             }
         }
         else
@@ -619,11 +647,150 @@ public class MinecraftBuilder : MonoBehaviour
             //pub.PublishEditedPointCloudMsg();
             kube = Instantiate(cube, point, Quaternion.identity);
             kube.gameObject.name = "VoxelAdded";
-            kube.transform.SetParent(Papa.gameObject.transform);
+            VoxelMeshRenderer = kube.GetComponent<MeshRenderer>();
+            VoxelMeshRenderer.material = materials[1];
+            kube.transform.SetParent(AdditonParent.gameObject.transform);
         }
-        AddedVoxelByte.AddRange(BitConverter.GetBytes(point.x));
-        AddedVoxelByte.AddRange(BitConverter.GetBytes(point.z));
-        AddedVoxelByte.AddRange(BitConverter.GetBytes(point.y));
+        TransformedPoints = TransformPCL(point);
+        AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.x));
+        AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.z));
+        AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.y));
+    }
+
+    public void UserAssetAddition(Vector3 point)
+    {
+        distx_in_cm = Mathf.RoundToInt(point.x / cubesize) * cubesize;
+        disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
+        distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
+        point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
+        Vector3 TransformedPoints;
+
+        if (VoxelPose.Contains(point))
+        {
+            VoxelProba[VoxelPose.IndexOf(point)] = 2f;
+            if (!VoxelExists[VoxelPose.IndexOf(point)]) //Fix to include if the voxel already exists
+            {
+                VoxelExists[VoxelPose.IndexOf(point)] = true;
+
+                kube = Instantiate(cube, point, Quaternion.identity);
+                kube.name = "VoxelAdded";
+                VoxelMeshRenderer = kube.GetComponent<MeshRenderer>();
+                VoxelMeshRenderer.material = materials[3];
+                kube.transform.SetParent(AdditonParent.gameObject.transform);
+
+                VoxelByteMap.Add(VoxelPose.IndexOf(point));
+
+                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
+                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
+                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
+            }
+            else
+            {
+                overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
+                foreach (Collider overlap in overlaps)
+                {
+                    if (overlap.gameObject.name.Contains("Voxel"))
+                    {
+                        overlap.gameObject.name = "VoxelAdded";
+                        VoxelMeshRenderer = overlap.gameObject.GetComponent<MeshRenderer>();
+                        VoxelMeshRenderer.material = materials[3];
+                        overlap.gameObject.transform.SetParent(AdditonParent.gameObject.transform);
+                    }
+
+                }
+            }
+        }
+        else
+        {
+            VoxelPose.Add(point);
+            VoxelProba.Add(2f);
+            VoxelExists.Add(true);
+
+            VoxelByteMap.Add(VoxelPose.IndexOf(point));
+
+            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
+            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
+            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
+
+            //pub.PublishEditedPointCloudMsg();
+            kube = Instantiate(cube, point, Quaternion.identity);
+            kube.gameObject.name = "VoxelAdded";
+            VoxelMeshRenderer = kube.GetComponent<MeshRenderer>();
+            VoxelMeshRenderer.material = materials[3];
+            kube.transform.SetParent(AdditonParent.gameObject.transform);
+        }
+        TransformedPoints = TransformPCL(point);
+        AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.x));
+        AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.z));
+        AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.y));
+    }
+
+    public void VuforiaAddition(Vector3 point)
+    {
+        distx_in_cm = Mathf.RoundToInt(point.x / cubesize) * cubesize;
+        disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
+        distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
+        point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
+        Vector3 TransformedPoints;
+
+        if (VoxelPose.Contains(point))
+        {
+            VoxelProba[VoxelPose.IndexOf(point)] = 2f;
+            if (!VoxelExists[VoxelPose.IndexOf(point)]) //Fix to include if the voxel already exists
+            {
+                VoxelExists[VoxelPose.IndexOf(point)] = true;
+
+                kube = Instantiate(cube, point, Quaternion.identity);
+                kube.name = "VoxelAdded";
+                VoxelMeshRenderer = kube.GetComponent<MeshRenderer>();
+                VoxelMeshRenderer.material = materials[4];
+                kube.transform.SetParent(AdditonParent.gameObject.transform);
+
+                VoxelByteMap.Add(VoxelPose.IndexOf(point));
+
+                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
+                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
+                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
+            }
+            else
+            {
+                overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
+                foreach (Collider overlap in overlaps)
+                {
+                    if (overlap.gameObject.name.Contains("Voxel"))
+                    {
+                        overlap.gameObject.name = "VoxelAdded";
+                        VoxelMeshRenderer = overlap.gameObject.GetComponent<MeshRenderer>();
+                        VoxelMeshRenderer.material = materials[4];
+                        overlap.gameObject.transform.SetParent(AdditonParent.gameObject.transform);
+                    }
+
+                }
+            }
+        }
+        else
+        {
+            VoxelPose.Add(point);
+            VoxelProba.Add(2f);
+            VoxelExists.Add(true);
+
+            VoxelByteMap.Add(VoxelPose.IndexOf(point));
+
+            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
+            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
+            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
+
+            //pub.PublishEditedPointCloudMsg();
+            kube = Instantiate(cube, point, Quaternion.identity);
+            kube.gameObject.name = "VoxelAdded";
+            VoxelMeshRenderer = kube.GetComponent<MeshRenderer>();
+            VoxelMeshRenderer.material = materials[4];
+            kube.transform.SetParent(AdditonParent.gameObject.transform);
+        }
+        TransformedPoints = TransformPCL(point);
+        AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.x));
+        AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.z));
+        AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.y));
     }
 
     public void UserVoxelDeletion(Vector3 point)
@@ -642,7 +809,7 @@ public class MinecraftBuilder : MonoBehaviour
                 overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
                 foreach (Collider overlap in overlaps)
                 {
-                    if (overlap.gameObject.name.StartsWith("Voxel"))
+                    if (overlap.gameObject.name.Contains("Voxel"))
                     {
                         //Instantiate(cube222, point, Quaternion.identity);
                         Destroy(overlap.gameObject);
@@ -665,9 +832,23 @@ public class MinecraftBuilder : MonoBehaviour
         DeletedVoxelByte.AddRange(BitConverter.GetBytes(point.x));
         DeletedVoxelByte.AddRange(BitConverter.GetBytes(point.z));
         DeletedVoxelByte.AddRange(BitConverter.GetBytes(point.y));
+
+        kube = Instantiate(cube, point, Quaternion.identity);
+        kube.gameObject.name = "VoxelDeleted";
+        VoxelMeshRenderer = kube.GetComponent<MeshRenderer>();
+        VoxelMeshRenderer.material = materials[2];
+        kube.transform.SetParent(DeletionParent.gameObject.transform);
     }
 
-
+    public Vector3 TransformPCL(Vector3 Pooint)
+    {
+        Vector3 translation = new Vector3((float)sub.x, (float)sub.y, (float)sub.z);
+        Vector3 rotationAngles = new Vector3((float)sub.rx, (float)sub.ry, (float)sub.rz);
+        Quaternion rotationQuaternion = Quaternion.Euler(rotationAngles);
+        //newPose = this.transform.position;
+        Pooint = rotationQuaternion * Pooint + translation;
+        return Pooint;
+    }
         // Old script:
     /*if (VoxelPose.Contains(point))
     {

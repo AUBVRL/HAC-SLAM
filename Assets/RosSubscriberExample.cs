@@ -5,6 +5,7 @@ using OGGM = RosMessageTypes.Nav.OccupancyGridMsg;
 using Posemsg = RosMessageTypes.Geometry.PoseMsg;
 using pc2m = RosMessageTypes.Sensor.PointCloud2Msg;
 using twist = RosMessageTypes.Geometry.TwistMsg;
+using transformer = RosMessageTypes.CustomInterfaces;
 using Geo = RosMessageTypes.Geometry;
 using Nav = RosMessageTypes.Nav;
 using StringMsg = RosMessageTypes.Std.StringMsg;
@@ -39,6 +40,7 @@ public class RosSubscriberExample : MonoBehaviour
     public uint pcwidth;
     [NonSerialized]
     public pc2m incomingPointCloudDownSampled, localPointCloudDownSampled, incomingPointCloudLive;
+    
     //public Geo.PoseStampedMsg GoalPose;
     //public Nav.PathMsg Path;
     //Nav.OdometryMsg Odometry;
@@ -60,7 +62,7 @@ public class RosSubscriberExample : MonoBehaviour
         ROSConnection.GetOrCreateInstance().Subscribe<pc2m>("/robot_map_downsampled", pointCloud); // No need for them anymore
         ROSConnection.GetOrCreateInstance().Subscribe<pc2m>("/local_map_downsampled", localPointCloud);
         ROSConnection.GetOrCreateInstance().Subscribe<pc2m>("/com/semantic_pcl", pointCloudLive);
-        ROSConnection.GetOrCreateInstance().Subscribe<twist>("/refined_tf", twistReceived); //This should become the edited message type that has idto idfrom
+        ROSConnection.GetOrCreateInstance().Subscribe<transformer.TransformationMsg>("/refined_tf", twistReceived); //This should become the edited message type that has idto idfrom
         //ROSConnection.GetOrCreateInstance().Subscribe<twist>("/trans_topic_merger", twistReceived);
         ROSConnection.GetOrCreateInstance().Subscribe<pc2m>("/com/downsampled", pointCloudDownsampled);
         ROSConnection.GetOrCreateInstance().Subscribe<pc2m>("/human/human_label", pointCloudDownsampledTest);
@@ -90,10 +92,10 @@ public class RosSubscriberExample : MonoBehaviour
     public void pointCloudLive(pc2m ptcldlive)
     {
         incomingPointCloudLive = ptcldlive;
-        Debug.Log("Ejit");
+        //Debug.Log("Ejit");
         //Debug.Log(ptcldlive.data[17]);    
     }
-    public void twistReceived(twist Twisty)
+    public void twistReceived(transformer.TransformationMsg Twisty)
     {
 
 
@@ -111,16 +113,21 @@ public class RosSubscriberExample : MonoBehaviour
         ry = 1 * Twisty.angular.z * Mathf.Rad2Deg;
         rz = 1 * Twisty.angular.x * Mathf.Rad2Deg; //was -1
         */
+        Debug.Log(Twisty.tf.linear.x);
+        Debug.Log(Twisty.tf.linear.y);
+        Debug.Log(Twisty.tf.linear.z);
+        Debug.Log(Twisty.tf.angular.x);
+        Debug.Log(Twisty.tf.angular.y);
+        Debug.Log(Twisty.tf.angular.z);
 
-
-        x = -1 * Twisty.linear.x;
-        y = -1 * Twisty.linear.z;
-        z = -1 * Twisty.linear.y;
+        x = -1 * Twisty.tf.linear.x;
+        y = -1 * Twisty.tf.linear.z;
+        z = -1 * Twisty.tf.linear.y;
         rx = 0; //1 * Twisty.angular.x * Mathf.Rad2Deg;
-        ry = 1 * Twisty.angular.z * Mathf.Rad2Deg;
+        ry = 1 * Twisty.tf.angular.z * Mathf.Rad2Deg;
         rz = 0; // 1 * Twisty.angular.y * Mathf.Rad2Deg; //was -1
 
-        Debug.Log("Oui");
+        pub.FirstAlignment = false;
     }
 
     public void localPointCloud(pc2m localptcld)

@@ -39,6 +39,8 @@ public class RosPublisherExample : MonoBehaviour
     string RequestNamesTopic = "/human/map_names";
     string LoadMapTopic = "/human/load_map";
     string localizeHumanTopic = "/human/localize";
+    string DeleteLabelTopic = "/human/delete_label";
+    string DeleteInstanceTopic = "/human/delete_instance";
     //Texture2D image; //For FSLAM. To be tried later
 
     float publishMessageFrequency = 3f;
@@ -61,12 +63,12 @@ public class RosPublisherExample : MonoBehaviour
     pc2.PointCloud2Msg pc2l;
     GeometryMsgs.TwistMsg twist;
     GeometryMsgs.TwistMsg robot_twist;
-    _int.Int16Msg intRequest;
-    _int.StringMsg SaveMapName;
-    _int.StringMsg LoadMapName;
+    _int.Int16Msg intRequest, deleteLabel;
+    _int.StringMsg SaveMapName, LoadMapName;
     _int.BoolMsg RequestNames;
 
     transformer.TransformationMsg newTwist;
+    transformer.InstanceMsg deleteInstance;
     //transformer.LabelPCLMsg labeler;
 
     uint NewWidth = 0;
@@ -91,6 +93,10 @@ public class RosPublisherExample : MonoBehaviour
 
         // This is not initialized on ros tcp. Wait for malak
         ros.RegisterPublisher<transformer.TransformationMsg>(topicName8);
+
+        ros.RegisterPublisher<transformer.InstanceMsg>(DeleteInstanceTopic);
+        ros.RegisterPublisher<_int.Int16Msg>(DeleteLabelTopic);
+
         ros.RegisterPublisher<_int.Int16Msg>(topicName10); //For Minimap requests
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName11);
         ros.RegisterPublisher<_int.StringMsg>(SaveTopic);
@@ -249,6 +255,10 @@ public class RosPublisherExample : MonoBehaviour
 
         FirstAlignment = true;
 
+        deleteLabel = new _int.Int16Msg();
+        deleteInstance = new transformer.InstanceMsg();
+
+
     }
 
     private void Update()
@@ -366,11 +376,11 @@ public class RosPublisherExample : MonoBehaviour
         newTwist.tf.linear.x = -1 * (global.transform.position.x - local.transform.position.x) / global.transform.localScale.x;
         newTwist.tf.linear.y = -1 * (global.transform.position.z - local.transform.position.z) / global.transform.localScale.z;
         newTwist.tf.linear.z = -1 * (global.transform.position.y - local.transform.position.y) / global.transform.localScale.y;
-        newTwist.tf.angular.x = (global.transform.rotation.eulerAngles.z - local.transform.rotation.eulerAngles.z) * Mathf.Deg2Rad;
-        newTwist.tf.angular.y = (local.transform.rotation.eulerAngles.x - global.transform.rotation.eulerAngles.x) * Mathf.Deg2Rad;
+        newTwist.tf.angular.x = (global.transform.rotation.eulerAngles.x - local.transform.rotation.eulerAngles.x) * Mathf.Deg2Rad;
+        newTwist.tf.angular.y = (global.transform.rotation.eulerAngles.z - local.transform.rotation.eulerAngles.z) * Mathf.Deg2Rad;
         newTwist.tf.angular.z = (global.transform.rotation.eulerAngles.y - local.transform.rotation.eulerAngles.y) * Mathf.Deg2Rad;
 
-        FirstAlignment = false;
+        
 
         /* twist.linear.x = -1 * (global.transform.position.x - local.transform.position.x) / global.transform.localScale.x; //(global.transform.position.z - local.transform.position.z) / global.transform.localScale.z;
          twist.linear.y = -1 * (global.transform.position.z - local.transform.position.z) / global.transform.localScale.z;
@@ -542,7 +552,7 @@ public class RosPublisherExample : MonoBehaviour
         ros.Publish(LoadMapTopic, LoadMapName);
     }
 
-    public void HumanLozalizationPublisher()
+    public void HumanLozalizationPublisher() //Needs lots of fixinng
     {
         robot_twist = new GeometryMsgs.TwistMsg();
         robot_twist.linear.x = RobotTarget.transform.position.x + sub.x;
@@ -554,6 +564,19 @@ public class RosPublisherExample : MonoBehaviour
 
         ros.Publish(localizeHumanTopic, robot_twist);
         Debug.Log(robot_twist);
+    }
+
+    public void PublishDeleteLabel(byte label)
+    {
+        deleteLabel.data = label;
+        ros.Publish(DeleteLabelTopic, deleteLabel);
+    }
+    public void PublishDeleteInstance(byte label, byte instance)
+    {
+        deleteInstance.label = (sbyte) label;
+        deleteInstance.instance = (sbyte) instance;
+        ros.Publish(DeleteInstanceTopic, deleteInstance);
+
     }
 
 }

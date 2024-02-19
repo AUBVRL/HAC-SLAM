@@ -1,3 +1,4 @@
+using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,10 +6,10 @@ using UnityEngine;
 public class OnOff : MonoBehaviour
 {
     List<Vector3> vec;
-    Vector3 Pose,Rota;
+    Vector3 Pose,Rota,newPose;
     private void Start()
     {
-        vec = new List<Vector3>();
+        /*vec = new List<Vector3>();
         Vector3 testvec = new Vector3(1f, 2f, 3f);
         Vector3 testvec2 = new Vector3(2f, 2f, 3f);
         vec.Add(testvec);
@@ -18,20 +19,24 @@ public class OnOff : MonoBehaviour
         float floatValue = System.BitConverter.ToSingle(byteArray, 0);
         //Debug.Log(floatValue);
         byte ex = 255;
-        byte[] fff = System.BitConverter.GetBytes(ex);
+        byte[] fff = System.BitConverter.GetBytes(ex);*/
         //Debug.Log(fff[1]);
+
+        //this.transform.Translate(new Vector3(0, 0, 1), Space.World);
+        Pose = new Vector3(-1, 0, -1);
+        Vector3 rotationAngles = new Vector3(0, -45, 0);
+        Quaternion rotationQuaternion = Quaternion.Euler(rotationAngles);
+        //newPose = this.transform.position;
+        this.transform.position = rotationQuaternion * this.transform.position + Pose;
+        //this.transform.position = newPose;
+
     }
 
-    /*private void Update()
+    private void Update()
     {
-        Pose.x = Camera.main.transform.localPosition.x + 2*Mathf.Sin(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
-        Pose.y = Camera.main.transform.localPosition.y - 0.5f;
-        Pose.z = Camera.main.transform.localPosition.z + 2*Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
-        gameObject.transform.position = Pose;
-        Rota.Set(0, Camera.main.transform.localRotation.eulerAngles.y, 0);
-        gameObject.transform.localEulerAngles = Rota;
         
-    }*/
+
+    }
 
     public void lilililililii()
     {

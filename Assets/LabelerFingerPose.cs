@@ -34,7 +34,9 @@ public class LabelerFingerPose : MonoBehaviour
     public HoloKeyboard holoKey;
     byte[] InstanceCounter = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; //Should be dynamic but here it's just a proof of the concept
     public GameObject[] Buttons = new GameObject[6];
+    public GameObject Parent;
     ButtonConfigHelper ButtonText;
+    LabelAndInstance LabelInstance;
     byte label;
 
     // Start is called before the first frame update
@@ -217,11 +219,12 @@ public class LabelerFingerPose : MonoBehaviour
                                 
                                 foreach (Collider overlap2 in overlaps)
                                 {
-                                    if (overlap2.gameObject.name.StartsWith("Voxel"))
+                                    if (overlap2.gameObject.name.Contains("Voxel"))
                                     {
                                         VoxelMeshRenderer = overlap2.gameObject.GetComponent<MeshRenderer>();
                                         VoxelMeshRenderer.material = SelectedMaterial;
-                                        overlap2.gameObject.name = "Labeled";
+                                        overlap2.gameObject.name = "VoxelLabeled";
+                                        overlap2.transform.SetParent(Parent.transform);
                                         //ToolTipAnchor += overlap2.gameObject.transform.position;
                                         //counterForVoxels++;
                                         Pub.LabeledPointCloudPopulater(overlap2.gameObject.transform.position, labely , instancey);
@@ -277,6 +280,8 @@ public class LabelerFingerPose : MonoBehaviour
         label++;
         //Debug.Log("Label: " + label);
         labelVoxelizer(label, 0);
+        LabelInstance.label = label;
+        LabelInstance.instance = 0;
         Destroy(Selector);
         appBar.SetActive(false);
         doneInstantiation = false;
@@ -301,20 +306,24 @@ public class LabelerFingerPose : MonoBehaviour
         // TODO: after pressing add new label, the abort will not delete the changes and tooltips
         tool = Instantiate(tooltip, Selector.transform.position + new Vector3(0, (Selector.transform.localScale.y) / 2, 0), Quaternion.identity);
         tooltipText = tool.GetComponent<ToolTip>();
+        LabelInstance = tool.GetComponent<LabelAndInstance>();
         //labelVoxelizer();
         
 
         //////// Enable when deploying to HoloLens
-        //holoKey.OpenKeyboard();
+        holoKey.OpenKeyboard();
 
         ToolTextBool = true;
         
     }
 
-    public void AssetToolTip(Vector3 pose, string name)
+    public void AssetToolTip(Vector3 pose, string name, byte Label, byte Instance)
     {
         tool = Instantiate(tooltip, pose + new Vector3(0, 0.2f, 0), Quaternion.identity);
         tooltipText = tool.GetComponent<ToolTip>();
+        LabelInstance = tool.GetComponent<LabelAndInstance>();
+        LabelInstance.label = Label;
+        LabelInstance.instance = Instance;
         tooltipText.ToolTipText = name;
     }
 
@@ -324,11 +333,15 @@ public class LabelerFingerPose : MonoBehaviour
         //Debug.Log("hay lbyte: " + b);
         tool = Instantiate(tooltip, Selector.transform.position + new Vector3(0, (Selector.transform.localScale.y) / 2, 0), Quaternion.identity);
         tooltipText = tool.GetComponent<ToolTip>();
+        LabelInstance = tool.GetComponent<LabelAndInstance>();
         ButtonText = Buttons[b-5].GetComponent<ButtonConfigHelper>();
         tooltipText.ToolTipText = ButtonText.MainLabelText;
         InstanceCounter[b]++;
-        //Debug.Log("Hay linstance: " + InstanceCounter[b]);
+        LabelInstance.label = b;
+        LabelInstance.instance = InstanceCounter[b];
+        
         b++;
+
         labelVoxelizer(b, InstanceCounter[b-1]);
         //Debug.Log("Insta: " + InstanceCounter[b]);
         Destroy(Selector);
@@ -343,7 +356,7 @@ public class LabelerFingerPose : MonoBehaviour
         labelo = (byte) (labelo - 1);
         
         byte CurrentInstance = InstanceCounter[labelo];
-        Debug.Log(InstanceCounter[labelo]);
+        //Debug.Log(InstanceCounter[labelo]);
         InstanceCounter[labelo]++;
         return CurrentInstance;
         
