@@ -207,7 +207,7 @@ public class LabelerFingerPose : MonoBehaviour
                 for (int k = minbound_inCubes.z; k <= maxbound_inCubes.z; k++)
                 {
                     coliderPose.Set(i, j, k);
-                    coliderPose = coliderPose * cubesize;
+                    coliderPose = coliderPose * 0.04999f;// cubesize;
 
                     overlaps = Physics.OverlapBox(coliderPose, cubesizeScale / 2);
                     if (overlaps != null)
