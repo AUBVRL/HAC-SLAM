@@ -40,7 +40,7 @@ public class MinecraftBuilder : MonoBehaviour
     int disty_in_cubes;
     int distz_in_cubes;
     //float min_hit;
-    Vector3 nearest_pt;
+    Vector3 nearest_pt, TransformedPoints;
     Vector3 nearest_pt2;
     Vector3[] pt = new Vector3[(int)(Hor_angle_window / angle_size)];
     float hit_distance;
@@ -136,7 +136,11 @@ public class MinecraftBuilder : MonoBehaviour
                             // Instantiator(hit.point);
                             // Rasterizer(Gaze_position, hit.point);
                         }*/
-                        VoxelInstantiator(hit.point);
+                        if (hit.point.y >= -1.65)
+                        {
+                            VoxelInstantiator(hit.point);
+                        }
+                        
 
 
                         ///////For deleting
@@ -595,7 +599,6 @@ public class MinecraftBuilder : MonoBehaviour
         disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
         distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
         point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
-        Vector3 TransformedPoints;
         
         if (VoxelPose.Contains(point))
         {
@@ -663,7 +666,6 @@ public class MinecraftBuilder : MonoBehaviour
         disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
         distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
         point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
-        Vector3 TransformedPoints;
 
         if (VoxelPose.Contains(point))
         {
@@ -731,7 +733,6 @@ public class MinecraftBuilder : MonoBehaviour
         disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
         distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
         point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
-        Vector3 TransformedPoints;
 
         if (VoxelPose.Contains(point))
         {
@@ -828,9 +829,10 @@ public class MinecraftBuilder : MonoBehaviour
 
             
         }
-        DeletedVoxelByte.AddRange(BitConverter.GetBytes(point.x));
-        DeletedVoxelByte.AddRange(BitConverter.GetBytes(point.z));
-        DeletedVoxelByte.AddRange(BitConverter.GetBytes(point.y));
+        TransformedPoints = TransformPCL(point);
+        DeletedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.x));
+        DeletedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.z));
+        DeletedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.y));
 
         kube = Instantiate(cube, point, Quaternion.identity);
         kube.gameObject.name = "VoxelDeleted";

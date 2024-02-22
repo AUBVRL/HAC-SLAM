@@ -553,7 +553,7 @@ public class RosPublisherExample : MonoBehaviour
         ros.Publish(LoadMapTopic, LoadMapName);
     }
 
-    public void HumanLozalizationPublisher() //Needs lots of fixinng
+    public void HumanLozalizationPublisher()
     {
         robot_twist = new GeometryMsgs.TwistMsg();
         robot_twist.linear.x = RobotTarget.transform.position.x + sub.x;
