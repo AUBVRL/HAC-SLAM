@@ -16,7 +16,7 @@ public class LabelerFingerPose : MonoBehaviour
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftIndex;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftThumb;
     float fingersThreshold, HandAngleThreshold, cubesize;
-    Vector3 InitialPose, FinalPose, PrismCenter, Scale_incubes, coliderPose, cubesizeScale, ToolTipAnchor;
+    Vector3 InitialPose, FinalPose, PrismCenter, Scale_incubes, coliderPose, cubesizeScale, ToolTipAnchor, TransformedPoints;
     Vector3Int InitialPose_incubes, FinalPose_incubes, minbound_inCubes, maxbound_inCubes;
     public MinecraftBuilder _minecraftbuilder;
     public RosPublisherExample Pub;
@@ -227,7 +227,8 @@ public class LabelerFingerPose : MonoBehaviour
                                         overlap2.transform.SetParent(Parent.transform);
                                         //ToolTipAnchor += overlap2.gameObject.transform.position;
                                         //counterForVoxels++;
-                                        Pub.LabeledPointCloudPopulater(overlap2.gameObject.transform.position, labely , instancey);
+                                        TransformedPoints = _minecraftbuilder.TransformPCL(overlap2.gameObject.transform.position);
+                                        Pub.LabeledPointCloudPopulater(TransformedPoints, labely , instancey);
                                         break;
                                         //Destroy(overlap2.gameObject);   //this works
                                     }
