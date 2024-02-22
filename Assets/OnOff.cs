@@ -23,12 +23,13 @@ public class OnOff : MonoBehaviour
         //Debug.Log(fff[1]);
 
         //this.transform.Translate(new Vector3(0, 0, 1), Space.World);
-        Pose = new Vector3(-1, 0, -1);
-        Vector3 rotationAngles = new Vector3(0, -45, 0);
+        Pose = new Vector3(0, 1, 0);
+        Vector3 rotationAngles = new Vector3(0, 0, 90);
         Quaternion rotationQuaternion = Quaternion.Euler(rotationAngles);
         //newPose = this.transform.position;
-        this.transform.position = rotationQuaternion * this.transform.position + Pose;
+        //this.transform.position = rotationQuaternion * this.transform.position;
         //this.transform.position = newPose;
+        Debug.Log(rotationQuaternion * Pose);
 
     }
 

@@ -16,4 +16,11 @@ public class VuforiaModleTargetToggle : MonoBehaviour
             GetComponent<VuforiaBehaviour>().enabled = true;
         }
     }
+
+    public void ToggleUsingState(bool state)
+    {
+        GetComponent<VuforiaBehaviour>().enabled = state;
+    }
 }
+
+

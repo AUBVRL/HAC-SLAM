@@ -79,7 +79,8 @@ public class RosPublisherExample : MonoBehaviour
     public GameObject global, local;
     
     ButtonConfigHelper ButtonName;
-
+    Vector3 TransformedPose, TransformedRot;
+    Quaternion Rotation;
     void Start()
     {
         // start the ROS connection
@@ -556,15 +557,22 @@ public class RosPublisherExample : MonoBehaviour
     public void HumanLozalizationPublisher()
     {
         robot_twist = new GeometryMsgs.TwistMsg();
-        robot_twist.linear.x = RobotTarget.transform.position.x + sub.x;
-        robot_twist.linear.y = RobotTarget.transform.position.y + sub.y;
-        robot_twist.linear.z = RobotTarget.transform.position.z + sub.z;
-        robot_twist.angular.x = RobotTarget.transform.rotation.x + sub.rx;
-        robot_twist.angular.y = RobotTarget.transform.rotation.y + sub.ry;
-        robot_twist.angular.z = RobotTarget.transform.rotation.z + sub.rz;
+        TransformedPose = mcb.TransformPCL(RobotTarget.transform.position);
+        
+        robot_twist.linear.x = TransformedPose.x;
+        robot_twist.linear.y = TransformedPose.z;
+        robot_twist.linear.z = TransformedPose.y;
+
+        TransformedRot.Set(-(float)sub.rx, -(float)sub.ry, -(float)sub.rz);
+        Rotation = Quaternion.Euler(TransformedRot);
+        TransformedRot = Rotation*RobotTarget.transform.rotation.eulerAngles;
+        
+        robot_twist.angular.x = TransformedRot.x;
+        robot_twist.angular.y = TransformedRot.z;
+        robot_twist.angular.z = TransformedRot.y;
 
         ros.Publish(localizeHumanTopic, robot_twist);
-        Debug.Log(robot_twist);
+        //Debug.Log(robot_twist);
     }
 
     public void PublishDeleteLabel(byte label)
