@@ -5,6 +5,7 @@ using UnityEngine;
 using Microsoft.MixedReality.Toolkit.Experimental.UI;
 using TMPro;
 using System;
+using System.Security.Policy;
 
 public class HoloKeyboard : MonoBehaviour
 {
@@ -13,12 +14,38 @@ public class HoloKeyboard : MonoBehaviour
     public RosPublisherExample Pub;
     [NonSerialized]
     public string texty;
-    
+    public MixedRealityKeyboardPreview mixedRealityKeyboardPreview;
 
 
     void Start()
     {
         MRkeyboard = gameObject.AddComponent<MixedRealityKeyboard>();
+        
+        if (mixedRealityKeyboardPreview != null)
+        {
+            mixedRealityKeyboardPreview.gameObject.SetActive(false);
+        }
+        if (MRkeyboard.OnShowKeyboard != null)
+        {
+            MRkeyboard.OnShowKeyboard.AddListener(() =>
+            {
+                if (mixedRealityKeyboardPreview != null)
+                {
+                    mixedRealityKeyboardPreview.gameObject.SetActive(true);
+                }
+            });
+        }
+
+        if (MRkeyboard.OnHideKeyboard != null)
+        {
+            MRkeyboard.OnHideKeyboard.AddListener(() =>
+            {
+                if (mixedRealityKeyboardPreview != null)
+                {
+                    mixedRealityKeyboardPreview.gameObject.SetActive(false);
+                }
+            });
+        }
     }
 
     // Update is called once per frame
@@ -28,10 +55,21 @@ public class HoloKeyboard : MonoBehaviour
         if (MRkeyboard.Visible)
         {
             texty = MRkeyboard.Text;
+            if (mixedRealityKeyboardPreview != null)
+            {
+                mixedRealityKeyboardPreview.Text = MRkeyboard.Text;
+                mixedRealityKeyboardPreview.CaretIndex = MRkeyboard.CaretIndex;
+            }
         }
         else
         {
             MRkeyboard.ClearKeyboardText();
+
+            if (mixedRealityKeyboardPreview != null)
+            {
+                mixedRealityKeyboardPreview.Text = string.Empty;
+                mixedRealityKeyboardPreview.CaretIndex = 0;
+            }
         }
     }
 
@@ -44,8 +82,8 @@ public class HoloKeyboard : MonoBehaviour
 
     public void SaveName()
     {
-        //Pub.PublishSavedMapName(texty);
-        Pub.PublishSavedMapName("HelloMalakkkk");
+        Pub.PublishSavedMapName(texty);
+        //Pub.PublishSavedMapName("HelloMalakkkk");
     }
 
     public void CloseKeyboard() 

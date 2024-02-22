@@ -92,7 +92,7 @@ public class RosSubscriberExample : MonoBehaviour
     public void pointCloudLive(pc2m ptcldlive)
     {
         incomingPointCloudLive = ptcldlive;
-        //Debug.Log("Ejit");
+        Debug.Log("Ejit");
         //Debug.Log(ptcldlive.data[17]);    
     }
     public void twistReceived(transformer.TransformationMsg Twisty)
@@ -113,21 +113,26 @@ public class RosSubscriberExample : MonoBehaviour
         ry = 1 * Twisty.angular.z * Mathf.Rad2Deg;
         rz = 1 * Twisty.angular.x * Mathf.Rad2Deg; //was -1
         */
-        Debug.Log(Twisty.tf.linear.x);
+        /*Debug.Log(Twisty.tf.linear.x);
         Debug.Log(Twisty.tf.linear.y);
         Debug.Log(Twisty.tf.linear.z);
         Debug.Log(Twisty.tf.angular.x);
         Debug.Log(Twisty.tf.angular.y);
-        Debug.Log(Twisty.tf.angular.z);
+        Debug.Log(Twisty.tf.angular.z);*/
+        if (Twisty.idfrom == 2)
+        {
+            x = -1 * Twisty.tf.linear.x;
+            y = -1 * Twisty.tf.linear.z;
+            z = -1 * Twisty.tf.linear.y;
+            rx = 0; //1 * Twisty.angular.x * Mathf.Rad2Deg;
+            ry = 1 * Twisty.tf.angular.z * Mathf.Rad2Deg;
+            rz = 0; // 1 * Twisty.angular.y * Mathf.Rad2Deg; //was -1
+            Debug.Log(ry);
+            pub.FirstAlignment = false;
+        }
+        
+        
 
-        x = -1 * Twisty.tf.linear.x;
-        y = -1 * Twisty.tf.linear.z;
-        z = -1 * Twisty.tf.linear.y;
-        rx = 0; //1 * Twisty.angular.x * Mathf.Rad2Deg;
-        ry = 1 * Twisty.tf.angular.z * Mathf.Rad2Deg;
-        rz = 0; // 1 * Twisty.angular.y * Mathf.Rad2Deg; //was -1
-
-        pub.FirstAlignment = false;
     }
 
     public void localPointCloud(pc2m localptcld)
@@ -150,6 +155,7 @@ public class RosSubscriberExample : MonoBehaviour
             miniMap.Clean();
             miniMap.FillLocal(downsampled);
             MenuText.text = "Maps received";
+            Debug.Log("Hry");
             pub.RequestDownsampledTo();
         }
 

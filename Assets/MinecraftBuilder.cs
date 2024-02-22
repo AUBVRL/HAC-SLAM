@@ -472,7 +472,7 @@ public class MinecraftBuilder : MonoBehaviour
                 VoxelProba[VoxelPose.IndexOf(point)] = VoxelProba[VoxelPose.IndexOf(point)] + 0.15f;
             }
 
-            if (!VoxelExists[VoxelPose.IndexOf(point)] && VoxelProba[VoxelPose.IndexOf(point)] > 0.6f)
+            if (!VoxelExists[VoxelPose.IndexOf(point)] && VoxelProba[VoxelPose.IndexOf(point)] > 0.6f && VoxelProba[VoxelPose.IndexOf(point)] <= 1)
             {
                 kube = Instantiate(cube, point, Quaternion.identity);
                 kube.gameObject.name = "Voxel";
@@ -515,7 +515,7 @@ public class MinecraftBuilder : MonoBehaviour
             VoxelProba[VoxelPose.IndexOf(point)] = VoxelProba[VoxelPose.IndexOf(point)] - 0.01f;
         }
 
-        if (VoxelExists[VoxelPose.IndexOf(point)] && VoxelProba[VoxelPose.IndexOf(point)] < 0.6f)
+        if (VoxelExists[VoxelPose.IndexOf(point)] && VoxelProba[VoxelPose.IndexOf(point)] < 0.6f && VoxelProba[VoxelPose.IndexOf(point)] >= 0)
         {
 
             overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
@@ -799,11 +799,10 @@ public class MinecraftBuilder : MonoBehaviour
         distx_in_cm = Mathf.RoundToInt(point.x / cubesize) * cubesize;
         disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
         distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
-        point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
+        point.Set(distx_in_cm, disty_in_cm, distz_in_cm);
         if (VoxelPose.Contains(point))
         {
             VoxelProba[VoxelPose.IndexOf(point)] = 2f;
-            
             if (VoxelExists[VoxelPose.IndexOf(point)])
             {
                 overlaps = Physics.OverlapBox(point, cubesizeScale / 2);
@@ -842,14 +841,20 @@ public class MinecraftBuilder : MonoBehaviour
 
     public Vector3 TransformPCL(Vector3 Pooint)
     {
-        Vector3 translation = new Vector3((float)sub.x, (float)sub.y, (float)sub.z);
-        Vector3 rotationAngles = new Vector3((float)sub.rx, (float)sub.ry, (float)sub.rz);
+
+        Vector3 rotationAngles = new Vector3((float)sub.rx, -(float)sub.ry, (float)sub.rz);
+        Vector3 translation = new Vector3(-(float)sub.x, -(float)sub.y, -(float)sub.z);
+        //Vector3 rotationAngles = new Vector3(0, 133.951803f, 0);
+        //Vector3 translation = new Vector3(-2.622f, 1.4178f, -0.0768f);
         Quaternion rotationQuaternion = Quaternion.Euler(rotationAngles);
         //newPose = this.transform.position;
         Pooint = rotationQuaternion * Pooint + translation;
         return Pooint;
     }
-        // Old script:
+        
+    
+    
+    // Old script:
     /*if (VoxelPose.Contains(point))
     {
         if (VoxelProba[VoxelPose.IndexOf(point)] > 0 && VoxelProba[VoxelPose.IndexOf(point)] < 1.1)

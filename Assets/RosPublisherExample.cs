@@ -548,7 +548,8 @@ public class RosPublisherExample : MonoBehaviour
     public void RequestSpecificMap(GameObject gameObject)
     {
         ButtonName = gameObject.GetComponent<ButtonConfigHelper>();
-        LoadMapName.data = ButtonName.MainLabelText;
+        LoadMapName.data = "test5";
+        //LoadMapName.data = ButtonName.MainLabelText;
         ros.Publish(LoadMapTopic, LoadMapName);
     }
 

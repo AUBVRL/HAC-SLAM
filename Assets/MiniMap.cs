@@ -58,7 +58,7 @@ public class MiniMap : MonoBehaviour
 
     private void OnDisable()
     {
-        Clean();
+        //Clean();
     }
     public void ShowLocalMap()
     {

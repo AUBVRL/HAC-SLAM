@@ -11,4 +11,11 @@ public class AssetRotation : MonoBehaviour
     {
         transform.Rotate(Vector3.up * Time.deltaTime * 100);
     }
+
+    /*public void Roto()
+    {
+        transform.rotation = Quaternion.identity;
+        transform.position = Vector3.zero;
+        transform.Rotate(Vector3.one * 25f);
+    }*/
 }

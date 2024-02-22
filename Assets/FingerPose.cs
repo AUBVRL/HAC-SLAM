@@ -20,10 +20,10 @@ public class FingerPose : MonoBehaviour
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftIndex; //new
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftThumb; //new
     IMixedRealityHandJointService handJointService;
-    float cubesize;
+    float cubesize, HandAngleThreshold;
     float fingersThreshold = 0.04f;
     GameObject Selector;
-    bool EditorActivator, EditorActivatorOld, selectorInstantiated, trackingLost, fingersClosed, doneInstantiation, testingBool, ConvexityState, DeletingVoxels, AddingAssets, VuforiaEnabled, VuforiaFound;
+    bool EditorActivator, EditorActivatorOld, selectorInstantiated, trackingLost, fingersClosed, doneInstantiation, testingBool, ConvexityState, DeletingVoxels, AddingAssets, VuforiaEnabled, VuforiaFound, HandAngle;
 
     Renderer selectorMesh;
     Vector3 minbound, maxbound; //delete 
@@ -43,6 +43,7 @@ public class FingerPose : MonoBehaviour
     {
         handJointService = CoreServices.GetInputSystemDataProvider<IMixedRealityHandJointService>();
         cubesize = _MinecraftBuilder.cubesize;
+        HandAngleThreshold = 30;
         EnablePrism = false;  //enabled when the user gestures a pinch
         EditorActivator = false; //enabled from the 'Edit Voxels' button
         EditorActivatorOld = false;
@@ -132,7 +133,8 @@ public class FingerPose : MonoBehaviour
                     }
                     else  //here the instantation happens
                     {
-                        if (fingersClosed)
+                        HandAngle = Vector3.Angle(Camera.main.transform.forward, (poseLeftIndex.Position - Camera.main.transform.position)) < HandAngleThreshold;
+                        if (fingersClosed && HandAngle)
                         {
                             //selector instantiation
                             InitialPose = poseLeftIndex.Position;
@@ -296,7 +298,7 @@ public class FingerPose : MonoBehaviour
                                 //_MinecraftBuilder.Instantiator(coliderPose, true);
                                 if (AddingAssets || VuforiaEnabled)
                                 {
-                                    _MinecraftBuilder.UserVoxelAddition(coliderPose);
+                                    _MinecraftBuilder.UserAssetAddition(coliderPose);
                                     _RosPublisher.LabeledPointCloudPopulater(coliderPose, AssetLabel, AssetInstance);
                                 }
                                 else if (DeletingVoxels)
@@ -411,7 +413,7 @@ public class FingerPose : MonoBehaviour
     {
         if (Selector != null) Destroy(Selector);
         AssetPose.x = Camera.main.transform.localPosition.x + 2 * Mathf.Sin(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
-        AssetPose.y = Camera.main.transform.localPosition.y - 0.5f;
+        AssetPose.y = Camera.main.transform.localPosition.y - 1.5f;
         AssetPose.z = Camera.main.transform.localPosition.z + 2 * Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
         
         AssetRot.Set(0, Camera.main.transform.localRotation.eulerAngles.y, 0);

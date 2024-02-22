@@ -34,7 +34,7 @@ public class MiniMapIncoming : MonoBehaviour
 
     private void OnDisable()
     {
-        Clean();
+        //Clean();
     }
     public void ShowIncomingMap()
     {

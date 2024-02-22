@@ -176,10 +176,10 @@ public class LabelerFingerPose : MonoBehaviour
             if (ToolTextBool)
             {
                 //////Enable when deploying to HL
-                //tooltipText.ToolTipText = holoKey.texty;
+                tooltipText.ToolTipText = holoKey.texty;
                 
                 //////Enable when trying in editor
-                tooltipText.ToolTipText = "Akal";
+                //tooltipText.ToolTipText = "Akal";
             }
         }
     }
@@ -290,14 +290,15 @@ public class LabelerFingerPose : MonoBehaviour
     public void adjustSelector()
     {
         Selector.GetComponent<ObjectManipulator>().enabled = true;
-        Selector.GetComponent<BoxCollider>().enabled = true;
-        Selector.GetComponent<BoundsControl>().enabled = true;
+        //Selector.GetComponent<BoxCollider>().enabled = true;
+        //Selector.GetComponent<BoundsControl>().enabled = true;
     }
 
     public void doneSelector()
     {
-        Selector.GetComponent<BoxCollider>().enabled = false;
-        Selector.GetComponent<BoundsControl>().enabled = false;
+        Selector.GetComponent<ObjectManipulator>().enabled = false;
+        //Selector.GetComponent<BoxCollider>().enabled = false;
+        //Selector.GetComponent<BoundsControl>().enabled = false;
     }
 
     public void NewLabelSelector()
