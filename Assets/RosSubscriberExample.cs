@@ -124,10 +124,10 @@ public class RosSubscriberExample : MonoBehaviour
             x = -1 * Twisty.tf.linear.x;
             y = -1 * Twisty.tf.linear.z;
             z = -1 * Twisty.tf.linear.y;
-            rx = 0; //1 * Twisty.angular.x * Mathf.Rad2Deg;
+            rx = 1 * Twisty.tf.angular.x * Mathf.Rad2Deg;
             ry = 1 * Twisty.tf.angular.z * Mathf.Rad2Deg;
-            rz = 0; // 1 * Twisty.angular.y * Mathf.Rad2Deg; //was -1
-            Debug.Log(ry);
+            rz = 1 * Twisty.tf.angular.y * Mathf.Rad2Deg; //was -1
+            //Debug.Log(ry);
             pub.FirstAlignment = false;
         }
         
@@ -174,6 +174,7 @@ public class RosSubscriberExample : MonoBehaviour
 
     public void PathDataSub(Nav.PathMsg path)
     {
+        Debug.Log("eja pathhh");
         Vector3 posePath = new Vector3();
         Vector3 posePath2 = new Vector3();
         Vector3 dir = new Vector3();
@@ -182,10 +183,11 @@ public class RosSubscriberExample : MonoBehaviour
         // Check if we got a new goal from Rviz
         posePath.Set((float)path.poses[path.poses.Length - 1].pose.position.x, (float)path.poses[path.poses.Length - 1].pose.position.z, (float)path.poses[path.poses.Length - 1].pose.position.y);
 
+
         if (PathGoal != posePath)
         {
             PathGoal = posePath;
-            FixedShift = Shift;
+            //FixedShift = Shift;
         }
 
 
@@ -199,11 +201,12 @@ public class RosSubscriberExample : MonoBehaviour
         {
             posePath.Set((float)path.poses[i].pose.position.x, (float)path.poses[i].pose.position.z, (float)path.poses[i].pose.position.y);
 
-            posePath -= FixedShift;
-
+            //posePath -= FixedShift;
+            //posePath = TransformFromGlobalToLocal(posePath);
+            
             posePath2.Set((float)path.poses[i + 1].pose.position.x, (float)path.poses[i + 1].pose.position.z, (float)path.poses[i + 1].pose.position.y);
-            posePath2 -= FixedShift;
-
+            //posePath2 -= FixedShift;
+            //posePath2 = TransformFromGlobalToLocal(posePath2);
 
             dir = posePath2 - posePath;
 
@@ -214,7 +217,18 @@ public class RosSubscriberExample : MonoBehaviour
 
         }
     }
+    public Vector3 TransformFromGlobalToLocal(Vector3 point)
+    {
+        Vector3 rotationAngles = new Vector3((float)rx, (float)ry, (float)rz);
+        Vector3 translation = new Vector3((float)x, (float)y, (float)z);
+        
+        Quaternion rotationQuaternion = Quaternion.Euler(rotationAngles);
+        
+        point = rotationQuaternion * point + translation;
 
+
+        return point;
+    }
     public void OdomSub(Nav.OdometryMsg odom)
     {
         //When Vuforia is able to localize the robot, please add the transform that vuforia returns to the shift.

@@ -29,7 +29,7 @@ public class OnOff : MonoBehaviour
         //newPose = this.transform.position;
         //this.transform.position = rotationQuaternion * this.transform.position;
         //this.transform.position = newPose;
-        Debug.Log(rotationQuaternion * Pose);
+        //Debug.Log(rotationQuaternion * Pose);
 
     }
 

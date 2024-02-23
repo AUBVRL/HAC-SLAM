@@ -564,9 +564,13 @@ public class RosPublisherExample : MonoBehaviour
         robot_twist.linear.z = TransformedPose.y;
 
         TransformedRot.Set(-(float)sub.rx, -(float)sub.ry, -(float)sub.rz);
+        Debug.Log("Hay before: " + TransformedRot);
         Rotation = Quaternion.Euler(TransformedRot);
-        TransformedRot = Rotation*RobotTarget.transform.rotation.eulerAngles;
-        
+        Debug.Log("Hy ot: " +  Rotation);
+        TransformedRot = Rotation*RobotTarget.transform.localRotation.eulerAngles;
+        Debug.Log("Hay robo rot: " + RobotTarget.transform.rotation.eulerAngles);
+        Debug.Log("Hay robo local rot: " + RobotTarget.transform.localRotation.eulerAngles);
+        Debug.Log("Hay after: " + TransformedRot);
         robot_twist.angular.x = TransformedRot.x;
         robot_twist.angular.y = TransformedRot.z;
         robot_twist.angular.z = TransformedRot.y;
