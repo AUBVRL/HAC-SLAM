@@ -286,7 +286,7 @@ public class FingerPose : MonoBehaviour
                 for (int k = minbound_inCubes.z; k <= maxbound_inCubes.z; k++)
                 {
                     coliderPose.Set(i, j, k);
-                    coliderPose = coliderPose * 0.04999f;// cubesize;
+                    coliderPose = coliderPose * 0.04f;// cubesize;
 
                     overlaps = Physics.OverlapBox(coliderPose, cubesizeScale / 2);
                     if (overlaps != null)
