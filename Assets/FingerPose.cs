@@ -296,7 +296,7 @@ public class FingerPose : MonoBehaviour
                             if(overlap.gameObject.name == "Prism")
                             {
                                 coliderPose = coliderPose / cubesize;
-                                coliderPose = coliderPose * 0.04f;
+                                coliderPose = coliderPose * 0.04999f;
                                 //_MinecraftBuilder.Instantiator(coliderPose, true);
                                 if (AddingAssets || VuforiaEnabled)
                                 {
