@@ -47,19 +47,21 @@ public class MergedVoxelDisplay : MonoBehaviour
             cubePose.z = System.BitConverter.ToSingle(pointcloud.data, j + 4);
             cubePose.y = System.BitConverter.ToSingle(pointcloud.data, j + 8);
             transformed = mcb.TransformPCL(Camera.main.transform.localPosition);
-            if (Vector3.Distance(cubePose,transformed) < 15)
+            if (Vector3.Distance(cubePose,transformed) < 30)
             {
                 kuby = Instantiate(cubz, cubePose, Quaternion.identity);
                 kuby.transform.SetParent(Parent.transform, false);
                 kuby.gameObject.name = "MergedVoxel";
+                if (pointcloud.data[j + 17] != 0)
+                {
+                    VoxelMeshRenderer = kuby.gameObject.GetComponent<MeshRenderer>();
+                    VoxelMeshRenderer.material = SelectedMaterial;
+                    Debug.Log("Oui");
+                }
+
             }
 
-            if (pointcloud.data[j + 17] != 0)
-            {
-                VoxelMeshRenderer = kuby.gameObject.GetComponent<MeshRenderer>();
-                VoxelMeshRenderer.material = SelectedMaterial;
-                //Debug.Log("Oui");
-            }
+            
 
             countTillYield++;
             
@@ -102,7 +104,7 @@ public class MergedVoxelDisplay : MonoBehaviour
         rz = (float)Sub.rz;
         Parent.transform.rotation = Quaternion.identity; 
         Parent.transform.position = Vector3.zero;
-        Parent.transform.Rotate(new Vector3(rx, ry, rz), Space.Self);
+        Parent.transform.Rotate(new Vector3(0, ry, 0), Space.Self);
         Parent.transform.Translate(new Vector3(x, y, z), Space.Self);
         
         

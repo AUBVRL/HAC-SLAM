@@ -136,10 +136,10 @@ public class MinecraftBuilder : MonoBehaviour
                             // Instantiator(hit.point);
                             // Rasterizer(Gaze_position, hit.point);
                         }*/
-                        if (hit.point.y >= -1.65)
-                        {
+                        ///if (hit.point.y >= -1.65)
+                        ////{
                             VoxelInstantiator(hit.point);
-                        }
+                        ///}
                         
 
 
@@ -488,10 +488,10 @@ public class MinecraftBuilder : MonoBehaviour
 
                 VoxelByteMap.Add(VoxelPose.IndexOf(point));
 
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
-                
+                VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].x / cubesize) * 0.04999999f));
+                VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].z / cubesize) * 0.04999999f));
+                VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].y / cubesize) * 0.04999999f));
+
             }
         }
 
@@ -615,9 +615,9 @@ public class MinecraftBuilder : MonoBehaviour
 
                 VoxelByteMap.Add(VoxelPose.IndexOf(point));
 
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
+                VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].x / cubesize) * 0.04999999f));
+                VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].z / cubesize) * 0.04999999f));
+                VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].y / cubesize) * 0.04999999f));
             }
             else
             {
@@ -637,15 +637,16 @@ public class MinecraftBuilder : MonoBehaviour
         }
         else
         {
+
             VoxelPose.Add(point);
             VoxelProba.Add(2f);
             VoxelExists.Add(true);
 
             VoxelByteMap.Add(VoxelPose.IndexOf(point));
 
-            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
-            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
-            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
+            VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].x / cubesize) * 0.04999999f));
+            VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].z / cubesize) * 0.04999999f));
+            VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].y / cubesize) * 0.04999999f));
 
             //pub.PublishEditedPointCloudMsg();
             kube = Instantiate(cube, point, Quaternion.identity);
@@ -653,8 +654,10 @@ public class MinecraftBuilder : MonoBehaviour
             VoxelMeshRenderer = kube.GetComponent<MeshRenderer>();
             VoxelMeshRenderer.material = materials[1];
             kube.transform.SetParent(AdditonParent.gameObject.transform);
+
         }
-        TransformedPoints = TransformPCL(point);
+
+        TransformedPoints = TransformPCL((point / cubesize) * 0.04999999f);
         AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.x));
         AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.z));
         AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.y));
@@ -682,9 +685,9 @@ public class MinecraftBuilder : MonoBehaviour
 
                 VoxelByteMap.Add(VoxelPose.IndexOf(point));
 
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
+                VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].x / cubesize) * 0.04999999f));
+                VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].z / cubesize) * 0.04999999f));
+                VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].y / cubesize) * 0.04999999f));
             }
             else
             {
@@ -710,9 +713,9 @@ public class MinecraftBuilder : MonoBehaviour
 
             VoxelByteMap.Add(VoxelPose.IndexOf(point));
 
-            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
-            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
-            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
+            VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].x / cubesize) * 0.04999999f));
+            VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].z / cubesize) * 0.04999999f));
+            VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].y / cubesize) * 0.04999999f));
 
             //pub.PublishEditedPointCloudMsg();
             kube = Instantiate(cube, point, Quaternion.identity);
@@ -721,7 +724,7 @@ public class MinecraftBuilder : MonoBehaviour
             VoxelMeshRenderer.material = materials[3];
             kube.transform.SetParent(AdditonParent.gameObject.transform);
         }
-        TransformedPoints = TransformPCL(point);
+        TransformedPoints = TransformPCL((point / cubesize) * 0.04999999f);
         AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.x));
         AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.z));
         AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.y));
@@ -749,9 +752,9 @@ public class MinecraftBuilder : MonoBehaviour
 
                 VoxelByteMap.Add(VoxelPose.IndexOf(point));
 
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
-                VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
+                VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].x / cubesize) * 0.04999999f));
+                VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].z / cubesize) * 0.04999999f));
+                VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].y / cubesize) * 0.04999999f));
             }
             else
             {
@@ -777,9 +780,9 @@ public class MinecraftBuilder : MonoBehaviour
 
             VoxelByteMap.Add(VoxelPose.IndexOf(point));
 
-            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].x));
-            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].z));
-            VoxelByte.AddRange(BitConverter.GetBytes(VoxelPose[VoxelPose.IndexOf(point)].y));
+            VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].x / cubesize) * 0.04999999f));
+            VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].z / cubesize) * 0.04999999f));
+            VoxelByte.AddRange(BitConverter.GetBytes((VoxelPose[VoxelPose.IndexOf(point)].y / cubesize) * 0.04999999f));
 
             //pub.PublishEditedPointCloudMsg();
             kube = Instantiate(cube, point, Quaternion.identity);
@@ -788,7 +791,7 @@ public class MinecraftBuilder : MonoBehaviour
             VoxelMeshRenderer.material = materials[4];
             kube.transform.SetParent(AdditonParent.gameObject.transform);
         }
-        TransformedPoints = TransformPCL(point);
+        TransformedPoints = TransformPCL((point / cubesize) * 0.04999999f);
         AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.x));
         AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.z));
         AddedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.y));
@@ -829,7 +832,7 @@ public class MinecraftBuilder : MonoBehaviour
 
             
         }
-        TransformedPoints = TransformPCL(point);
+        TransformedPoints = TransformPCL((point / cubesize) * 0.04999999f);
         DeletedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.x));
         DeletedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.z));
         DeletedVoxelByte.AddRange(BitConverter.GetBytes(TransformedPoints.y));

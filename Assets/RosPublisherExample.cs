@@ -467,6 +467,7 @@ public class RosPublisherExample : MonoBehaviour
 
     public void LabeledPointCloudPopulater(Vector3 point, byte Label, byte Instance)
     {
+        point = (point / 0.05f) * 0.04999999f;
         byte[] laabel = new byte[] { Label };
         byte[] iinstance = new byte[] { Instance };
         tempData = new byte[pc2l.data.Length];
@@ -476,9 +477,9 @@ public class RosPublisherExample : MonoBehaviour
         {
             pc2l.data[i] = tempData[i];
         }
-        byte[] xBytes = System.BitConverter.GetBytes(point.x);
-        byte[] yBytes = System.BitConverter.GetBytes(point.z);
-        byte[] zBytes = System.BitConverter.GetBytes(point.y);
+        byte[] xBytes = System.BitConverter.GetBytes(point.x); // / 0.05f) * 0.0499f);
+        byte[] yBytes = System.BitConverter.GetBytes(point.z); // 0.05f) * 0.0499f);
+        byte[] zBytes = System.BitConverter.GetBytes(point.y); // 0.05f) * 0.0499f);
         byte[] probaBytes = System.BitConverter.GetBytes(0);
 
 
@@ -536,7 +537,8 @@ public class RosPublisherExample : MonoBehaviour
     public void PublishSavedMapName(string name)
     {
         name.ToLower();
-        SaveMapName.data = name;
+        ///////SaveMapName.data = name;
+        SaveMapName.data = "savediw";
         ros.Publish(SaveTopic, SaveMapName);
     }
 
@@ -549,7 +551,7 @@ public class RosPublisherExample : MonoBehaviour
     public void RequestSpecificMap(GameObject gameObject)
     {
         ButtonName = gameObject.GetComponent<ButtonConfigHelper>();
-        LoadMapName.data = "test5";
+        LoadMapName.data = "savediw.bt";
         //LoadMapName.data = ButtonName.MainLabelText;
         ros.Publish(LoadMapTopic, LoadMapName);
     }

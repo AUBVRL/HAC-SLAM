@@ -49,6 +49,7 @@ public class RosSubscriberExample : MonoBehaviour
     public MiniMapIncoming mmincom;
     public MiniMap miniMap;
     public TextMeshPro MenuText;
+    public MergedVoxelDisplay mvd;
     GameObject PathParent, PathElement;
     Vector3 Shift = new Vector3();
     Vector3 FixedShift = new Vector3(0, 0, 0);
@@ -93,6 +94,7 @@ public class RosSubscriberExample : MonoBehaviour
     {
         incomingPointCloudLive = ptcldlive;
         Debug.Log("Ejit");
+        //mvd.ShowMergedMap();
         //Debug.Log(ptcldlive.data[17]);    
     }
     public void twistReceived(transformer.TransformationMsg Twisty)
@@ -197,6 +199,8 @@ public class RosSubscriberExample : MonoBehaviour
 
         //Instantiate new path objects (arrows)
         PathParent = new GameObject("PathParent");
+        PathParent.transform.Rotate(new Vector3((float)rx, (float)ry, (float)rz), Space.Self);
+        PathParent.transform.Translate(new Vector3((float)x, (float)y, (float)z), Space.Self);
         for (int i = 0; i < path.poses.Length - 1; i++)
         {
             posePath.Set((float)path.poses[i].pose.position.x, (float)path.poses[i].pose.position.z, (float)path.poses[i].pose.position.y);
@@ -217,15 +221,14 @@ public class RosSubscriberExample : MonoBehaviour
 
         }
     }
-    public Vector3 TransformFromGlobalToLocal(Vector3 point)
+    public Vector3 TransformFromGlobalToLocal(Vector3 poiint)
     {
         Vector3 rotationAngles = new Vector3((float)rx, (float)ry, (float)rz);
         Vector3 translation = new Vector3((float)x, (float)y, (float)z);
         
         Quaternion rotationQuaternion = Quaternion.Euler(rotationAngles);
         
-        point = rotationQuaternion * point + translation;
-
+        Vector3 point = rotationQuaternion * poiint + translation;
 
         return point;
     }

@@ -207,7 +207,7 @@ public class LabelerFingerPose : MonoBehaviour
                 for (int k = minbound_inCubes.z; k <= maxbound_inCubes.z; k++)
                 {
                     coliderPose.Set(i, j, k);
-                    coliderPose = coliderPose * 0.04999f;// cubesize;
+                    coliderPose = coliderPose * cubesize;
 
                     overlaps = Physics.OverlapBox(coliderPose, cubesizeScale / 2);
                     if (overlaps != null)
@@ -229,6 +229,7 @@ public class LabelerFingerPose : MonoBehaviour
                                         //counterForVoxels++;
                                         TransformedPoints = _minecraftbuilder.TransformPCL(overlap2.gameObject.transform.position);
                                         Pub.LabeledPointCloudPopulater(TransformedPoints, labely , instancey);
+                                        //Debug.Log(labely);
                                         break;
                                         //Destroy(overlap2.gameObject);   //this works
                                     }
