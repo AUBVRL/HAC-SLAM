@@ -27,30 +27,6 @@ public class MiniMap : MonoBehaviour
         Rot = new Vector3(0, 0, 0);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        box.size = max * 2 + min;
-        /*timeElapsed += Time.deltaTime;
-        if (timeElapsed > publishMessageFrequency)
-        {
-            
-            //ros.Publish(topicName6, pc2e);
-            //ros.Publish(topicName7, pc2d);
-            ShowLocalMap();
-            timeElapsed = 0;
-        }*/
-        
-    }
-    /* public void Fill(Vector3 pose)
-     {
-         kuby = Instantiate(cubz, pose, Quaternion.identity);
-         kuby.transform.SetParent(this.gameObject.transform, false);
-         max.x = Mathf.Max(Mathf.Abs(kuby.transform.localPosition.x), max.x);
-         max.y = Mathf.Max(Mathf.Abs(kuby.transform.localPosition.y), max.y);
-         max.z = Mathf.Max(Mathf.Abs(kuby.transform.localPosition.z), max.z);
-     }
- */
     private void OnEnable()
     {
         ResetPose();
@@ -58,15 +34,9 @@ public class MiniMap : MonoBehaviour
 
     private void OnDisable()
     {
-        //Clean();
-    }
-    public void ShowLocalMap()
-    {
         Clean();
-        FillLocal(sub.localPointCloudDownSampled);
-        //FillLocal(pub.pc2m);
-
     }
+    
     public void Clean()
     {
         if (this.gameObject.transform.childCount > 1)
@@ -108,6 +78,7 @@ public class MiniMap : MonoBehaviour
             max.y = Mathf.Max(Mathf.Abs(kuby.transform.localPosition.y), max.y);
             max.z = Mathf.Max(Mathf.Abs(kuby.transform.localPosition.z), max.z);
         }
+        box.size = max * 2 + min;
     }
 
     

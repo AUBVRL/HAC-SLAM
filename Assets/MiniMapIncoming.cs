@@ -9,40 +9,19 @@ public class MiniMapIncoming : MonoBehaviour
     Vector3 min, max, zeros, Pose, Rot;
     GameObject kuby;
     public GameObject cubz;
-    public RosSubscriberExample Sub;
-    public RosPublisherExample Pub;
-    // Start is called before the first frame update
 
     void Start()
     {
         min = new Vector3(1f, 1f, 1f);
         zeros = new Vector3(0f, 0f, 0f);
         Rot = new Vector3(0f, 0f, 0f);
-        //Debug.Log(max);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        box.size = max * 2 + min;
     }
 
     private void OnEnable()
     {
         ResetPose();
     }
-
-    private void OnDisable()
-    {
-        //Clean();
-    }
-    public void ShowIncomingMap()
-    {
-        Clean();
-        FillIncoming(Sub.incomingPointCloudDownSampled);
-        //FillIncoming(Pub.pc2m);
-
-    }
+    
     public void Clean()
     {
         if (this.gameObject.transform.childCount > 1)
@@ -67,16 +46,13 @@ public class MiniMapIncoming : MonoBehaviour
             cubePose.z = System.BitConverter.ToSingle(pointcloud.data, j + 4);
             cubePose.y = System.BitConverter.ToSingle(pointcloud.data, j + 8);
 
-            /*cubePose.z = System.BitConverter.ToSingle(pointcloud.data, j);
-            cubePose.x = -1 * System.BitConverter.ToSingle(pointcloud.data, j + 4);
-            cubePose.y = System.BitConverter.ToSingle(pointcloud.data, j + 8);*/
-
             kuby = Instantiate(cubz, cubePose, Quaternion.identity);
             kuby.transform.SetParent(this.gameObject.transform, false);
             max.x = Mathf.Max(Mathf.Abs(kuby.transform.localPosition.x), max.x);
             max.y = Mathf.Max(Mathf.Abs(kuby.transform.localPosition.y), max.y);
             max.z = Mathf.Max(Mathf.Abs(kuby.transform.localPosition.z), max.z);
         }
+        box.size = max * 2 + min;
     }
 
     public void ResetPose()
@@ -84,9 +60,10 @@ public class MiniMapIncoming : MonoBehaviour
         Pose.x = Camera.main.transform.localPosition.x + Mathf.Sin(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
         Pose.y = Camera.main.transform.localPosition.y - 0.5f;
         Pose.z = Camera.main.transform.localPosition.z + Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
-        gameObject.transform.position = Pose;
 
         Rot.Set(0, Camera.main.transform.localRotation.eulerAngles.y, 0);
+
+        gameObject.transform.position = Pose;
         gameObject.transform.rotation = Quaternion.Euler(Rot);
     }
 }

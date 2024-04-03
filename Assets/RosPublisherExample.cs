@@ -12,13 +12,14 @@ using System.Runtime.InteropServices;
 using System;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Examples.Demos;
+using RosMessageTypes.Std;
 
 /// <summary>
 /// 
 /// </summary>
 public class RosPublisherExample : MonoBehaviour
 {
-
+    
     ROSConnection ros;
     public MinecraftBuilder mcb;
     public GameObject RobotTarget;
@@ -85,19 +86,15 @@ public class RosPublisherExample : MonoBehaviour
     {
         // start the ROS connection
         ros = ROSConnection.GetOrCreateInstance();
+        
         ros.RegisterPublisher<GeometryMsgs.TwistMsg>(topicName);
         ros.RegisterPublisher<OGM.OccupancyGridMsg>(topicName2);
-        //ros.RegisterPublisher<octom.OctomapMsg>(topicName4);
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName5);
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName6);
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName7);
-
-        // This is not initialized on ros tcp. Wait for malak
         ros.RegisterPublisher<transformer.TransformationMsg>(topicName8);
-
         ros.RegisterPublisher<transformer.InstanceMsg>(DeleteInstanceTopic);
         ros.RegisterPublisher<_int.Int16Msg>(DeleteLabelTopic);
-
         ros.RegisterPublisher<_int.Int16Msg>(topicName10); //For Minimap requests
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName11);
         ros.RegisterPublisher<_int.StringMsg>(SaveTopic);
@@ -107,16 +104,6 @@ public class RosPublisherExample : MonoBehaviour
 
         //The below is for the robot rotation 
         PublishTwist = false;
-        
-        //The below is for the Octomap
-        /*octo = new octom.OctomapMsg();
-        octo.header.frame_id = "map";
-        octo.id = "octo";
-        octo.resolution = 0.5;
-        octo.binary = false;
-        sbyte[] octoData = new sbyte[16];
-        octoData[0] = 0;*/
-
 
         //for point cloud 2:
         pc2m = new pc2.PointCloud2Msg();
@@ -191,21 +178,6 @@ public class RosPublisherExample : MonoBehaviour
             new pc2.PointFieldMsg { name = "z", offset = 8, datatype = pc2.PointFieldMsg.FLOAT32, count = 1 },
             new pc2.PointFieldMsg { name = "rgb", offset = 16, datatype = pc2.PointFieldMsg.FLOAT32, count = 1 },
             
-
-
-
-            /*new pc2.PointFieldMsg { name = "x", offset = 0, datatype = pc2.PointFieldMsg.FLOAT32, count = 1 },
-            new pc2.PointFieldMsg { name = "y", offset = 4, datatype = pc2.PointFieldMsg.FLOAT32, count = 1 },
-            new pc2.PointFieldMsg { name = "z", offset = 8, datatype = pc2.PointFieldMsg.FLOAT32, count = 1 },
-            new pc2.PointFieldMsg { name = "one", offset = 12, datatype = pc2.PointFieldMsg.FLOAT32, count = 1 },
-            new pc2.PointFieldMsg { name = "r", offset = 16, datatype = pc2.PointFieldMsg.UINT8, count = 1 },
-            new pc2.PointFieldMsg { name = "g", offset = 17, datatype = pc2.PointFieldMsg.UINT8, count = 1 },
-            new pc2.PointFieldMsg { name = "b", offset = 18, datatype = pc2.PointFieldMsg.UINT8, count = 1 },
-            new pc2.PointFieldMsg { name = "z1", offset = 19, datatype = pc2.PointFieldMsg.FLOAT32, count = 1 },
-            new pc2.PointFieldMsg { name = "z2", offset = 23, datatype = pc2.PointFieldMsg.FLOAT32, count = 1 },
-            new pc2.PointFieldMsg { name = "z3", offset = 27, datatype = pc2.PointFieldMsg.INT16, count = 1 },
-            new pc2.PointFieldMsg { name = "z4", offset = 31, datatype = pc2.PointFieldMsg.UINT8, count = 1 },*/
-            
             
         };
         pc2l.is_bigendian = false;
@@ -215,33 +187,6 @@ public class RosPublisherExample : MonoBehaviour
         pc2l.width = NewWidthforEdited;
         pc2l.height = 1;
         pc2l.data = new byte[0];
-
-
-
-        /*pc2l = new pc2.PointCloud2Msg();
-        pc2l.header.frame_id = "map";
-        pc2l.header.stamp.nanosec = 2;
-        pc2l.fields = new pc2.PointFieldMsg[]
-        {
-            new pc2.PointFieldMsg { name = "x", offset = 0, datatype = pc2.PointFieldMsg.FLOAT32, count = 1 },
-            new pc2.PointFieldMsg { name = "y", offset = 4, datatype = pc2.PointFieldMsg.FLOAT32, count = 1 },
-            new pc2.PointFieldMsg { name = "z", offset = 8, datatype = pc2.PointFieldMsg.FLOAT32, count = 1 },
-            new pc2.PointFieldMsg { name = "r", offset = 12, datatype = pc2.PointFieldMsg.UINT8, count = 1 },
-            new pc2.PointFieldMsg { name = "g", offset = 13, datatype = pc2.PointFieldMsg.UINT8, count = 1 },
-            new pc2.PointFieldMsg { name = "b", offset = 14, datatype = pc2.PointFieldMsg.UINT8, count = 1 },
-            
-            
-            *//*new pc2.PointFieldMsg { name = "proba", offset = 12, datatype = pc2.PointFieldMsg.UINT8, count = 1 },
-            new pc2.PointFieldMsg { name = "label", offset = 13, datatype = pc2.PointFieldMsg.UINT8, count = 1 },
-            new pc2.PointFieldMsg { name = "instance", offset = 14, datatype = pc2.PointFieldMsg.UINT8, count = 1 },*//*
-        };
-        pc2l.is_bigendian = false;
-        pc2l.point_step = 15;
-        pc2l.row_step = pc2e.point_step;
-        pc2l.is_dense = true;
-        pc2l.width = NewWidthforEdited;
-        pc2l.height = 1;
-        pc2l.data = new byte[0];*/
 
 
 
@@ -452,17 +397,6 @@ public class RosPublisherExample : MonoBehaviour
         intRequest.data = (short)x;
         ros.Publish(topicName10, intRequest);
 
-
-        /*if (FirstAlignment)
-        {
-            intRequest.data = 1;
-            ros.Publish(topicName10, intRequest);
-        }
-        else
-        {
-            intRequest.data = 0;
-            ros.Publish(topicName10, intRequest);
-        }*/
     }
 
     public void LabeledPointCloudPopulater(Vector3 point, byte Label, byte Instance)
@@ -481,14 +415,6 @@ public class RosPublisherExample : MonoBehaviour
         byte[] yBytes = System.BitConverter.GetBytes(point.z); // 0.05f) * 0.0499f);
         byte[] zBytes = System.BitConverter.GetBytes(point.y); // 0.05f) * 0.0499f);
         byte[] probaBytes = System.BitConverter.GetBytes(0);
-
-
-
-
-        //Debug.Log("iinstance: " + iinstance[0]);
-        /*byte[] labelBytes = System.BitConverter.GetBytes(77);
-        byte[] instanceBytes = System.BitConverter.GetBytes(66)*/
-        ;
 
         byte[] one = System.BitConverter.GetBytes(1f);
         byte[] byteArrayZeros = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };

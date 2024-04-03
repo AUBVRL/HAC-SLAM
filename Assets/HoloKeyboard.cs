@@ -75,7 +75,7 @@ public class HoloKeyboard : MonoBehaviour
 
     public void OpenKeyboard()
     {
-        //Debug.Log("Yow");
+        
         MRkeyboard.ShowKeyboard(MRkeyboard.Text, false);
         // MRkeyboard.OnCommitText.AddListener(OpenKeyboard); Mhemme
     }
@@ -83,7 +83,7 @@ public class HoloKeyboard : MonoBehaviour
     public void SaveName()
     {
         Pub.PublishSavedMapName(texty);
-        //Pub.PublishSavedMapName("HelloMalakkkk");
+        //Pub.PublishSavedMapName("FixedTextHere");
     }
 
     public void CloseKeyboard() 
