@@ -8,57 +8,50 @@ using System;
 
 public class FingerPose : MonoBehaviour
 {
-    Vector3 InitialPose, FinalPose, PrismCenter, Scale_incubes, AssetPose, AssetRot;
-    Vector3Int InitialPose_incubes, FinalPose_incubes;
-    GameObject Prism, ModelTarget;
+    Vector3 InitialPose, FinalPose, PrismCenter, Scale_incubes, AssetPose, AssetRot, coliderPose, cubesizeScale;
+    Vector3Int InitialPose_incubes, FinalPose_incubes, minbound_inCubes, maxbound_inCubes;
+    GameObject Prism, ModelTarget, Selector;
+
     public GameObject[] Selectors = new GameObject[8];
     public GameObject[] VuforiaTargets = new GameObject[6];
+    
     public LabelerFingerPose Labeler;
     public MinecraftBuilder _MinecraftBuilder;
     public RosPublisherExample _RosPublisher;
-    Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeft;
-    Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftIndex; //new
-    Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftThumb; //new
-    IMixedRealityHandJointService handJointService;
-    float cubesize, HandAngleThreshold;
-    float fingersThreshold = 0.04f;
-    GameObject Selector;
-    bool EditorActivator, EditorActivatorOld, selectorInstantiated, trackingLost, fingersClosed, doneInstantiation, testingBool, ConvexityState, DeletingVoxels, AddingAssets, VuforiaEnabled, VuforiaFound, HandAngle;
+
+    Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftIndex, poseLeftThumb; //new
+    
+    float cubesize, HandAngleThreshold, fingersThreshold;
+    bool EditorActivator, selectorInstantiated, trackingLost, fingersClosed, doneInstantiation, testingBool, ConvexityState, DeletingVoxels, AddingAssets, VuforiaEnabled, VuforiaFound, HandAngle, EnablePrism;
 
     Renderer selectorMesh;
-    Vector3 minbound, maxbound; //delete 
 
-    Vector3Int minbound_inCubes, maxbound_inCubes;
-    Vector3 coliderPose, cubesizeScale;
     Collider[] overlaps;
     public GameObject appBar;
     byte AssetLabel, AssetInstance;
  
-    //MixedRealityInputAction selectAction;
-    bool EnablePrism;
+    
     MeshCollider _meshCollider;
     InputActionHandler _inputActionHandler;
     string AssetName;
     private void Start()
     {
-        handJointService = CoreServices.GetInputSystemDataProvider<IMixedRealityHandJointService>();
         cubesize = _MinecraftBuilder.cubesize;
+        cubesizeScale.Set(cubesize, cubesize, cubesize);
+
         HandAngleThreshold = 30;
         EnablePrism = false;  //enabled when the user gestures a pinch
         EditorActivator = false; //enabled from the 'Edit Voxels' button
-        EditorActivatorOld = false;
         doneInstantiation = false;
         testingBool = true;
         DeletingVoxels = false;
         AddingAssets = false;
-        cubesizeScale.Set(cubesize, cubesize, cubesize);
+        
         fingersThreshold = 0.04f;
         Prism = Selectors[3];
         _meshCollider = Prism.GetComponent<MeshCollider>();
         _inputActionHandler = gameObject.GetComponent<InputActionHandler>();
 
-        
-        //_meshCollider.convex = true;  // We need to make this as a kabse later.
     }
 
     public void Update()
@@ -185,86 +178,18 @@ public class FingerPose : MonoBehaviour
             Selector.transform.rotation = ModelTarget.transform.rotation;
         }
 
-
-        /////// here is the old part
-        /*if (EnablePrism == true && HandJointUtils.TryGetJointPose(Microsoft.MixedReality.Toolkit.Utilities.TrackedHandJoint.IndexTip, Microsoft.MixedReality.Toolkit.Utilities.Handedness.Right, out poseLeft))
-        {
-
-            FinalPose = poseLeft.Position;
-            
-            //Converting units to cubes:
-            FinalPose_incubes.Set(Mathf.RoundToInt(FinalPose.x / cubesize), Mathf.RoundToInt(FinalPose.y / cubesize), Mathf.RoundToInt(FinalPose.z / cubesize));
-            PrismCenter = (InitialPose_incubes + FinalPose_incubes);
-            Scale_incubes.x = Mathf.Max(Mathf.Abs((InitialPose_incubes.x - FinalPose_incubes.x) * cubesize) + cubesize, cubesize);
-            Scale_incubes.y = Mathf.Max(Mathf.Abs((InitialPose_incubes.y - FinalPose_incubes.y) * cubesize) + cubesize, cubesize);
-            Scale_incubes.z = Mathf.Max(Mathf.Abs((InitialPose_incubes.z - FinalPose_incubes.z) * cubesize) + cubesize, cubesize);
-
-            Selector.transform.position = PrismCenter * cubesize/2;
-            Selector.transform.localScale = Scale_incubes;
-            
-        }*/
     }
 
-    public void editor3D()  //instantiator
-    {
-        if (EditorActivatorOld)
-        {
-            if (HandJointUtils.TryGetJointPose(Microsoft.MixedReality.Toolkit.Utilities.TrackedHandJoint.IndexTip, Microsoft.MixedReality.Toolkit.Utilities.Handedness.Right, out poseLeft))
-            {
-                EnablePrism = !EnablePrism;
-                InitialPose = poseLeft.Position;
-                InitialPose_incubes.Set(Mathf.RoundToInt(InitialPose.x / cubesize), Mathf.RoundToInt(InitialPose.y / cubesize), Mathf.RoundToInt(InitialPose.z / cubesize));
 
-                if (EnablePrism == true)
-                {
-                    Selector = Instantiate(Prism, InitialPose_incubes, Quaternion.identity);
-                    Selector.name = "Prism";
-                }
-            }
-        }
-        
-}
 
-    public void CubeAdder()
-    {
-        if (EditorActivatorOld)
-        {
-            _MinecraftBuilder.InstantiateEditor(InitialPose_incubes, FinalPose_incubes);
-            Destroy(Selector);
-        }
-        
-    }
-
-    public void CubeRemover()
-    {
-        if (EditorActivatorOld)
-        {
-            _MinecraftBuilder.DestroyEditor(InitialPose_incubes, FinalPose_incubes);
-            Destroy(Selector);
-        }
-        
-    }
-   
     public void ActivateEditor(bool state)
-    {
+    {    // Called by the "Add Voxels", "Delete Voxels", and "Home" buttons in the Edit menu.
         EditorActivator = state;
     }
 
-    public void vertexExtractor()
-    {
-        if (testingBool)
-        {
-            selectorMesh = Selector.GetComponent<Renderer>();
-            minbound = selectorMesh.bounds.min;
-            maxbound = selectorMesh.bounds.max;
-            //Instantiate(sfiro, minbound, Quaternion.identity); //watch out for the position it should be transformed
-            //Instantiate(sfiro, maxbound, Quaternion.identity);
-        }   
-    }
-    
     public void officialVoxelizer()
     {
-        
+        // Transforms the selector shape into voxels and saves the center of each voxel as a pointcloud ROS message.
         selectorMesh = Selector.GetComponent<Renderer>();
 
         //Rounding of the bounds to units of cubes:
@@ -280,7 +205,7 @@ public class FingerPose : MonoBehaviour
         //Loop from min to max bound:
         for(int i = minbound_inCubes.x; i <= maxbound_inCubes.x; i++)
         {
-            //test
+            
             for (int j = minbound_inCubes.y; j <= maxbound_inCubes.y; j++)
             {
                 for (int k = minbound_inCubes.z; k <= maxbound_inCubes.z; k++)
@@ -324,6 +249,7 @@ public class FingerPose : MonoBehaviour
 
     public void abortSelector()
     {
+        // Called by the "Abort" button in the editors app bar. Aborts a created selector and enables the user to create another. TODO: selector should also be aborted when someone exits the editing menu.
         if (Selector != null) Destroy(Selector);
         appBar.SetActive(false);
         doneInstantiation = false;
@@ -340,6 +266,7 @@ public class FingerPose : MonoBehaviour
 
     public void confirmSelector()
     {
+        // Called by the "Confirm" button in the app bar. Calls officialVoxelizer(), publishes the saved pointcloud, listens to new user input, and more case specific actions.
         if (AddingAssets)
         {
             _inputActionHandler.enabled = true;
@@ -386,20 +313,19 @@ public class FingerPose : MonoBehaviour
 
     public void adjustSelector()
     {
-        //Selector.GetComponent<BoxCollider>().enabled = true;
-        //Selector.GetComponent<BoundsControl>().enabled = true;
+        // Called by the "Adjust" button in the app bar. enables the object manipulator script.
         Selector.GetComponent<ObjectManipulator>().enabled = true;
     }
 
     public void doneSelector()
     {
-        //Selector.GetComponent<BoxCollider>().enabled = false;
-        //Selector.GetComponent<BoundsControl>().enabled = false;
+        // Called by the "Done" button in the app bar. disables the object manipulator script.
         Selector.GetComponent<ObjectManipulator>().enabled = false;
     }
 
     public void requestSelectorShape(int index)
     {
+        // Changes the selector shape based on what the user chose. Called from the shape selector menu by each button.
         Prism = Selectors[index];
         _meshCollider = Selectors[index].GetComponent<MeshCollider>();
         _meshCollider.convex = ConvexityState;
@@ -407,13 +333,17 @@ public class FingerPose : MonoBehaviour
 
     public void Convexity(bool state)
     {
+        // Called by the convex button.
         _meshCollider.convex = state;
         ConvexityState = state;
     }
 
     public void AssetInstantiator()
     {
+        // Instantiates the asset 2 meters infront of the user and 1.5 meters lower than the camers (Head of the user)
+        
         if (Selector != null) Destroy(Selector);
+        
         AssetPose.x = Camera.main.transform.localPosition.x + 2 * Mathf.Sin(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
         AssetPose.y = Camera.main.transform.localPosition.y - 1.5f;
         AssetPose.z = Camera.main.transform.localPosition.z + 2 * Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
@@ -428,27 +358,33 @@ public class FingerPose : MonoBehaviour
 
     public void EnableAssetAddition(bool state)
     {
+        // Enabled by the "Add Asset" button. and disabled by the "Back" button.
+
         AddingAssets = state;
         _inputActionHandler.enabled = state;
     }
 
     public void AssetLabelNumber(int label)
     {
+        // Called when selecting an asset. Specifies the the label value that will be sent in the pointcloud message.
         AssetLabel = (byte)label;
     }
 
     public void AssetNameForTooltip(string name)
     {
+        // Called by selecting an asset. Specfies the name of the asset for the tooltip.
         AssetName = name;
     }
 
     public void EnableDeletion(bool state)
     {
+        // Called by the "Delete Voxels" button. Triggered to false by the back button
         DeletingVoxels = state;
     }
 
     public void EnableVuforia(bool state)
     {
+        //  Called by selecting a vuforia asset shape. Triggered to false by the back button or when user is done with first vuforia run (After confirmation).
         VuforiaEnabled = state;
 
         if (!state)
@@ -460,12 +396,14 @@ public class FingerPose : MonoBehaviour
 
     public void VuforiaTargetRequest(int index)
     {
+        // Grabs the model target object from the "Vuforia Targets" game object. Called by  selecting a vuforia asset shape.
         VuforiaTargets[index].SetActive(true);
         ModelTarget = VuforiaTargets[index];
     }
 
     public void ModelTracked(GameObject Object)
     {
+        // Called by vuforia when a target is found. The update loop handles the alignment of the instantiated selector and the tracked physical asset.
         if (!VuforiaFound)
         {
             Prism = Object;
