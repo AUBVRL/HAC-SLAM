@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/FinalVerision2.unity
     guid: be151675e782d8a4a969d6075c3528bd
+  - enabled: 1
+    path: Assets/Scenes/PointCloudScene.unity
+    guid: 0abdef1e9688bef47b6c55ba217f9a72
   m_configObjects:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 835a6aed30cd37248bc3990c038c6e78, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 1c2c0fd53d1114148a40d03e890a0008, type: 2}
