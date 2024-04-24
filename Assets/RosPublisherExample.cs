@@ -25,10 +25,10 @@ public class RosPublisherExample : MonoBehaviour
     public GameObject RobotTarget;
     public RosSubscriberExample sub;
 
-    string topicName = "/twist"; // It was "/joy_teleop/cmd_vel" when we were publishing to control the robot movement
+    string topicName = "/twist";
     string topicName2 = "/occupancy_map"; // For 2D mapping
-    //string topicName3 = "/sowar"; //For FSLAM. To be tried later
-    //string topicName4 = "/octomap"; //To be used to publish Octomaps
+    
+    
     string topicName5 = "/point_cloud"; //For publishing point clouds
     string topicName6 = "/human/add"; //For publishing edits
     string topicName7 = "human/delete"; //For publishing deleted
@@ -42,7 +42,6 @@ public class RosPublisherExample : MonoBehaviour
     string localizeHumanTopic = "/human/localize";
     string DeleteLabelTopic = "/human/delete_label";
     string DeleteInstanceTopic = "/human/delete_instance";
-    //Texture2D image; //For FSLAM. To be tried later
 
     float publishMessageFrequency = 3f;
 
@@ -84,9 +83,10 @@ public class RosPublisherExample : MonoBehaviour
     Quaternion Rotation;
     void Start()
     {
-        // start the ROS connection
+        // Start the ROS connection
         ros = ROSConnection.GetOrCreateInstance();
         
+        // Define the ROS topics
         ros.RegisterPublisher<GeometryMsgs.TwistMsg>(topicName);
         ros.RegisterPublisher<OGM.OccupancyGridMsg>(topicName2);
         ros.RegisterPublisher<pc2.PointCloud2Msg>(topicName5);
@@ -105,7 +105,7 @@ public class RosPublisherExample : MonoBehaviour
         //The below is for the robot rotation 
         PublishTwist = false;
 
-        //for point cloud 2:
+        //Initializing pointcloud message variable for mapping
         pc2m = new pc2.PointCloud2Msg();
         pc2m.header.frame_id = "map";
         pc2m.header.stamp.nanosec = 2;
@@ -125,7 +125,7 @@ public class RosPublisherExample : MonoBehaviour
 
         newTwist = new transformer.TransformationMsg();
 
-        //For edited point clouds
+        //Initializing pointcloud message variable for adding
         pc2e = new pc2.PointCloud2Msg();
         pc2e.header.frame_id = "map";
         pc2e.header.stamp.nanosec = 2;
@@ -146,7 +146,7 @@ public class RosPublisherExample : MonoBehaviour
 
 
 
-        //For deleted point clouds:
+        // Initializing pointcloud message variable for deleting
         pc2d = new pc2.PointCloud2Msg();
         pc2d.header.frame_id = "map";
         pc2d.header.stamp.nanosec = 2;
@@ -166,7 +166,7 @@ public class RosPublisherExample : MonoBehaviour
 
 
 
-        //For labeled point clouds:
+        //Initializing pointcloud message variable for labeling
         pc2l = new pc2.PointCloud2Msg();
         pc2l.header.frame_id = "map";
         pc2l.header.stamp.nanosec = 2;
@@ -190,8 +190,9 @@ public class RosPublisherExample : MonoBehaviour
 
 
 
-        //For twist messages:
+        //Initializing twist message variable for transforms
         twist = new GeometryMsgs.TwistMsg();
+
 
         intRequest = new _int.Int16Msg();
         SaveMapName = new _int.StringMsg();

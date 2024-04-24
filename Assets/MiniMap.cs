@@ -14,7 +14,7 @@ public class MiniMap : MonoBehaviour
     Vector3 min, max, Pose, Rot;
     GameObject kuby;
     public GameObject cubz;
-    public RosPublisherExample pub;
+    
     public RosSubscriberExample sub;
     public GameObject HL;
     
