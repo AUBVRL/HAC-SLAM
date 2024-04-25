@@ -157,8 +157,7 @@ public class RosSubscriberExample : MonoBehaviour
             miniMap.Clean();
             miniMap.FillLocal(downsampled);
             MenuText.text = "Maps received";
-            Debug.Log("Hry");
-            pub.RequestDownsampledTo();
+            pub.RequestDownsampledMapTo();
         }
 
     }

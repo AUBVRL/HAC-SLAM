@@ -274,7 +274,7 @@ public class FingerPose : MonoBehaviour
             Labeler.AssetToolTip(Selector.transform.position, AssetName, AssetLabel, AssetInstance);
             _MinecraftBuilder.AddedVoxelByte.Clear();
             officialVoxelizer();
-            _RosPublisher.PublishEditedPointCloudMsg();
+            _RosPublisher.PublishAddedPointCloudMsg();
             _RosPublisher.LabelPublisher();
 
         }
@@ -282,7 +282,7 @@ public class FingerPose : MonoBehaviour
         {
             _MinecraftBuilder.DeletedVoxelByte.Clear();
             officialVoxelizer();
-            _RosPublisher.PublishDeletedVoxels();
+            _RosPublisher.PublishDeletedPointCloudMsg();
             doneInstantiation = false;
 
         }
@@ -292,7 +292,7 @@ public class FingerPose : MonoBehaviour
             Labeler.AssetToolTip(Selector.transform.position, AssetName, AssetLabel, AssetInstance);
             _MinecraftBuilder.AddedVoxelByte.Clear();
             officialVoxelizer();
-            _RosPublisher.PublishEditedPointCloudMsg();
+            _RosPublisher.PublishAddedPointCloudMsg();
             _RosPublisher.LabelPublisher();
             VuforiaFound = false;
             ModelTarget.SetActive(false);
@@ -302,7 +302,7 @@ public class FingerPose : MonoBehaviour
         {
             _MinecraftBuilder.AddedVoxelByte.Clear();
             officialVoxelizer();
-            _RosPublisher.PublishEditedPointCloudMsg();
+            _RosPublisher.PublishAddedPointCloudMsg();
             doneInstantiation = false;
         }
         
