@@ -17,7 +17,7 @@ public class MiniMapIncoming : MonoBehaviour
         Rot = new Vector3(0f, 0f, 0f);
     }
 
-    private void OnEnable()
+    private void OnDisable()
     {
         ResetPose();
     }

@@ -93,6 +93,7 @@ public class RosPublisherExample : MonoBehaviour
         ros.RegisterPublisher<_int.StringMsg>(LoadMapTopic);
         ros.RegisterPublisher<GeometryMsgs.TwistMsg>(localizeHumanTopic);
 
+
         //Initializing pointcloud message variable for mapping
         pc2m = new pc2.PointCloud2Msg();
         pc2m.header.frame_id = "map";
@@ -111,7 +112,7 @@ public class RosPublisherExample : MonoBehaviour
         pc2m.height = 1;
         pc2m.data = new byte[0];
 
-        newTwist = new transformer.TransformationMsg();
+        
 
         //Initializing pointcloud message variable for adding
         pc2e = new pc2.PointCloud2Msg();
@@ -130,7 +131,6 @@ public class RosPublisherExample : MonoBehaviour
         pc2e.width = NewWidthforEdited;
         pc2e.height = 1;
         pc2e.data = new byte[0];
-
 
 
 
@@ -181,7 +181,7 @@ public class RosPublisherExample : MonoBehaviour
         //Initializing twist message variable for transforms
         twist = new GeometryMsgs.TwistMsg();
 
-
+        newTwist = new transformer.TransformationMsg();
         intRequest = new _int.Int16Msg();
         SaveMapName = new _int.StringMsg();
         LoadMapName = new _int.StringMsg();

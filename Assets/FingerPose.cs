@@ -180,8 +180,6 @@ public class FingerPose : MonoBehaviour
 
     }
 
-
-
     public void ActivateEditor(bool state)
     {    // Called by the "Add Voxels", "Delete Voxels", and "Home" buttons in the Edit menu.
         EditorActivator = state;

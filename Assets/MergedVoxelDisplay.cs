@@ -49,8 +49,7 @@ public class MergedVoxelDisplay : MonoBehaviour
             transformed = mcb.TransformPCL(Camera.main.transform.localPosition);
             if (Vector3.Distance(cubePose,transformed) < 30)
             {
-                kuby = Instantiate(cubz, cubePose, Quaternion.identity);
-                kuby.transform.SetParent(Parent.transform, false);
+                kuby = Instantiate(cubz, cubePose, Quaternion.identity, Parent.transform);
                 kuby.gameObject.name = "MergedVoxel";
                 if (pointcloud.data[j + 17] != 0)
                 {
@@ -79,9 +78,6 @@ public class MergedVoxelDisplay : MonoBehaviour
 
 
     }
-
-
-    
 
     public void Clean()
     {

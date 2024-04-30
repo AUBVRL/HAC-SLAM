@@ -16,7 +16,7 @@ public class MiniMap : MonoBehaviour
     public GameObject cubz;
     
     public RosSubscriberExample sub;
-    public GameObject HL;
+    
     
     void Start()
     {
@@ -48,17 +48,6 @@ public class MiniMap : MonoBehaviour
         }
     }
 
-    public void CleanHLMap()
-    {
-        if (HL.gameObject.transform.childCount > 1)
-        {
-            for (int i = 0; i < HL.gameObject.transform.childCount - 1; i++)
-            {
-                Destroy(HL.gameObject.transform.GetChild(i).gameObject);
-            }
-        }
-    }
-
     public void FillLocal(pc2 pointcloud)
     {
         max.Set(0.05f, 0.05f, 0.05f);
@@ -72,8 +61,7 @@ public class MiniMap : MonoBehaviour
             cubePose.z = System.BitConverter.ToSingle(pointcloud.data, j + 4);
             cubePose.y = System.BitConverter.ToSingle(pointcloud.data, j + 8);
 
-            kuby = Instantiate(cubz, cubePose, Quaternion.identity);
-            kuby.transform.SetParent(this.gameObject.transform, false);
+            kuby = Instantiate(cubz, cubePose, Quaternion.identity, this.gameObject.transform);
             max.x = Mathf.Max(Mathf.Abs(kuby.transform.localPosition.x), max.x);
             max.y = Mathf.Max(Mathf.Abs(kuby.transform.localPosition.y), max.y);
             max.z = Mathf.Max(Mathf.Abs(kuby.transform.localPosition.z), max.z);
