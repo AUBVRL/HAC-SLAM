@@ -6,6 +6,7 @@ using System.Drawing;
 using Unity.VisualScripting;
 using System.Linq;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
+using RosMessageTypes.Sensor;
 
 
 public class MinecraftBuilder : MonoBehaviour
@@ -87,11 +88,12 @@ public class MinecraftBuilder : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+   private void Update()
     {
 
-        if(MappingSwitch)  
+        if(MappingSwitch)
         {
+            
             Gaze_direction = Camera.main.transform.forward;
             Gaze_position = Camera.main.transform.position;
             
@@ -133,7 +135,7 @@ public class MinecraftBuilder : MonoBehaviour
 
                             }
                         }
-                        
+
                     }
                 }
             }
@@ -490,5 +492,30 @@ public class MinecraftBuilder : MonoBehaviour
         Pooint = rotationQuaternion * Pooint + translation;
         return Pooint;
     }
-        
+
+    // public List<Vector3> MeshToPointCloud()
+    // {
+    //     List<Vector3> meshPoints = new List<Vector3>();
+    //     Gaze_direction = Camera.main.transform.forward;
+    //         Gaze_position = Camera.main.transform.position;
+            
+    //         for (int i = 0; i < (Hor_angle_window / angle_size); i++)
+    //         {
+    //             Hor_Ray_direction = Quaternion.Euler(0, (Hor_angle_min + (angle_size * i)), 0) * Gaze_direction;
+    //             for (int j = 0; j < (int)(Ver_angle_window / angle_size); j++)
+    //             {
+
+    //                 Ver_Ray_direction = Quaternion.Euler((Ver_angle_min + (angle_size * j)), 0, 0) * Hor_Ray_direction;
+
+    //                 raycastHit = Physics.Raycast(Gaze_position, Ver_Ray_direction, out hit, 10f);
+                    
+    //                 if (raycastHit && hit.transform.name.Contains("SpatialMesh")) //The second condition ensures that only the spatial mesh is mapped. Should be checking tags instead.
+    //                 {
+                        
+    //                 }
+    //             }
+    //         }
+    //         return meshPoints;
+    // }
 }
+        
