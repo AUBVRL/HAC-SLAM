@@ -24,7 +24,7 @@ public class VoxelManager : MonoBehaviour
         //Voxel voxilaya3 = new Voxel(new Vector3(2,0,0));
         Monazzim.Voxelet.Add(voxilaya);
         //Voxelet.Add(voxilaya2);
-        Debug.Log("Yes " + Monazzim.Voxelet.Any(x => x.Posito == voxilaya2.Posito));
+        //Debug.Log("Yes " + Monazzim.Voxelet.Any(x => x.Posito == voxilaya2.Posito));
         //Debug.Log("Yes " + VoxeletPosition.Contains(vocto3));
     }
 
@@ -35,28 +35,37 @@ public class VoxelManager : MonoBehaviour
     }
 }
 
-class Voxel
+public class Voxel
 {
-    public Vector3 Posito;
+    public Vector3 Position;
     public float Proba;
     public bool State;
     public byte[] PoseInBytes;
 
     private void Converter() 
     {
-        PoseInBytes = BitConverter.GetBytes(Posito.x);
+        PoseInBytes = BitConverter.GetBytes(Position.x);
     }
     
     public Voxel(Vector3 vecto)
     {
-        //Debug.Log("Akalz");
-        Posito = vecto;
-        //Debug.Log(Pose);
-
+        Position = vecto;
     }
 }
 
-static class Monazzim 
+public class Monazzim 
 {
     public static List<Voxel> Voxelet = new List<Voxel>();
+}
+
+public class Chunk
+{
+    public Vector3 Position;
+    public List<Voxel> Voxels = new List<Voxel>();
+
+    //There should be a function that resets the byte array
+
+    
+
+
 }

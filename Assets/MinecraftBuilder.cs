@@ -63,7 +63,10 @@ public class MinecraftBuilder : MonoBehaviour
     RaycastHit[] hits;
     bool spatial, raycastHit;
     MeshRenderer VoxelMeshRenderer;
-    //Dictionary<Vector3, float> VoxelProba;
+
+    //Refactoring variables:
+    List<Vector3> extractedPoints;
+    
 
 
 
@@ -85,61 +88,19 @@ public class MinecraftBuilder : MonoBehaviour
         //VoxelProba = new Dictionary<Vector3, float>();
         spatial = false;
 
+
+
+
     }
 
     // Update is called once per frame
    private void Update()
     {
+        extractedPoints = MeshToPointCloud();
 
-        if(MappingSwitch)
-        {
-            
-            Gaze_direction = Camera.main.transform.forward;
-            Gaze_position = Camera.main.transform.position;
-            
-            for (int i = 0; i < (Hor_angle_window / angle_size); i++)
-            {
-                Hor_Ray_direction = Quaternion.Euler(0, (Hor_angle_min + (angle_size * i)), 0) * Gaze_direction;
-                for (int j = 0; j < (int)(Ver_angle_window / angle_size); j++)
-                {
-
-                    Ver_Ray_direction = Quaternion.Euler((Ver_angle_min + (angle_size * j)), 0, 0) * Hor_Ray_direction;
-
-                    raycastHit = Physics.Raycast(Gaze_position, Ver_Ray_direction, out hit, 10f);
-                    
-                    if (raycastHit && hit.transform.name.Contains("SpatialMesh")) //The second condition ensures that only the spatial mesh is mapped. Should be checking tags instead.
-                    {
-
-                        VoxelInstantiator(hit.point);
-                        
-                        Gaze_distance = Vector3.Distance(Gaze_position, hit.point);
-
-                        hits = Physics.RaycastAll(Gaze_position, Ver_Ray_direction, Gaze_distance, 4);
-                        foreach (RaycastHit Hit in hits)
-                        {
-                            if (Hit.transform.name == "Voxel")
-                            {
-                                overlaps = Physics.OverlapBox(Hit.transform.position, cubesizeScale / 2);
-                                foreach (Collider overlap in overlaps)
-                                {
-                                    spatial = false;
-                                    if (overlap.gameObject.name.Contains("SpatialMesh"))
-                                    {
-                                        spatial = true;
-                                        break;
-                                    }
-                                }
-                                if (spatial) continue;
-                                VoxelDestroyer(Hit.transform.position);
-
-
-                            }
-                        }
-
-                    }
-                }
-            }
-        }
+        VoxelInstantiator(extractedPoints);
+        
+        VoxelDestroyer(extractedPoints);
     }
 
     public void DisableMinecraft()
@@ -154,11 +115,13 @@ public class MinecraftBuilder : MonoBehaviour
 
     public void VoxelInstantiator(Vector3 point)
     {
+        //point = point / cubesize;
+        //Vector3Int Roundedpoint = Vector3Int.RoundToInt(point);
         distx_in_cm = Mathf.RoundToInt(point.x / cubesize) * cubesize;
         disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
         distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
         point.Set(distx_in_cm, disty_in_cm, distz_in_cm);
-
+    
         if (VoxelPose.Contains(point))
         {
             if (VoxelProba[VoxelPose.IndexOf(point)] < 1 && VoxelProba[VoxelPose.IndexOf(point)] >= 0)
@@ -168,11 +131,11 @@ public class MinecraftBuilder : MonoBehaviour
 
             if (!VoxelExists[VoxelPose.IndexOf(point)] && VoxelProba[VoxelPose.IndexOf(point)] > 0.6f && VoxelProba[VoxelPose.IndexOf(point)] <= 1)
             {
-                kube = Instantiate(cube, point, Quaternion.identity);
-                kube.gameObject.name = "Voxel";
+                kube = Instantiate(cube, point, Quaternion.identity, VoxelsParent.transform);
+                //kube.gameObject.name = "Voxel";
                 VoxelMeshRenderer = kube.GetComponent<MeshRenderer>();
                 VoxelMeshRenderer.material = materials[0];
-                kube.transform.SetParent(VoxelsParent.transform);
+                
                 
                 VoxelExists[VoxelPose.IndexOf(point)] = true;
 
@@ -193,6 +156,14 @@ public class MinecraftBuilder : MonoBehaviour
         }
     }
 
+    public void VoxelInstantiator(List<Vector3> vectors)
+    {
+        foreach (Vector3 vector in vectors)
+        {
+            VoxelInstantiator(vector);
+        }
+    }
+    
     public void VoxelDestroyer(Vector3 point)
     {
 
@@ -222,11 +193,32 @@ public class MinecraftBuilder : MonoBehaviour
 
             }
             VoxelExists[VoxelPose.IndexOf(point)] = false;
-
+            
             VoxelByte.RemoveRange(12 * VoxelByteMap.IndexOf(VoxelPose.IndexOf(point)), 12);
             VoxelByteMap.Remove(VoxelPose.IndexOf(point));
         }
             
+    }
+
+    public void VoxelDestroyer(List<Vector3> vectors)
+    {
+        int voxelLayerMask = 1 << 7;
+        int spatialMeshLayerMask = 1 << 31;
+        
+        foreach (Vector3 vector in vectors)
+        {
+            Gaze_distance = Vector3.Distance(Camera.main.transform.position, vector) - 0.09f;
+            Vector3 direction =  vector - Camera.main.transform.position;
+            hits = Physics.RaycastAll(Camera.main.transform.position, direction.normalized, Gaze_distance, voxelLayerMask);
+            foreach (RaycastHit Hit in hits)
+            {  
+                bool checkBoxOverlap = Physics.CheckBox(Hit.transform.position, cubesizeScale, Quaternion.identity, spatialMeshLayerMask);
+                    if (!checkBoxOverlap)
+                    {
+                        VoxelDestroyer(Hit.transform.position);
+                    }
+            }
+        }
     }
 
     public void UserVoxelAddition(Vector3 point)
@@ -493,29 +485,29 @@ public class MinecraftBuilder : MonoBehaviour
         return Pooint;
     }
 
-    // public List<Vector3> MeshToPointCloud()
-    // {
-    //     List<Vector3> meshPoints = new List<Vector3>();
-    //     Gaze_direction = Camera.main.transform.forward;
-    //         Gaze_position = Camera.main.transform.position;
-            
-    //         for (int i = 0; i < (Hor_angle_window / angle_size); i++)
-    //         {
-    //             Hor_Ray_direction = Quaternion.Euler(0, (Hor_angle_min + (angle_size * i)), 0) * Gaze_direction;
-    //             for (int j = 0; j < (int)(Ver_angle_window / angle_size); j++)
-    //             {
+    public List<Vector3> MeshToPointCloud()
+    {
+        List<Vector3> meshPoints = new List<Vector3>();
+        Gaze_direction = Camera.main.transform.forward;
+        Gaze_position = Camera.main.transform.position;
+        int layerMask = 1 << 31;
 
-    //                 Ver_Ray_direction = Quaternion.Euler((Ver_angle_min + (angle_size * j)), 0, 0) * Hor_Ray_direction;
+        for (int i = 0; i < (Hor_angle_window / angle_size); i++)
+        {
+            Hor_Ray_direction = Quaternion.Euler(0, (Hor_angle_min + (angle_size * i)), 0) * Gaze_direction;
+            for (int j = 0; j < (int)(Ver_angle_window / angle_size); j++)
+            {
+                Ver_Ray_direction = Quaternion.Euler((Ver_angle_min + (angle_size * j)), 0, 0) * Hor_Ray_direction;
+                raycastHit = Physics.Raycast(Gaze_position, Ver_Ray_direction, out hit, 10f, layerMask);
+                if (raycastHit)
+                    {
+                        meshPoints.Add(hit.point);
+                    }
+            }
+        }
+        
+        return meshPoints;
+    }
 
-    //                 raycastHit = Physics.Raycast(Gaze_position, Ver_Ray_direction, out hit, 10f);
-                    
-    //                 if (raycastHit && hit.transform.name.Contains("SpatialMesh")) //The second condition ensures that only the spatial mesh is mapped. Should be checking tags instead.
-    //                 {
-                        
-    //                 }
-    //             }
-    //         }
-    //         return meshPoints;
-    // }
 }
         
