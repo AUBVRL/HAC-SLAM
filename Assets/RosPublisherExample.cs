@@ -204,8 +204,8 @@ public class RosPublisherExample : MonoBehaviour
 
         if (timeElapsed > publishMessageFrequency)
         {
-            ros.Publish(topicName5, pc2m);
-            PopulateMappedPointCloudMsg();
+            //ros.Publish(topicName5, pc2m);
+            ///PopulateMappedPointCloudMsg();
             timeElapsed = 0;
         }
 

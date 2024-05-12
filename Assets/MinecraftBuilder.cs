@@ -20,11 +20,12 @@ public class MinecraftBuilder : MonoBehaviour
     public TextWriter txtwrtr;
     [NonSerialized]
     public float cubesize;
-    static int Hor_angle_window = 18; //90; //36
-    static int Ver_angle_window = 8; //46; //16
-    static float angle_size = 2f;
-    float Hor_angle_min = -((float)Hor_angle_window / 2);
-    float Ver_angle_min = -((float)Ver_angle_window / 2);
+    float chunkSize;
+    public static int Hor_angle_window = 18; //90; //36
+    public static int Ver_angle_window = 8; //46; //16
+    public static float angle_size = 2f;
+    public static float Hor_angle_min = -((float)Hor_angle_window / 2);
+    public static float Ver_angle_min = -((float)Ver_angle_window / 2);
     Vector3 Hor_Ray_direction, Gaze_direction, Gaze_position;
     Vector3 Ver_Ray_direction;
     //[NonSerialized]
@@ -50,7 +51,6 @@ public class MinecraftBuilder : MonoBehaviour
     float[] grid_arr;
     int indexo;
     bool MappingSwitch;
-
     List<Vector3> VoxelPose;
     [NonSerialized]
     public List<Byte> VoxelByte, AddedVoxelByte, DeletedVoxelByte;
@@ -88,6 +88,7 @@ public class MinecraftBuilder : MonoBehaviour
         //VoxelProba = new Dictionary<Vector3, float>();
         spatial = false;
 
+        chunkSize = 3f;
 
 
 
@@ -509,5 +510,15 @@ public class MinecraftBuilder : MonoBehaviour
         return meshPoints;
     }
 
+    public Vector3 RoundToVoxel(Vector3 v)
+    {
+        Vector3 roundedVector = new Vector3();
+        roundedVector.Set(Mathf.RoundToInt(v.x / cubesize) * cubesize,
+                          Mathf.RoundToInt(v.y / cubesize) * cubesize,
+                          Mathf.RoundToInt(v.z / cubesize) * cubesize);
+        return roundedVector;
+    }
+
+    
 }
         
