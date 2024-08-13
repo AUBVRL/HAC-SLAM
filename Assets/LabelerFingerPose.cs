@@ -7,15 +7,16 @@ using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using UnityEngine.InputSystem;
 using Microsoft.MixedReality.Toolkit.Examples.Demos;
 using Unity.VisualScripting;
+using System;
 
 public class LabelerFingerPose : MonoBehaviour
 {
-    bool labelerOn, doneInstantiation, trackingLost, selectorInstantiated, fingersClosed,ToolTextBool;
+    bool labelerOn, doneInstantiation, trackingLost, selectorInstantiated, fingersClosed, HandAngle,ToolTextBool;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeft;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftIndex;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftThumb;
-    float fingersThreshold, cubesize;
-    Vector3 InitialPose, FinalPose, PrismCenter, Scale_incubes, coliderPose, cubesizeScale, ToolTipAnchor;
+    float fingersThreshold, HandAngleThreshold, cubesize;
+    Vector3 InitialPose, FinalPose, PrismCenter, Scale_incubes, coliderPose, cubesizeScale, ToolTipAnchor, TransformedPoints;
     Vector3Int InitialPose_incubes, FinalPose_incubes, minbound_inCubes, maxbound_inCubes;
     public MinecraftBuilder _minecraftbuilder;
     public RosPublisherExample Pub;
@@ -31,15 +32,18 @@ public class LabelerFingerPose : MonoBehaviour
     MeshRenderer VoxelMeshRenderer;
     SystemKeyboardExample key;
     public HoloKeyboard holoKey;
-    byte[] InstanceCounter; //Should be dynamic but here it's a proof of concept
+    byte[] InstanceCounter = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; //Should be dynamic but here it's just a proof of the concept
     public GameObject[] Buttons = new GameObject[6];
+    public GameObject Parent;
     ButtonConfigHelper ButtonText;
+    LabelAndInstance LabelInstance;
     byte label;
 
     // Start is called before the first frame update
     void Start()
     {
         fingersThreshold = 0.04f;
+        HandAngleThreshold = 30;
         cubesize = _minecraftbuilder.cubesize;
         cubesizeScale.Set(cubesize - 0.001f, cubesize - 0.001f, cubesize - 0.001f);
         ToolTipAnchor = Vector3.zero;
@@ -49,8 +53,8 @@ public class LabelerFingerPose : MonoBehaviour
         labelerOn = true;
         doneInstantiation = false;
         ToolTextBool = false;
-        label = 0;
-        InstanceCounter = new byte[] { 0, 0, 0, 0, 0, 0 };
+        label = 5;
+        //InstanceCounter = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         //tooltipText = tooltip.GetComponent<ToolTip>();  //just now
         //tooltipconnector = tooltip.GetComponent<ToolTipConnector>();
         //Debug.Log(InstanceCounter[1]); prints 0
@@ -67,7 +71,10 @@ public class LabelerFingerPose : MonoBehaviour
                 if (HandJointUtils.TryGetJointPose(Microsoft.MixedReality.Toolkit.Utilities.TrackedHandJoint.IndexTip, Microsoft.MixedReality.Toolkit.Utilities.Handedness.Right, out poseLeftIndex))
                 {
                     HandJointUtils.TryGetJointPose(Microsoft.MixedReality.Toolkit.Utilities.TrackedHandJoint.ThumbTip, Microsoft.MixedReality.Toolkit.Utilities.Handedness.Right, out poseLeftThumb);
+                    
                     fingersClosed = Vector3.Distance(poseLeftIndex.Position, poseLeftThumb.Position) < fingersThreshold;
+
+                    HandAngle = Vector3.Angle(Camera.main.transform.forward, (poseLeftIndex.Position - Camera.main.transform.position)) < HandAngleThreshold;
                     if (selectorInstantiated)
                     {
                         if (trackingLost)
@@ -132,7 +139,7 @@ public class LabelerFingerPose : MonoBehaviour
                     }
                     else  //here the instantation happens
                     {
-                        if (fingersClosed)
+                        if (fingersClosed & HandAngle)
                         {
                             //selector instantiation
                             InitialPose = poseLeftIndex.Position;
@@ -168,7 +175,11 @@ public class LabelerFingerPose : MonoBehaviour
             
             if (ToolTextBool)
             {
+                //////Enable when deploying to HL
                 tooltipText.ToolTipText = holoKey.texty;
+                
+                //////Enable when trying in editor
+                //tooltipText.ToolTipText = "Akal";
             }
         }
     }
@@ -208,14 +219,17 @@ public class LabelerFingerPose : MonoBehaviour
                                 
                                 foreach (Collider overlap2 in overlaps)
                                 {
-                                    if (overlap2.gameObject.name == "Voxel")
+                                    if (overlap2.gameObject.name.Contains("Voxel"))
                                     {
                                         VoxelMeshRenderer = overlap2.gameObject.GetComponent<MeshRenderer>();
                                         VoxelMeshRenderer.material = SelectedMaterial;
-                                        overlap2.gameObject.name = "Labeled";
+                                        overlap2.gameObject.name = "VoxelLabeled";
+                                        overlap2.transform.SetParent(Parent.transform);
                                         //ToolTipAnchor += overlap2.gameObject.transform.position;
                                         //counterForVoxels++;
-                                        Pub.LabeledPointCloudPopulater(overlap2.gameObject.transform.position, labely , instancey);
+                                        TransformedPoints = _minecraftbuilder.TransformPCL(overlap2.gameObject.transform.position);
+                                        Pub.LabeledPointCloudPopulater(TransformedPoints, labely , instancey);
+                                        //Debug.Log(labely);
                                         break;
                                         //Destroy(overlap2.gameObject);   //this works
                                     }
@@ -257,17 +271,19 @@ public class LabelerFingerPose : MonoBehaviour
 
 
         /////Enable when deploying to hololens:
-        ///ToolTextBool = false;
-        Buttons[label].gameObject.SetActive(true);
+        ToolTextBool = false;
+        Buttons[label-5].gameObject.SetActive(true);
 
 
-        ////Buttons[label].GetComponent<ButtonConfigHelper>().MainLabelText = tooltipText.ToolTipText;
+        Buttons[label-5].GetComponent<ButtonConfigHelper>().MainLabelText = tooltipText.ToolTipText;
         
         ////comment the below for Hololens deployment
-        Buttons[label].GetComponent<ButtonConfigHelper>().MainLabelText = "Test " + label;
+        ///Buttons[label].GetComponent<ButtonConfigHelper>().MainLabelText = "Test " + label;
         label++;
         //Debug.Log("Label: " + label);
         labelVoxelizer(label, 0);
+        LabelInstance.label = label;
+        LabelInstance.instance = 0;
         Destroy(Selector);
         appBar.SetActive(false);
         doneInstantiation = false;
@@ -276,14 +292,15 @@ public class LabelerFingerPose : MonoBehaviour
     public void adjustSelector()
     {
         Selector.GetComponent<ObjectManipulator>().enabled = true;
-        Selector.GetComponent<BoxCollider>().enabled = true;
-        Selector.GetComponent<BoundsControl>().enabled = true;
+        //Selector.GetComponent<BoxCollider>().enabled = true;
+        //Selector.GetComponent<BoundsControl>().enabled = true;
     }
 
     public void doneSelector()
     {
-        Selector.GetComponent<BoxCollider>().enabled = false;
-        Selector.GetComponent<BoundsControl>().enabled = false;
+        Selector.GetComponent<ObjectManipulator>().enabled = false;
+        //Selector.GetComponent<BoxCollider>().enabled = false;
+        //Selector.GetComponent<BoundsControl>().enabled = false;
     }
 
     public void NewLabelSelector()
@@ -292,13 +309,25 @@ public class LabelerFingerPose : MonoBehaviour
         // TODO: after pressing add new label, the abort will not delete the changes and tooltips
         tool = Instantiate(tooltip, Selector.transform.position + new Vector3(0, (Selector.transform.localScale.y) / 2, 0), Quaternion.identity);
         tooltipText = tool.GetComponent<ToolTip>();
+        LabelInstance = tool.GetComponent<LabelAndInstance>();
         //labelVoxelizer();
         
 
         //////// Enable when deploying to HoloLens
-        ////holoKey.OpenKeyboard();
-        ////ToolTextBool = true;
+        holoKey.OpenKeyboard();
+
+        ToolTextBool = true;
         
+    }
+
+    public void AssetToolTip(Vector3 pose, string name, byte Label, byte Instance)
+    {
+        tool = Instantiate(tooltip, pose + new Vector3(0, 0.2f, 0), Quaternion.identity);
+        tooltipText = tool.GetComponent<ToolTip>();
+        LabelInstance = tool.GetComponent<LabelAndInstance>();
+        LabelInstance.label = Label;
+        LabelInstance.instance = Instance;
+        tooltipText.ToolTipText = name;
     }
 
     public void PreviouslyLabeled(int i)
@@ -307,17 +336,33 @@ public class LabelerFingerPose : MonoBehaviour
         //Debug.Log("hay lbyte: " + b);
         tool = Instantiate(tooltip, Selector.transform.position + new Vector3(0, (Selector.transform.localScale.y) / 2, 0), Quaternion.identity);
         tooltipText = tool.GetComponent<ToolTip>();
-        ButtonText = Buttons[b].GetComponent<ButtonConfigHelper>();
+        LabelInstance = tool.GetComponent<LabelAndInstance>();
+        ButtonText = Buttons[b-5].GetComponent<ButtonConfigHelper>();
         tooltipText.ToolTipText = ButtonText.MainLabelText;
         InstanceCounter[b]++;
-        Debug.Log("Hay linstance: " + InstanceCounter[b]);
+        LabelInstance.label = b;
+        LabelInstance.instance = InstanceCounter[b];
+        
         b++;
+
         labelVoxelizer(b, InstanceCounter[b-1]);
         //Debug.Log("Insta: " + InstanceCounter[b]);
         Destroy(Selector);
         appBar.SetActive(false);
         doneInstantiation = false;
 
+    }
+
+    public byte AssetInstance(byte labelo)
+    {
+        
+        labelo = (byte) (labelo - 1);
+        
+        byte CurrentInstance = InstanceCounter[labelo];
+        //Debug.Log(InstanceCounter[labelo]);
+        InstanceCounter[labelo]++;
+        return CurrentInstance;
+        
     }
 
 }

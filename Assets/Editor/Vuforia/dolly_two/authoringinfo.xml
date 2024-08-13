@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QCARInfo>
+    <TargetSet version="36.0" toolVersion="v6.2.4">
+        <ModelTarget name="dolly_two" targetId="11d3b068281e4f7b92e6b4f81e63eebe" version="13.0" toolVersion="v6.2.4" bbox="-0.452819 0.000746 -0.656148 0.481555 0.368319 0.656147" trackingMode="scan" upVector="0.0 1.0 0.0" optimizeTrackingFor="default" realisticTextures="yes" />
+    </TargetSet>
+    <Assembly name="dolly_two" assemblyId="b910b34dbfd846c689a518c379cd0a36">
+        <Part name="dolly_two" translation="0 0 0" rotation="AD: 0 0 1 0" />
+        <EntryPoint name="(none)" trained="yes" />
+    </Assembly>
+</QCARInfo>

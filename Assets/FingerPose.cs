@@ -2,51 +2,62 @@ using UnityEngine;
 using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
+using Microsoft.MixedReality.Toolkit.UI;
+using UnityEngine.UI;
+using System;
 
 public class FingerPose : MonoBehaviour
 {
-    Vector3 InitialPose, FinalPose, PrismCenter, Scale_incubes;
+    Vector3 InitialPose, FinalPose, PrismCenter, Scale_incubes, AssetPose, AssetRot;
     Vector3Int InitialPose_incubes, FinalPose_incubes;
-    public GameObject Prism;
-    public GameObject Prism1;
-    public GameObject Prism2;
-    public GameObject Prism3;
-    public GameObject sfiro;
-    
+    GameObject Prism, ModelTarget;
+    public GameObject[] Selectors = new GameObject[8];
+    public GameObject[] VuforiaTargets = new GameObject[6];
+    public LabelerFingerPose Labeler;
     public MinecraftBuilder _MinecraftBuilder;
+    public RosPublisherExample _RosPublisher;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeft;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftIndex; //new
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseLeftThumb; //new
     IMixedRealityHandJointService handJointService;
-    float cubesize;
+    float cubesize, HandAngleThreshold;
     float fingersThreshold = 0.04f;
     GameObject Selector;
-    bool EditorActivator, EditorActivatorOld, selectorInstantiated, trackingLost, fingersClosed, doneInstantiation, testingBool;
+    bool EditorActivator, EditorActivatorOld, selectorInstantiated, trackingLost, fingersClosed, doneInstantiation, testingBool, ConvexityState, DeletingVoxels, AddingAssets, VuforiaEnabled, VuforiaFound, HandAngle;
 
     Renderer selectorMesh;
-
-    Vector3 minbound, maxbound; //delete
+    Vector3 minbound, maxbound; //delete 
 
     Vector3Int minbound_inCubes, maxbound_inCubes;
     Vector3 coliderPose, cubesizeScale;
     Collider[] overlaps;
     public GameObject appBar;
+    byte AssetLabel, AssetInstance;
  
     //MixedRealityInputAction selectAction;
     bool EnablePrism;
     MeshCollider _meshCollider;
+    InputActionHandler _inputActionHandler;
+    string AssetName;
     private void Start()
     {
         handJointService = CoreServices.GetInputSystemDataProvider<IMixedRealityHandJointService>();
         cubesize = _MinecraftBuilder.cubesize;
+        HandAngleThreshold = 30;
         EnablePrism = false;  //enabled when the user gestures a pinch
-        EditorActivator = true; //enabled from the 'Edit Voxels' button
+        EditorActivator = false; //enabled from the 'Edit Voxels' button
         EditorActivatorOld = false;
         doneInstantiation = false;
         testingBool = true;
+        DeletingVoxels = false;
+        AddingAssets = false;
         cubesizeScale.Set(cubesize, cubesize, cubesize);
         fingersThreshold = 0.04f;
+        Prism = Selectors[3];
         _meshCollider = Prism.GetComponent<MeshCollider>();
+        _inputActionHandler = gameObject.GetComponent<InputActionHandler>();
+
+        
         //_meshCollider.convex = true;  // We need to make this as a kabse later.
     }
 
@@ -103,10 +114,7 @@ public class FingerPose : MonoBehaviour
                                 Scale_incubes.y = Mathf.Max(Mathf.Abs((InitialPose_incubes.y - FinalPose_incubes.y) * cubesize), cubesize);
                                 Scale_incubes.z = Mathf.Max(Mathf.Abs((InitialPose_incubes.z - FinalPose_incubes.z) * cubesize), cubesize);
 
-                                //with extra cubesize
-                                /*Scale_incubes.x = Mathf.Max(Mathf.Abs((InitialPose_incubes.x - FinalPose_incubes.x) * cubesize) + cubesize, cubesize);
-                                Scale_incubes.y = Mathf.Max(Mathf.Abs((InitialPose_incubes.y - FinalPose_incubes.y) * cubesize) + cubesize, cubesize);
-                                Scale_incubes.z = Mathf.Max(Mathf.Abs((InitialPose_incubes.z - FinalPose_incubes.z) * cubesize) + cubesize, cubesize);*/
+                                
                                 //transform selector
                                 Selector.transform.position = PrismCenter * cubesize / 2;
                                 Selector.transform.localScale = Scale_incubes;
@@ -125,7 +133,8 @@ public class FingerPose : MonoBehaviour
                     }
                     else  //here the instantation happens
                     {
-                        if (fingersClosed)
+                        HandAngle = Vector3.Angle(Camera.main.transform.forward, (poseLeftIndex.Position - Camera.main.transform.position)) < HandAngleThreshold;
+                        if (fingersClosed && HandAngle)
                         {
                             //selector instantiation
                             InitialPose = poseLeftIndex.Position;
@@ -169,8 +178,12 @@ public class FingerPose : MonoBehaviour
             }
             
         }
-        
 
+        if (VuforiaFound)
+        {
+            Selector.transform.position = ModelTarget.transform.position;
+            Selector.transform.rotation = ModelTarget.transform.rotation;
+        }
 
 
         /////// here is the old part
@@ -232,9 +245,9 @@ public class FingerPose : MonoBehaviour
         
     }
    
-    public void ActivateEditor()
+    public void ActivateEditor(bool state)
     {
-        EditorActivator = !EditorActivator;
+        EditorActivator = state;
     }
 
     public void vertexExtractor()
@@ -267,6 +280,7 @@ public class FingerPose : MonoBehaviour
         //Loop from min to max bound:
         for(int i = minbound_inCubes.x; i <= maxbound_inCubes.x; i++)
         {
+            //test
             for (int j = minbound_inCubes.y; j <= maxbound_inCubes.y; j++)
             {
                 for (int k = minbound_inCubes.z; k <= maxbound_inCubes.z; k++)
@@ -281,8 +295,23 @@ public class FingerPose : MonoBehaviour
                         {
                             if(overlap.gameObject.name == "Prism")
                             {
-                                _MinecraftBuilder.Instantiator(coliderPose, true);
-                                //Instantiate(sfiro,)
+                                //coliderPose = coliderPose / cubesize;
+                                //coliderPose = coliderPose * 0.0499f;
+                                //_MinecraftBuilder.Instantiator(coliderPose, true);
+                                if (AddingAssets || VuforiaEnabled)
+                                {
+                                    _MinecraftBuilder.UserAssetAddition(coliderPose);
+                                    _RosPublisher.LabeledPointCloudPopulater(coliderPose, AssetLabel, AssetInstance);
+                                }
+                                else if (DeletingVoxels)
+                                {
+                                    _MinecraftBuilder.UserVoxelDeletion(coliderPose);
+                                }
+                                else
+                                {
+                                    _MinecraftBuilder.UserVoxelAddition(coliderPose);
+                                }
+                                break;
                             }
                         }
                     }
@@ -291,51 +320,161 @@ public class FingerPose : MonoBehaviour
         }
 
 
-
     }
 
     public void abortSelector()
     {
-        Destroy(Selector);
+        if (Selector != null) Destroy(Selector);
         appBar.SetActive(false);
         doneInstantiation = false;
+        if (AddingAssets)
+        {
+            _inputActionHandler.enabled = true;
+        }
+        else if (VuforiaEnabled)
+        {
+            VuforiaFound = false;
+            ModelTarget.SetActive(false);
+        }
     }
 
     public void confirmSelector()
     {
-        officialVoxelizer();
+        if (AddingAssets)
+        {
+            _inputActionHandler.enabled = true;
+            AssetInstance = Labeler.AssetInstance(AssetLabel);
+            Labeler.AssetToolTip(Selector.transform.position, AssetName, AssetLabel, AssetInstance);
+            _MinecraftBuilder.AddedVoxelByte.Clear();
+            officialVoxelizer();
+            _RosPublisher.PublishEditedPointCloudMsg();
+            _RosPublisher.LabelPublisher();
+
+        }
+        else if (DeletingVoxels)
+        {
+            _MinecraftBuilder.DeletedVoxelByte.Clear();
+            officialVoxelizer();
+            _RosPublisher.PublishDeletedVoxels();
+            doneInstantiation = false;
+
+        }
+        else if (VuforiaEnabled)
+        {
+            AssetInstance = Labeler.AssetInstance(AssetLabel);
+            Labeler.AssetToolTip(Selector.transform.position, AssetName, AssetLabel, AssetInstance);
+            _MinecraftBuilder.AddedVoxelByte.Clear();
+            officialVoxelizer();
+            _RosPublisher.PublishEditedPointCloudMsg();
+            _RosPublisher.LabelPublisher();
+            VuforiaFound = false;
+            ModelTarget.SetActive(false);
+
+        }
+        else
+        {
+            _MinecraftBuilder.AddedVoxelByte.Clear();
+            officialVoxelizer();
+            _RosPublisher.PublishEditedPointCloudMsg();
+            doneInstantiation = false;
+        }
+        
         Destroy(Selector);
         appBar.SetActive(false);
-        doneInstantiation = false;
+        
     }
 
     public void adjustSelector()
     {
-        Selector.GetComponent<BoxCollider>().enabled = true;
-        Selector.GetComponent<BoundsControl>().enabled = true;
+        //Selector.GetComponent<BoxCollider>().enabled = true;
+        //Selector.GetComponent<BoundsControl>().enabled = true;
+        Selector.GetComponent<ObjectManipulator>().enabled = true;
     }
 
     public void doneSelector()
     {
-        Selector.GetComponent<BoxCollider>().enabled = false;
-        Selector.GetComponent<BoundsControl>().enabled = false;
+        //Selector.GetComponent<BoxCollider>().enabled = false;
+        //Selector.GetComponent<BoundsControl>().enabled = false;
+        Selector.GetComponent<ObjectManipulator>().enabled = false;
     }
 
-    public void request1()
+    public void requestSelectorShape(int index)
     {
-        Prism = Prism1;
-        _meshCollider = Prism1.GetComponent<MeshCollider>();
+        Prism = Selectors[index];
+        _meshCollider = Selectors[index].GetComponent<MeshCollider>();
+        _meshCollider.convex = ConvexityState;
     }
-    
-    public void request2()
+
+    public void Convexity(bool state)
     {
-        Prism = Prism2;
-        _meshCollider = Prism2.GetComponent<MeshCollider>();
+        _meshCollider.convex = state;
+        ConvexityState = state;
     }
-    
-    public void request3()
+
+    public void AssetInstantiator()
     {
-        Prism = Prism3;
-        _meshCollider = Prism3.GetComponent<MeshCollider>();
+        if (Selector != null) Destroy(Selector);
+        AssetPose.x = Camera.main.transform.localPosition.x + 2 * Mathf.Sin(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+        AssetPose.y = Camera.main.transform.localPosition.y - 1.5f;
+        AssetPose.z = Camera.main.transform.localPosition.z + 2 * Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+        
+        AssetRot.Set(0, Camera.main.transform.localRotation.eulerAngles.y, 0);
+        
+        Selector = Instantiate(Prism, AssetPose, Quaternion.Euler(AssetRot));
+        Selector.name = "Prism";
+        appBar.SetActive(true);
+        _inputActionHandler.enabled = false;
     }
+
+    public void EnableAssetAddition(bool state)
+    {
+        AddingAssets = state;
+        _inputActionHandler.enabled = state;
+    }
+
+    public void AssetLabelNumber(int label)
+    {
+        AssetLabel = (byte)label;
+    }
+
+    public void AssetNameForTooltip(string name)
+    {
+        AssetName = name;
+    }
+
+    public void EnableDeletion(bool state)
+    {
+        DeletingVoxels = state;
+    }
+
+    public void EnableVuforia(bool state)
+    {
+        VuforiaEnabled = state;
+
+        if (!state)
+        {
+            VuforiaFound = false;
+            ModelTarget.SetActive(false);
+        }
+    }
+
+    public void VuforiaTargetRequest(int index)
+    {
+        VuforiaTargets[index].SetActive(true);
+        ModelTarget = VuforiaTargets[index];
+    }
+
+    public void ModelTracked(GameObject Object)
+    {
+        if (!VuforiaFound)
+        {
+            Prism = Object;
+            Selector = Instantiate(Prism, ModelTarget.transform.position, ModelTarget.transform.rotation);
+            Selector.name = "Prism";
+            appBar.SetActive(true);
+            VuforiaFound = true;
+        }
+
+    }
+
 }

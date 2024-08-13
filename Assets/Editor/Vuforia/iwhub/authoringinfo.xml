@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QCARInfo>
+    <TargetSet version="36.0" toolVersion="v6.2.4">
+        <ModelTarget name="iwhub" targetId="4feec242ca14449a87dfc6ee9610829f" version="13.0" toolVersion="v6.2.4" bbox="-0.668499 -0.000467 -0.315480 0.732953 0.225968 0.302369" trackingMode="scan" upVector="0.0 1.0 0.0" optimizeTrackingFor="default" realisticTextures="yes" />
+    </TargetSet>
+    <Assembly name="iwhub" assemblyId="613f2c605c20424d87e5a31912a6f086">
+        <Part name="iwhub" translation="0 0 0" rotation="AD: 0 0 1 0" />
+        <EntryPoint name="(none)" trained="yes" />
+    </Assembly>
+</QCARInfo>
