@@ -1,11 +1,13 @@
 {
-    "dependencies": {
-    "com.ptc.vuforia.engine": "file:com.ptc.vuforia.engine-10.20.3.tgz",
+  "dependencies": {
     "com.microsoft.mixedreality.openxr": "file:MixedReality/com.microsoft.mixedreality.openxr-1.7.2.tgz",
+    "com.microsoft.mixedreality.sceneunderstanding": "file:C:/Users/hs192/Desktop/packs/pack1/package",
     "com.microsoft.mixedreality.toolkit.examples": "file:MixedReality/com.microsoft.mixedreality.toolkit.examples-2.8.3.tgz",
     "com.microsoft.mixedreality.toolkit.extensions": "file:MixedReality/com.microsoft.mixedreality.toolkit.extensions-2.8.3.tgz",
     "com.microsoft.mixedreality.toolkit.foundation": "file:MixedReality/com.microsoft.mixedreality.toolkit.foundation-2.8.3.tgz",
     "com.microsoft.mixedreality.toolkit.standardassets": "file:MixedReality/com.microsoft.mixedreality.toolkit.standardassets-2.8.3.tgz",
+    "com.microsoft.windows.mixedreality.dotnetwinrt": "file:C:/Users/hs192/Desktop/packs/pack2/package",
+    "com.ptc.vuforia.engine": "file:com.ptc.vuforia.engine-10.20.3.tgz",
     "com.unity.collab-proxy": "1.15.15",
     "com.unity.feature.development": "1.0.1",
     "com.unity.ide.rider": "3.0.13",

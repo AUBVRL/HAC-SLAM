@@ -730,7 +730,7 @@ PlayerSettings:
   metroCertificatePassword: 
   metroCertificateSubject: DefaultCompany
   metroCertificateIssuer: DefaultCompany
-  metroCertificateNotAfter: 00c4f3bd887fda01
+  metroCertificateNotAfter: 0046959fb2eadb01
   metroApplicationDescription: Template_3D
   wsaImages: {}
   metroTileShortName: TestingROS
