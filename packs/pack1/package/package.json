@@ -1,0 +1,25 @@
+{
+    "name": "com.microsoft.mixedreality.sceneunderstanding",
+    "displayName": "Mixed Reality Scene Understanding",
+    "version": "0.6.0",
+    "unity": "2019.4",
+    "msftFeatureCategory": "Platform Support",
+    "description": "SDK for Scene Understanding on Windows Mixed Reality devices. Computes a description of the scene surrounding the user (walls, floors, surfaces, etc.), including quads, meshes, and content placement hints.",
+    "keywords": [
+        "microsoft",
+        "hololens",
+        "mixed",
+        "reality",
+        "scene",
+        "understanding",
+        "sceneunderstanding",
+        "spatial",
+        "mapping",
+        "spatialmapping"
+    ],
+    "author": {
+        "name": "Microsoft",
+        "url": "http://aka.ms/MR-SU"
+    },
+    "license": "SEE LICENSE IN LICENSE.txt"
+}

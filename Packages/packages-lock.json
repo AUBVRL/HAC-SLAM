@@ -12,7 +12,7 @@
       }
     },
     "com.microsoft.mixedreality.sceneunderstanding": {
-      "version": "file:C:/Users/hs192/Desktop/packs/pack1/package",
+      "version": "file:../packs/pack1/package",
       "depth": 0,
       "source": "local",
       "dependencies": {}
@@ -51,7 +51,7 @@
       }
     },
     "com.microsoft.windows.mixedreality.dotnetwinrt": {
-      "version": "file:C:/Users/hs192/Desktop/packs/pack2/package",
+      "version": "file:../packs/pack2/package",
       "depth": 0,
       "source": "local",
       "dependencies": {}
