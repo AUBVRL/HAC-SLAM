@@ -183,9 +183,23 @@ public class MinecraftBuilder : MonoBehaviour
                     }
                     else if(raycastHit && hit.transform.name.Contains("Quad") && hit.transform.parent.tag != "Finish")
                     {
-                        Debug.Log(GetID(hit) + ", (" + hit.transform.parent.position.x + "," + hit.transform.parent.position.y + "," + hit.transform.parent.position.z
+                        
+                        /*Debug.Log(GetID(hit) + ", (" + hit.transform.parent.position.x + "," + hit.transform.parent.position.y + "," + hit.transform.parent.position.z
                         + "),  " + hit.transform.parent.rotation + " ,  (" + hit.transform.localScale.x + "," + hit.transform.localScale.y + ")");
+                        */
                         hit.transform.parent.tag = "Finish";
+
+                        pub.PublishSpatialUnderstanding(
+                            GetID(hit),
+                            hit.transform.parent.position.x,
+                            hit.transform.parent.position.y,
+                            hit.transform.parent.position.z,
+                            hit.transform.parent.rotation.x,
+                            hit.transform.parent.rotation.y,
+                            hit.transform.parent.rotation.z,
+                            hit.transform.parent.rotation.w,
+                            hit.transform.localScale.x,
+                            hit.transform.localScale.y);
                     }
                 }
             }

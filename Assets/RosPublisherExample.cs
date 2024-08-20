@@ -3,7 +3,7 @@ using Unity.Robotics.ROSTCPConnector;
 using RosMessageTypes.UnityRoboticsDemo;
 using GeometryMsgs = RosMessageTypes.Geometry;
 using OGM = RosMessageTypes.Nav; //new
-using pics = RosMessageTypes.Sensor; //ktir new (nicolas)
+//using pics = RosMessageTypes.Sensor; //ktir new (nicolas)
 using octom = RosMessageTypes.Octomap; //ktir new (3D)
 using pc2 = RosMessageTypes.Sensor;
 using transformer = RosMessageTypes.CustomInterfaces; //This is the custom message
@@ -47,6 +47,8 @@ public class RosPublisherExample : MonoBehaviour
 
     // Used to determine how much time has elapsed since the last message was published
     float timeElapsed;
+    double[] myArray = new double[10] { 0f, -2.360056f, -0.1401037f, 7.176516f, -0.00033f, 0.79177f, -0.00048f, 0.61082f, 5.974876f, 2.78774f };
+
 
     bool PublishTwist;
     public bool FirstAlignment;
@@ -66,6 +68,9 @@ public class RosPublisherExample : MonoBehaviour
     _int.Int16Msg intRequest, deleteLabel;
     _int.StringMsg SaveMapName, LoadMapName;
     _int.BoolMsg RequestNames;
+    _int.Float64MultiArrayMsg FloatArray;
+    pc2.JointStateMsg joints;
+    GeometryMsgs.TwistMsg newtwist;
 
     transformer.TransformationMsg newTwist;
     transformer.InstanceMsg deleteInstance;
@@ -104,6 +109,9 @@ public class RosPublisherExample : MonoBehaviour
         ros.RegisterPublisher<_int.BoolMsg>(RequestNamesTopic);
         ros.RegisterPublisher<_int.StringMsg>(LoadMapTopic);
         ros.RegisterPublisher<GeometryMsgs.TwistMsg>(localizeHumanTopic);
+        ros.RegisterPublisher<_int.Float64MultiArrayMsg>("array");
+        ros.RegisterPublisher<pc2.JointStateMsg>("joint");
+        ros.RegisterPublisher<GeometryMsgs.TwistMsg>("newcmd");
 
         //The below is for the robot rotation 
         PublishTwist = false;
@@ -259,6 +267,20 @@ public class RosPublisherExample : MonoBehaviour
         deleteLabel = new _int.Int16Msg();
         deleteInstance = new transformer.InstanceMsg();
 
+        FloatArray = new _int.Float64MultiArrayMsg();
+
+
+
+        FloatArray.data = myArray;
+
+        joints = new pc2.JointStateMsg();
+        joints.header.frame_id = "map";
+        joints.name = new string[10] { "1", "1", "1", "1", "1", "1", "1", "1","1", "1"};
+        //joints.position = myArray;
+        
+
+        newtwist = new GeometryMsgs.TwistMsg();
+        newtwist.angular.x = 5f;
 
     }
 
@@ -272,6 +294,9 @@ public class RosPublisherExample : MonoBehaviour
             ros.Publish(topicName5, pc2m);
             PopulatePointCloudMsg();
             timeElapsed = 0;
+            ros.Publish("array", FloatArray);
+            
+            ros.Publish("newcmd", newtwist);
         }
 
 
@@ -592,6 +617,27 @@ public class RosPublisherExample : MonoBehaviour
         deleteInstance.instance = (sbyte) instance;
         ros.Publish(DeleteInstanceTopic, deleteInstance);
 
+    }
+
+    public void PublishSpatialUnderstanding(double ID, double posex, double posey, double posez, 
+                                            double rotx, double roty, double rotz, double rotw, 
+                                            double scalex, double scaley)
+    {
+        myArray[0] = ID;
+        myArray[1] = posex;
+        myArray[2] = posey;
+        myArray[3] = posez;
+        myArray[4] = rotx;
+        myArray[5] = roty;
+        myArray[6] = rotz;
+        myArray[7] = rotw;
+        myArray[8] = scalex;
+        myArray[9] = scaley;
+
+        joints.position = myArray;
+        ros.Publish("joint", joints);
+
+        Debug.Log("YES");
     }
 
 }
