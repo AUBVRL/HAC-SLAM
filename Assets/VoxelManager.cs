@@ -2,17 +2,18 @@ using System.Collections;
 using System;
 using JetBrains.Annotations;
 using System.Linq;
-//using System.Numerics;
 using UnityEngine;
 using System.Collections.Generic;
 using Microsoft.MixedReality.Toolkit.Examples.Demos;
 
 public class VoxelManager : MonoBehaviour
 {
-    [SerializeField]
-    public GameObject cube1;
+    
+    public GameObject VoxelPrefab;
     float chunkSize = 3f;
+    [SerializeField]
     float voxelSize = 0.05f;
+    public Vector2Int rayCastArray = new Vector2Int(50, 50);
     List<Vector3> VoxeletPosition = new List<Vector3>();
     public static List<Chunk> Chunks = new List<Chunk>();
     public static Dictionary<Vector3, Chunk> ChunksDict = new Dictionary<Vector3, Chunk>();
@@ -21,37 +22,14 @@ public class VoxelManager : MonoBehaviour
     RaycastHit hit;
     void Start()
     {
-        Voxel.cubecube = cube1;
-        Voxel voxilaya = new Voxel(new Vector3(1,0,0));
-        Voxel voxilaya2 = new Voxel(new Vector3(1,0,0));
-        Vector3 vocto = new Vector3(0,0,0);
-        Vector3 vocto2 = new Vector3(0,0,1);
-        Vector3 vocto3 = new Vector3(0,0,1);
-
-        
-
-        Chunk chik;
-        chik = Chunks.Find(x => x.Position == vocto);
-        if (chik == null)
-        {
-            Debug.Log("Kousa");
-        }
-        
-        Chunks.Add(new Chunk(new Vector3(2,2,2)));
-        VoxeletPosition.Add(vocto);
-        VoxeletPosition.Add(vocto2);
-        //Voxel voxilaya3 = new Voxel(new Vector3(2,0,0));
-        //Monazzim.Voxelet.Add(voxilaya);
-        //Voxelet.Add(voxilaya2);
-        //Debug.Log("Yes " + Monazzim.Voxelet.Any(x => x.Position == voxilaya2.Position));
-        //Debug.Log("Yes " + VoxeletPosition.Contains(vocto3));
-        //Debug.Log(Chunks[1].Voxels.Find(x => x.Position == voxilaya2.Position));
+        Voxel.prefab = VoxelPrefab;
+        Voxel.prefab.transform.localScale = new Vector3(voxelSize, voxelSize, voxelSize);
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        VoxeletPosition = MeshToPointCloud();
+        VoxeletPosition = MeshToPointCloudParallel();
 
         foreach( Vector3 v in VoxeletPosition)
         {
@@ -61,12 +39,12 @@ public class VoxelManager : MonoBehaviour
 
     public void Manager(Vector3 RandomVector)
     {
-        Vector3 chunkVector, voxelVector;
+        //Vector3 chunkVector, voxelVector;
         Chunk tempChunk;
         Voxel tempVoxel;
         //Vector3 RandomVector = new Vector3(1,2,3);
-        chunkVector = RoundToChunk(RandomVector);
-        voxelVector = RoundToVoxel(RandomVector);
+        Vector3 chunkVector = RoundToChunk(RandomVector);
+        Vector3 voxelVector = RoundToVoxel(RandomVector);
         if (!ChunksDict.ContainsKey(chunkVector))
         {
             ChunksDict.Add(chunkVector, new Chunk(voxelVector));
@@ -78,9 +56,12 @@ public class VoxelManager : MonoBehaviour
         {
             tempChunk.VoxelsDict.Add(voxelVector, new Voxel(voxelVector));
         }
+        else
+        {
+            tempVoxel = tempChunk.VoxelsDict[voxelVector];
+            tempVoxel.IncreaseProba();
+        }
         
-        tempVoxel = tempChunk.VoxelsDict[voxelVector];
-        tempVoxel.IncreaseProba();
 
     }
 
@@ -91,6 +72,7 @@ public class VoxelManager : MonoBehaviour
                           Mathf.RoundToInt(v.y / chunkSize),
                           Mathf.RoundToInt(v.z / chunkSize));
         return roundedVector;
+
     }
 
     public Vector3 RoundToVoxel(Vector3 v)
@@ -102,14 +84,13 @@ public class VoxelManager : MonoBehaviour
         return roundedVector;
     }
 
-    public List<Vector3> MeshToPointCloud()
+    public List<Vector3> MeshToPointCloudBeam()
     {
         List<Vector3> meshPoints = new List<Vector3>();
         Vector3 Gaze_direction = Camera.main.transform.forward;
         Vector3 Gaze_position = Camera.main.transform.position;
         
         int layerMask = 1 << 31;
-
         for (int i = 0; i < (MinecraftBuilder.Hor_angle_window / MinecraftBuilder.angle_size); i++)
         {
             Vector3 Hor_Ray_direction = Quaternion.Euler(0, (MinecraftBuilder.Hor_angle_min + (MinecraftBuilder.angle_size * i)), 0) * Gaze_direction;
@@ -123,7 +104,33 @@ public class VoxelManager : MonoBehaviour
                     }
             }
         }
-        
+        return meshPoints;
+    }
+
+    public List<Vector3> MeshToPointCloudParallel()
+    {
+        List<Vector3> meshPoints = new List<Vector3>();
+        Vector3 Gaze_direction = Camera.main.transform.forward;
+        Vector3 Gaze_position = Camera.main.transform.position;
+
+        int layerMask = 1 << 31;
+        int count = 0;
+        for (int i = -rayCastArray.x /2; i < rayCastArray.x/2 ; i++)
+        {
+            Vector3 xGazeposition = Gaze_position + new Vector3(i*voxelSize , 0, 0);
+            for (int j = -rayCastArray.y / 2; j < rayCastArray.y / 2; j++)
+            {
+                Vector3 newGazeposition = xGazeposition + new Vector3(0, j * voxelSize, 0);
+                bool raycastHit = Physics.Raycast(newGazeposition, Gaze_direction, out hit, 10f, layerMask);
+                if (raycastHit)
+                {
+                    meshPoints.Add(hit.point);
+                }
+                count++;
+            }
+        }
+        print(count);
+        count = 0;
         return meshPoints;
     }
 }
@@ -135,7 +142,7 @@ public class Voxel
     public bool State;
     public byte[] PoseInBytes;
 
-    public static GameObject cubecube;
+    public static GameObject prefab;
 
     private void Converter() 
     {
@@ -164,7 +171,7 @@ public class Voxel
 
     private void create()
     {
-        UnityEngine.Object.Instantiate(cubecube, Position, Quaternion.identity);
+        UnityEngine.Object.Instantiate(prefab, Position, Quaternion.identity);
         State = true;
     }
 
