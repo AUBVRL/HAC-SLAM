@@ -75,3 +75,4 @@ crashlytics-build.properties
 
 # Ignore ply files
 *.ply
+.DS_Store
