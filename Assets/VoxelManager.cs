@@ -5,46 +5,58 @@ using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
 using Microsoft.MixedReality.Toolkit.Examples.Demos;
+using Microsoft.MixedReality.Toolkit.UI;
+using Unity.VisualScripting;
 
 public class VoxelManager : MonoBehaviour
 {
     
     public GameObject VoxelPrefab;
+
+    public static GameObject staticPrefab, staticPrefabParent;
     float chunkSize = 3f;
     [SerializeField]
     float voxelSize = 0.05f;
-    public Vector2Int rayCastArray = new Vector2Int(50, 50);
-    List<Vector3> VoxeletPosition = new List<Vector3>();
-    public static List<Chunk> Chunks = new List<Chunk>();
+    public Vector2Int rayCastArray = new Vector2Int(20, 20);
+    List<Vector3> VoxelsPosition = new List<Vector3>();
+    //public static List<Chunk> Chunks = new List<Chunk>();
     public static Dictionary<Vector3, Chunk> ChunksDict = new Dictionary<Vector3, Chunk>();
     // Start is called before the first frame update
     //MinecraftBuilder mini = new MinecraftBuilder();
     RaycastHit hit;
+    
+    public static Dictionary<Vector3, byte[]> VoxelByteDict = new();
+
     void Start()
     {
-        Voxel.prefab = VoxelPrefab;
-        Voxel.prefab.transform.localScale = new Vector3(voxelSize, voxelSize, voxelSize);
+        staticPrefab = VoxelPrefab;
+        staticPrefabParent = new GameObject("VoxelParent");
+        //Instantiate(staticPrefabParent);
+        staticPrefab.transform.localScale = new Vector3(voxelSize, voxelSize, voxelSize);
+        InvokeRepeating("VoxelCleanse", 0, 1);
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        VoxeletPosition = MeshToPointCloudParallel();
+        VoxelsPosition = MeshToPointCloudParallel();
 
-        foreach( Vector3 v in VoxeletPosition)
+        foreach( Vector3 v in VoxelsPosition)
         {
-            Manager(v);
+            AddVoxel(v);
         }
+       
     }
 
-    public void Manager(Vector3 RandomVector)
+    public void AddVoxel(Vector3 RandomVector)
     {
         //Vector3 chunkVector, voxelVector;
         Chunk tempChunk;
         Voxel tempVoxel;
         //Vector3 RandomVector = new Vector3(1,2,3);
-        Vector3 chunkVector = RoundToChunk(RandomVector);
         Vector3 voxelVector = RoundToVoxel(RandomVector);
+        Vector3 chunkVector = RoundToChunk(voxelVector);
+        
         if (!ChunksDict.ContainsKey(chunkVector))
         {
             ChunksDict.Add(chunkVector, new Chunk(voxelVector));
@@ -65,12 +77,21 @@ public class VoxelManager : MonoBehaviour
 
     }
 
+    public void RemoveVoxel(Vector3 RandomVector)
+    {
+
+        Vector3 chunkVector = RoundToChunk(RandomVector);
+        //Vector3 voxelVector = RoundToVoxel(RandomVector);
+        ChunksDict[chunkVector].VoxelsDict[RandomVector].DecrementProba();
+        
+    }
+
     public Vector3 RoundToChunk(Vector3 v)
     {
         Vector3 roundedVector = new Vector3();
-        roundedVector.Set(Mathf.RoundToInt(v.x / chunkSize),
-                          Mathf.RoundToInt(v.y / chunkSize),
-                          Mathf.RoundToInt(v.z / chunkSize));
+        roundedVector.Set(Mathf.RoundToInt(v.x / chunkSize) * chunkSize,
+                          Mathf.RoundToInt(v.y / chunkSize) * chunkSize,
+                          Mathf.RoundToInt(v.z / chunkSize) * chunkSize);
         return roundedVector;
 
     }
@@ -114,108 +135,64 @@ public class VoxelManager : MonoBehaviour
         Vector3 Gaze_position = Camera.main.transform.position;
 
         int layerMask = 1 << 31;
-        int count = 0;
+        int layerMask2 = 1 << 7;
         for (int i = -rayCastArray.x /2; i < rayCastArray.x/2 ; i++)
         {
             Vector3 xGazeposition = Gaze_position + new Vector3(i*voxelSize , 0, 0);
             for (int j = -rayCastArray.y / 2; j < rayCastArray.y / 2; j++)
             {
                 Vector3 newGazeposition = xGazeposition + new Vector3(0, j * voxelSize, 0);
-                bool raycastHit = Physics.Raycast(newGazeposition, Gaze_direction, out hit, 10f, layerMask);
-                if (raycastHit)
+                bool raycastHit = Physics.Raycast(newGazeposition, Gaze_direction, out hit, 10f, layerMask | layerMask2);
+                if (raycastHit && hit.transform.gameObject.layer == 31)
                 {
                     meshPoints.Add(hit.point);
                 }
-                count++;
+
             }
         }
-        print(count);
-        count = 0;
         return meshPoints;
     }
-}
-
-public class Voxel
-{
-    public Vector3 Position;
-    private float Proba;
-    public bool State;
-    public byte[] PoseInBytes;
-
-    public static GameObject prefab;
-
-    private void Converter() 
+    
+    public List<Vector3> StateCheckerParallel()
     {
-        PoseInBytes = BitConverter.GetBytes(Position.x);
+        List<Vector3> meshPoints = new List<Vector3>();
+        Vector3 Gaze_direction = Camera.main.transform.forward;
+        Vector3 Gaze_position = Camera.main.transform.position;
+
+        int layerMask = 1 << 7;
+        for (int i = -rayCastArray.x / 2; i < rayCastArray.x / 2; i++)
+        {
+            Vector3 xGazeposition = Gaze_position + new Vector3(i * voxelSize, 0, 0);
+            for (int j = -rayCastArray.y / 2; j < rayCastArray.y / 2; j++)
+            {
+                Vector3 newGazeposition = xGazeposition + new Vector3(0, j * voxelSize, 0);
+                bool raycastHit = Physics.Raycast(newGazeposition, Gaze_direction, out hit, 10f, layerMask);
+                if (raycastHit)
+                {
+                    meshPoints.Add(hit.transform.position);
+                }
+                
+            }
+        }
+        return meshPoints;
     }
     
-    public Voxel(Vector3 vecto)
+    void VoxelCleanse() 
     {
-        Position = vecto;
-        Proba = 0.15f;
-        State = false;
+        VoxelsPosition = StateCheckerParallel();
+        foreach(Vector3 v in VoxelsPosition)
+        {   
+            RemoveVoxel(v);
+        }
     }
 
-    public void IncreaseProba()
+    void OnDisable()
     {
-        if (Proba <= 0.85 && Proba >= 0) Proba += 0.15f;
-        if (!State && Proba >= 0.6f) create();
-        
+        CancelInvoke("VoxelCleanse");
     }
 
-    public void DecrementProba()
+    void OnEnable()
     {
-        if (Proba <= 1 && Proba >= 0.01) Proba -= 0.01f;
-        if (State && Proba < 0.6f) destroy();
+        InvokeRepeating("VoxelCleanse", 0, 1);
     }
-
-    private void create()
-    {
-        UnityEngine.Object.Instantiate(prefab, Position, Quaternion.identity);
-        State = true;
-    }
-
-    private void destroy()
-    {
-
-    }
-
-    public void AddVoxel()
-    {
-
-    }
-
-    public void DeleteVoxel()
-    {
-
-    }
-
-    public void LabelVoxel()
-    {
-
-    }
-}
-
-public class Monazzim 
-{
-    public static List<Voxel> Voxelet = new List<Voxel>();
-}
-
-public class Chunk
-{
-    public Vector3 Position;
-
-    public List<Voxel> Voxels = new List<Voxel>();
-    public Dictionary<Vector3, Voxel> VoxelsDict = new Dictionary<Vector3, Voxel>();
-
-    public Chunk(Vector3 position)
-    {
-        Position = position;
-        Voxels.Add(new Voxel(position));
-        //VoxelsDict.Add(position, new Voxel())
-    }
-
-
-    //There should be a function that resets the byte array
-
 }

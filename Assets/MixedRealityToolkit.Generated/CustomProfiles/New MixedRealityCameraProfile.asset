@@ -42,7 +42,14 @@ MonoBehaviour:
     priority: 0
     runtimePlatform: -1
     settingsProfile: {fileID: 11400000, guid: 32349edfa9bacb94a9fe58923e9a2400, type: 2}
-  nearClipPlaneOpaqueDisplay: 0.1
+  - componentType:
+      reference: Microsoft.MixedReality.Toolkit.Experimental.UnityAR.UnityARCameraSettings,
+        Microsoft.MixedReality.Toolkit.Providers.UnityAR
+    componentName: Unity AR Foundation Camera Settings
+    priority: 0
+    runtimePlatform: 288
+    settingsProfile: {fileID: 11400000, guid: 7217eb8601261474684784a22112a1fb, type: 2}
+  nearClipPlaneOpaqueDisplay: 0.05
   farClipPlaneOpaqueDisplay: 20
   cameraClearFlagsOpaqueDisplay: 2
   backgroundColorOpaqueDisplay: {r: 0, g: 0, b: 0, a: 1}
