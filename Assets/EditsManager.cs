@@ -7,6 +7,7 @@ using UnityEngine.Networking;
 
 public class EditsManager : MonoBehaviour
 {
+    public static event Action OnObjectInstantiated;
 
     // Distance to instantiate the prefab in front of the camera
     public float distanceFromCamera = 0.5f;
@@ -54,8 +55,9 @@ public class EditsManager : MonoBehaviour
 
             if (touch.phase == TouchPhase.Ended && instantiatedObject != null)
             {
-                instantiatedObject = null;
-                //doneInstantiaion = true;
+                //instantiatedObject = null;
+                doneInstantiaion = true;
+                OnObjectInstantiated?.Invoke(); //The problem is that this is being triggered when I select confirm or cancel
             }
 
         }
@@ -107,5 +109,29 @@ public class EditsManager : MonoBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(screenPosition);
         return ray.origin + (ray.direction * distanceFromCamera);
+    }
+
+    public void Confirm()
+    {
+        VoxelizeSelector();
+        doneInstantiaion = false;
+    }
+
+    public void Cancel()
+    {
+        Destroy(instantiatedObject);
+        doneInstantiaion = false;
+    }
+
+    void VoxelizeSelector()
+    {
+        // Get the bounds of the instantiated object
+        Bounds bounds = instantiatedObject.GetComponent<MeshRenderer>().bounds;
+
+        // Get the size of the bounds
+        Vector3 size = bounds.size;
+
+        Destroy(instantiatedObject);
+
     }
 }
