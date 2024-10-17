@@ -56,8 +56,10 @@ public class EditsManager : MonoBehaviour
             if (touch.phase == TouchPhase.Ended && instantiatedObject != null)
             {
                 //instantiatedObject = null;
+
                 doneInstantiaion = true;
                 OnObjectInstantiated?.Invoke(); //The problem is that this is being triggered when I select confirm or cancel
+                Debug.Log("Instantiated");
             }
 
         }
@@ -114,12 +116,30 @@ public class EditsManager : MonoBehaviour
     public void Confirm()
     {
         VoxelizeSelector();
+        Destroy(instantiatedObject);
+        instantiatedObject = null;
+        if (instantiatedObject == null)
+        {
+            Debug.Log("Destroyed");
+        } 
+        else
+        {
+            Debug.Log("Festroyed");
+        }
         doneInstantiaion = false;
     }
 
     public void Cancel()
     {
         Destroy(instantiatedObject);
+        instantiatedObject = null;
+        if (instantiatedObject != null)
+        {
+            Debug.Log("Destroyed");
+        }else
+        {
+            Debug.Log("Festroyed");
+        }
         doneInstantiaion = false;
     }
 
@@ -131,7 +151,7 @@ public class EditsManager : MonoBehaviour
         // Get the size of the bounds
         Vector3 size = bounds.size;
 
-        Destroy(instantiatedObject);
+        
 
     }
 }
