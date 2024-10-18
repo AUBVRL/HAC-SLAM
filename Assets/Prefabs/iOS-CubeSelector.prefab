@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5792916996534638439}
   - component: {fileID: 8049086085184959563}
   - component: {fileID: -294252362126133378}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: iOS-CubeSelector
   m_TagString: Untagged
   m_Icon: {fileID: 0}

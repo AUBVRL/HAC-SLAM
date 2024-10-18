@@ -18,7 +18,6 @@ public class SelectorMenuToggle : MonoBehaviour
     }
     void ToggleSelectorMenu()
     {
-        Debug.Log("Toggling Selector Menu");
         SelectorMenu.SetActive(true);
         gameObject.SetActive(false);
     }

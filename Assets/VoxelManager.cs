@@ -14,9 +14,10 @@ public class VoxelManager : MonoBehaviour
     public GameObject VoxelPrefab;
 
     public static GameObject staticPrefab, staticPrefabParent;
-    float chunkSize = 3f;
-    [SerializeField]
-    float voxelSize = 0.05f;
+    float ChunkSize = 3f;
+    public static float chunkSize;
+    public float VoxelSize = 0.05f;
+    public static float voxelSize;
     public Vector2Int rayCastArray = new Vector2Int(20, 20);
     List<Vector3> VoxelsPosition = new List<Vector3>();
     //public static List<Chunk> Chunks = new List<Chunk>();
@@ -27,19 +28,20 @@ public class VoxelManager : MonoBehaviour
     
     public static Dictionary<Vector3, byte[]> VoxelByteDict = new();
 
-    void Start()
+    void Awake()
     {
+        voxelSize = VoxelSize;
+        chunkSize = ChunkSize;
         staticPrefab = VoxelPrefab;
         staticPrefabParent = new GameObject("VoxelParent");
         //Instantiate(staticPrefabParent);
         staticPrefab.transform.localScale = new Vector3(voxelSize, voxelSize, voxelSize);
-        InvokeRepeating("VoxelCleanse", 0, 1);
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        VoxelsPosition = MeshToPointCloudParallel();
+        VoxelsPosition = MeshToPointCloudParallel(); //MeshToPointCloudParallel();
 
         foreach( Vector3 v in VoxelsPosition)
         {
@@ -48,7 +50,7 @@ public class VoxelManager : MonoBehaviour
        
     }
 
-    public void AddVoxel(Vector3 RandomVector)
+    public static void AddVoxel(Vector3 RandomVector)
     {
         //Vector3 chunkVector, voxelVector;
         Chunk tempChunk;
@@ -86,7 +88,7 @@ public class VoxelManager : MonoBehaviour
         
     }
 
-    public Vector3 RoundToChunk(Vector3 v)
+    public static Vector3 RoundToChunk(Vector3 v)
     {
         Vector3 roundedVector = new Vector3();
         roundedVector.Set(Mathf.RoundToInt(v.x / chunkSize) * chunkSize,
@@ -96,7 +98,7 @@ public class VoxelManager : MonoBehaviour
 
     }
 
-    public Vector3 RoundToVoxel(Vector3 v)
+    public static Vector3 RoundToVoxel(Vector3 v)
     {
         Vector3 roundedVector = new Vector3();
         roundedVector.Set(Mathf.RoundToInt(v.x / voxelSize) * voxelSize,
@@ -152,7 +154,7 @@ public class VoxelManager : MonoBehaviour
         }
         return meshPoints;
     }
-    
+
     public List<Vector3> StateCheckerParallel()
     {
         List<Vector3> meshPoints = new List<Vector3>();

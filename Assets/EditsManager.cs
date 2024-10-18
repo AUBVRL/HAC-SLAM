@@ -58,8 +58,7 @@ public class EditsManager : MonoBehaviour
                 //instantiatedObject = null;
 
                 doneInstantiaion = true;
-                OnObjectInstantiated?.Invoke(); //The problem is that this is being triggered when I select confirm or cancel
-                Debug.Log("Instantiated");
+                OnObjectInstantiated?.Invoke();
             }
 
         }
@@ -118,14 +117,6 @@ public class EditsManager : MonoBehaviour
         VoxelizeSelector();
         Destroy(instantiatedObject);
         instantiatedObject = null;
-        if (instantiatedObject == null)
-        {
-            Debug.Log("Destroyed");
-        } 
-        else
-        {
-            Debug.Log("Festroyed");
-        }
         doneInstantiaion = false;
     }
 
@@ -133,23 +124,37 @@ public class EditsManager : MonoBehaviour
     {
         Destroy(instantiatedObject);
         instantiatedObject = null;
-        if (instantiatedObject != null)
-        {
-            Debug.Log("Destroyed");
-        }else
-        {
-            Debug.Log("Festroyed");
-        }
         doneInstantiaion = false;
     }
 
     void VoxelizeSelector()
     {
+        int layerMask = 1 << 6;
         // Get the bounds of the instantiated object
-        Bounds bounds = instantiatedObject.GetComponent<MeshRenderer>().bounds;
+        Vector3 minBounds = VoxelManager.RoundToVoxel(instantiatedObject.GetComponent<MeshRenderer>().bounds.min) / VoxelManager.voxelSize;
+        Vector3 maxBounds = VoxelManager.RoundToVoxel(instantiatedObject.GetComponent<MeshRenderer>().bounds.max) / VoxelManager.voxelSize;
+        Vector3 voxelSizeVector = new Vector3(VoxelManager.voxelSize, VoxelManager.voxelSize, VoxelManager.voxelSize);
 
-        // Get the size of the bounds
-        Vector3 size = bounds.size;
+        for (int x = (int)minBounds.x; x <= maxBounds.x; x ++)
+        {
+            for (int y = (int)minBounds.y; y <= maxBounds.y; y ++)
+            {
+                for (int z = (int)minBounds.z; z <= maxBounds.z; z ++)
+                {
+                    Vector3 coliderPose = new Vector3(x, y, z) * VoxelManager.voxelSize;
+                    Collider[] overlaps = Physics.OverlapBox(coliderPose, voxelSizeVector / 2, Quaternion.identity, layerMask);
+                    if (overlaps != null)
+                    {
+                        foreach (Collider overlap in overlaps)
+                        {
+                            Instantiate(VoxelManager.staticPrefab, coliderPose, Quaternion.identity); //Needs the mapping to be turned on first to work.
+                        }
+                    }
+
+                }
+            }
+        }
+        
 
         
 
