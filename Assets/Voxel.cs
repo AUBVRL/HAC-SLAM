@@ -44,7 +44,7 @@ public class Voxel
 
     private void create()
     {
-        prefab = UnityEngine.Object.Instantiate(VoxelManager.staticPrefab, Position, Quaternion.identity,VoxelManager.staticPrefabParent.transform);
+        prefab = UnityEngine.Object.Instantiate(PrefabsManager.voxelPrefab, Position, Quaternion.identity,PrefabsManager.voxelPrefabParent.transform);
         State = true;
     }
 

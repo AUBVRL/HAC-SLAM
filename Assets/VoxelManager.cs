@@ -11,13 +11,10 @@ using Unity.VisualScripting;
 public class VoxelManager : MonoBehaviour
 {
     
-    public GameObject VoxelPrefab;
-
-    public static GameObject staticPrefab, staticPrefabParent;
-    float ChunkSize = 3f;
+    
+    public float ChunkSize = 3f;
     public static float chunkSize;
-    public float VoxelSize = 0.05f;
-    public static float voxelSize;
+    
     public Vector2Int rayCastArray = new Vector2Int(20, 20);
     List<Vector3> VoxelsPosition = new List<Vector3>();
     //public static List<Chunk> Chunks = new List<Chunk>();
@@ -30,12 +27,7 @@ public class VoxelManager : MonoBehaviour
 
     void Awake()
     {
-        voxelSize = VoxelSize;
         chunkSize = ChunkSize;
-        staticPrefab = VoxelPrefab;
-        staticPrefabParent = new GameObject("VoxelParent");
-        //Instantiate(staticPrefabParent);
-        staticPrefab.transform.localScale = new Vector3(voxelSize, voxelSize, voxelSize);
     }
 
     // Update is called once per frame
@@ -101,9 +93,9 @@ public class VoxelManager : MonoBehaviour
     public static Vector3 RoundToVoxel(Vector3 v)
     {
         Vector3 roundedVector = new Vector3();
-        roundedVector.Set(Mathf.RoundToInt(v.x / voxelSize) * voxelSize,
-                          Mathf.RoundToInt(v.y / voxelSize) * voxelSize,
-                          Mathf.RoundToInt(v.z / voxelSize) * voxelSize);
+        roundedVector.Set(Mathf.RoundToInt(v.x / PrefabsManager.voxelSize) * PrefabsManager.voxelSize,
+                          Mathf.RoundToInt(v.y / PrefabsManager.voxelSize) * PrefabsManager.voxelSize,
+                          Mathf.RoundToInt(v.z / PrefabsManager.voxelSize) * PrefabsManager.voxelSize);
         return roundedVector;
     }
 
@@ -140,10 +132,10 @@ public class VoxelManager : MonoBehaviour
         int layerMask2 = 1 << 7;
         for (int i = -rayCastArray.x /2; i < rayCastArray.x/2 ; i++)
         {
-            Vector3 xGazeposition = Gaze_position + new Vector3(i*voxelSize , 0, 0);
+            Vector3 xGazeposition = Gaze_position + new Vector3(i*PrefabsManager.voxelSize , 0, 0);
             for (int j = -rayCastArray.y / 2; j < rayCastArray.y / 2; j++)
             {
-                Vector3 newGazeposition = xGazeposition + new Vector3(0, j * voxelSize, 0);
+                Vector3 newGazeposition = xGazeposition + new Vector3(0, j * PrefabsManager.voxelSize, 0);
                 bool raycastHit = Physics.Raycast(newGazeposition, Gaze_direction, out hit, 10f, layerMask | layerMask2);
                 if (raycastHit && hit.transform.gameObject.layer == 31)
                 {
@@ -164,10 +156,10 @@ public class VoxelManager : MonoBehaviour
         int layerMask = 1 << 7;
         for (int i = -rayCastArray.x / 2; i < rayCastArray.x / 2; i++)
         {
-            Vector3 xGazeposition = Gaze_position + new Vector3(i * voxelSize, 0, 0);
+            Vector3 xGazeposition = Gaze_position + new Vector3(i * PrefabsManager.voxelSize, 0, 0);
             for (int j = -rayCastArray.y / 2; j < rayCastArray.y / 2; j++)
             {
-                Vector3 newGazeposition = xGazeposition + new Vector3(0, j * voxelSize, 0);
+                Vector3 newGazeposition = xGazeposition + new Vector3(0, j * PrefabsManager.voxelSize, 0);
                 bool raycastHit = Physics.Raycast(newGazeposition, Gaze_direction, out hit, 10f, layerMask);
                 if (raycastHit)
                 {

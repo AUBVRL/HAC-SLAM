@@ -70,7 +70,7 @@ public class EditsManager : MonoBehaviour
 
     public void StartStretching(Vector3 spawnPosition)
     {
-        instantiatedObject = Instantiate(SelectorManager.SelectorPrefab, spawnPosition, Quaternion.identity);
+        instantiatedObject = Instantiate(PrefabsManager.SelectorPrefab, spawnPosition, Quaternion.identity);
         initialWorldPosition = spawnPosition;
         instantiatedObject.transform.localScale = Vector3.zero; // Reset scale to start from zero
     }
@@ -131,9 +131,9 @@ public class EditsManager : MonoBehaviour
     {
         int layerMask = 1 << 6;
         // Get the bounds of the instantiated object
-        Vector3 minBounds = VoxelManager.RoundToVoxel(instantiatedObject.GetComponent<MeshRenderer>().bounds.min) / VoxelManager.voxelSize;
-        Vector3 maxBounds = VoxelManager.RoundToVoxel(instantiatedObject.GetComponent<MeshRenderer>().bounds.max) / VoxelManager.voxelSize;
-        Vector3 voxelSizeVector = new Vector3(VoxelManager.voxelSize, VoxelManager.voxelSize, VoxelManager.voxelSize);
+        Vector3 minBounds = VoxelManager.RoundToVoxel(instantiatedObject.GetComponent<MeshRenderer>().bounds.min) / PrefabsManager.voxelSize;
+        Vector3 maxBounds = VoxelManager.RoundToVoxel(instantiatedObject.GetComponent<MeshRenderer>().bounds.max) / PrefabsManager.voxelSize;
+        Vector3 voxelSizeVector = new Vector3(PrefabsManager.voxelSize, PrefabsManager.voxelSize, PrefabsManager.voxelSize);
 
         for (int x = (int)minBounds.x; x <= maxBounds.x; x ++)
         {
@@ -141,13 +141,13 @@ public class EditsManager : MonoBehaviour
             {
                 for (int z = (int)minBounds.z; z <= maxBounds.z; z ++)
                 {
-                    Vector3 coliderPose = new Vector3(x, y, z) * VoxelManager.voxelSize;
+                    Vector3 coliderPose = new Vector3(x, y, z) * PrefabsManager.voxelSize;
                     Collider[] overlaps = Physics.OverlapBox(coliderPose, voxelSizeVector / 2, Quaternion.identity, layerMask);
                     if (overlaps != null)
                     {
                         foreach (Collider overlap in overlaps)
                         {
-                            Instantiate(VoxelManager.staticPrefab, coliderPose, Quaternion.identity); //Needs the mapping to be turned on first to work.
+                            Instantiate(PrefabsManager.voxelPrefab, coliderPose, Quaternion.identity); 
                         }
                     }
 

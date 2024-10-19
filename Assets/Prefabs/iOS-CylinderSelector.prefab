@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6027954737431174123}
   - component: {fileID: 6027954737431174122}
   - component: {fileID: 6027954737431174121}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: iOS-CylinderSelector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
