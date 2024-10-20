@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Microsoft.MixedReality.Toolkit.Input;
+using Microsoft.MixedReality.Toolkit.Utilities;
 using Microsoft.MixedReality.Toolkit.Experimental.UI;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.XR;
 
 public class EditsManager : MonoBehaviour
 {
@@ -23,12 +26,14 @@ public class EditsManager : MonoBehaviour
     void Start()
     {
         UILayerMask = 1 << 6;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
         HandleTouchInput();
+        //HandleHandGestureInput();
     }
 
     public void HandleTouchInput()
@@ -65,7 +70,41 @@ public class EditsManager : MonoBehaviour
     }
    
     // Add other input handling functions later:
-    // HandleHandGestureInput();
+    public void HandleHandGestureInput()
+    {
+        if (!doneInstantiaion)
+        {
+            if (HandJointUtils.TryGetJointPose(TrackedHandJoint.IndexTip, Handedness.Right, out MixedRealityPose poseLeftIndex))
+            {
+                HandJointUtils.TryGetJointPose(TrackedHandJoint.ThumbTip, Handedness.Right, out MixedRealityPose poseLeftThumb);
+                bool fingersClosed = Vector3.Distance(poseLeftIndex.Position, poseLeftThumb.Position) < 0.04f;
+                if (instantiatedObject != null)
+                {
+                    if (fingersClosed) //equivelant to touch phase moved
+                    {
+                        //Vector3 currentWorldPosition = GetCurrentWorldPositionFromTouch(poseLeftIndex.Position);
+                        StretchObject(poseLeftIndex.Position);
+                    }
+                    else   //successful instantiation process and equivelant to touch phase ended
+                    {
+                        doneInstantiaion = true;
+                        OnObjectInstantiated?.Invoke();   
+                    }
+                }
+                else  //here the instantation happens and equicalant to touch phase began
+                {
+                    if (fingersClosed)
+                    {
+                        Debug.Log("Instantiating");
+                    //Vector3 spawnPosition = GetSpawnPositionFromTouch(poseLeftIndex.Position);
+                        StartStretching(poseLeftIndex.Position);
+                    }
+                    
+                }
+            }   
+        }    
+    }
+    
     // HandleMouseInput();
 
     public void StartStretching(Vector3 spawnPosition)
@@ -131,9 +170,12 @@ public class EditsManager : MonoBehaviour
     {
         int layerMask = 1 << 6;
         // Get the bounds of the instantiated object
-        Vector3 minBounds = VoxelManager.RoundToVoxel(instantiatedObject.GetComponent<MeshRenderer>().bounds.min) / PrefabsManager.voxelSize;
-        Vector3 maxBounds = VoxelManager.RoundToVoxel(instantiatedObject.GetComponent<MeshRenderer>().bounds.max) / PrefabsManager.voxelSize;
-        Vector3 voxelSizeVector = new Vector3(PrefabsManager.voxelSize, PrefabsManager.voxelSize, PrefabsManager.voxelSize);
+        Bounds bounds = instantiatedObject.GetComponent<MeshRenderer>().bounds;
+        
+        Vector3 minBounds = VoxelManager.RoundToVoxel(bounds.min) / PrefabsManager.voxelSize;
+        Vector3 maxBounds = VoxelManager.RoundToVoxel(bounds.max) / PrefabsManager.voxelSize;
+        
+        Vector3 voxelSizeVector = Vector3.one * PrefabsManager.voxelSize;
 
         for (int x = (int)minBounds.x; x <= maxBounds.x; x ++)
         {
@@ -147,7 +189,7 @@ public class EditsManager : MonoBehaviour
                     {
                         foreach (Collider overlap in overlaps)
                         {
-                            Instantiate(PrefabsManager.voxelPrefab, coliderPose, Quaternion.identity); 
+                            VoxelManager.AddVoxel(coliderPose, true);
                         }
                     }
 

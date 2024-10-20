@@ -16,36 +16,63 @@ public class Voxel
         PoseInBytes = BitConverter.GetBytes(Position.x);
     }
     
-    public Voxel(Vector3 vecto)
+    public Voxel(Vector3 vecto, bool humanEdited = false)
     {
         Position = vecto;
-        Proba = 0.15f;
-        State = false;
+        if(humanEdited)
+        {
+            IncreaseProba(humanEdited);
+        } 
+        else
+        {
+            Proba = 0.15f;
+            State = false;
+        }
+        
     }
 
-    public void IncreaseProba()
+    public void IncreaseProba(bool humanEdited = false)
     {
-        if (Proba <= 0.75 && Proba >= 0) Proba += 0.25f;
-        if (!State && Proba >= 0.6f) create();
+        if (!humanEdited)
+        {
+            if (Proba < 0.75 && Proba >= 0) Proba += 0.25f;
+            if (!State && Proba >= 0.6f) create();
+        }
+        else
+        {
+            Proba = 2;
+            create(humanEdited);
+        }
+        
     }
 
-    public void DecrementProba()
+    public void DecrementProba(bool humanEdited = false)
     {
         int layerMask = 1 << 31;
         bool checkBoxOverlap = Physics.CheckBox(Position, prefab.transform.localScale, Quaternion.identity, layerMask);
         if(!checkBoxOverlap)
         {
             Debug.Log("Removing");
-            if (Proba <= 1 && Proba >= 0.3) Proba -= 0.3f;
+            if (Proba <= 1 && Proba > 0.3) Proba -= 0.3f;
             if (State && Proba < 0.6f) destroy();
         }
         
     }
 
-    private void create()
+    private void create(bool humanEdited = false)
     {
-        prefab = UnityEngine.Object.Instantiate(PrefabsManager.voxelPrefab, Position, Quaternion.identity,PrefabsManager.voxelPrefabParent.transform);
-        State = true;
+        if(!humanEdited)
+        {
+            prefab = UnityEngine.Object.Instantiate(PrefabsManager.voxelPrefab, Position, Quaternion.identity,PrefabsManager.voxelPrefabParent.transform);
+        }
+        else
+        {
+            if (prefab != null) UnityEngine.Object.Destroy(prefab);
+            prefab = UnityEngine.Object.Instantiate(PrefabsManager.addedVoxelPrefab, Position, Quaternion.identity,PrefabsManager.addedVoxelPrefabParent.transform);
+
+        }
+            State = true;
+        
     }
 
     private void destroy()
