@@ -6,20 +6,28 @@ public class SelectorMenuToggle : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    public GameObject SelectorMenu;
+    public GameObject SelectorOptionsMenu, PrefabsSelectorMenu;
     void OnEnable()
     {
-        EditsManager.OnObjectInstantiated += ToggleSelectorMenu;
+        EditsManager.OnObjectInstantiated += ToggleSelectorOptionsMenu;
     }
 
     void OnDisable()
     {
-        EditsManager.OnObjectInstantiated -= ToggleSelectorMenu;
+        EditsManager.OnObjectInstantiated -= ToggleSelectorOptionsMenu;
     }
-    void ToggleSelectorMenu()
+    void ToggleSelectorOptionsMenu()
     {
-        SelectorMenu.SetActive(true);
+        SelectorOptionsMenu.SetActive(true);
         gameObject.SetActive(false);
+        SelectorOptionsMenu.GetComponent<PreviousMenuCallback>().SaveCallingMenu(gameObject);
+    }
+
+    public void TogglePrefabSelectorMenu()
+    {
+        PrefabsSelectorMenu.SetActive(true);
+        gameObject.SetActive(false);
+        PrefabsSelectorMenu.GetComponent<PreviousMenuCallback>().SaveCallingMenu(gameObject);
     }
 
 

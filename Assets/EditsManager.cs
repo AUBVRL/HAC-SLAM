@@ -97,7 +97,6 @@ public class EditsManager : MonoBehaviour
             }   
         }    
     }
-    
     // HandleMouseInput();
 
     void StartStretching(Vector3 spawnPosition)
