@@ -44,4 +44,12 @@ public class OnOff : MonoBehaviour
         Debug.Log("Oops");
     }
 
+    /// <summary>
+    /// This function is called when the behaviour becomes disabled or inactive.
+    /// </summary>
+    void OnDisable()
+    {
+        Debug.Log("Disabled");
+    }
+
 }

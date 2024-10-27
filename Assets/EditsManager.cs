@@ -18,25 +18,19 @@ public class EditsManager : MonoBehaviour
     GameObject instantiatedObject;
 
     bool doneInstantiaion = false;
+    bool additionSelected, deletionSelected, labelingSelected;
 
     Vector3 initialWorldPosition;
 
-    int UILayerMask;
-    // Start is called before the first frame update
-    void Start()
-    {
-        UILayerMask = 1 << 6;
-        
-    }
+    int UILayerMask = 1 << 6;
 
-    // Update is called once per frame
     void Update()
     {
-        HandleTouchInput();
-        //HandleHandGestureInput();
+        //HandleTouchInput();
+        HandleHandGestureInput();
     }
 
-    public void HandleTouchInput()
+    void HandleTouchInput()
     {
         if (Input.touchCount > 0 && !doneInstantiaion)
         {
@@ -68,9 +62,8 @@ public class EditsManager : MonoBehaviour
 
         }
     }
-   
-    // Add other input handling functions later:
-    public void HandleHandGestureInput()
+    
+    void HandleHandGestureInput()
     {
         if (!doneInstantiaion)
         {
@@ -107,7 +100,7 @@ public class EditsManager : MonoBehaviour
     
     // HandleMouseInput();
 
-    public void StartStretching(Vector3 spawnPosition)
+    void StartStretching(Vector3 spawnPosition)
     {
         instantiatedObject = Instantiate(PrefabsManager.SelectorPrefab, spawnPosition, Quaternion.identity);
         initialWorldPosition = spawnPosition;
@@ -115,7 +108,7 @@ public class EditsManager : MonoBehaviour
     }
 
     // Function to stretch the object between the initial and current positions
-    public void StretchObject(Vector3 currentWorldPosition)
+    void StretchObject(Vector3 currentWorldPosition)
     {
         Vector3 cornerDifference = currentWorldPosition - initialWorldPosition;
 
@@ -126,7 +119,7 @@ public class EditsManager : MonoBehaviour
     }
 
     // Get spawn position from the touch point (use this logic for other inputs as needed)
-    public Vector3 GetSpawnPositionFromTouch(Vector2 screenPosition)
+    Vector3 GetSpawnPositionFromTouch(Vector2 screenPosition)
     {
         Ray ray = Camera.main.ScreenPointToRay(screenPosition);
         RaycastHit hit;
@@ -145,15 +138,65 @@ public class EditsManager : MonoBehaviour
     }
 
     // Get current world position based on the touch movement (use this for other inputs as well)
-    public Vector3 GetCurrentWorldPositionFromTouch(Vector2 screenPosition)
+    Vector3 GetCurrentWorldPositionFromTouch(Vector2 screenPosition)
     {
         Ray ray = Camera.main.ScreenPointToRay(screenPosition);
         return ray.origin + (ray.direction * distanceFromCamera);
     }
 
+    List<Vector3> VoxelizeSelector()
+    {
+        List<Vector3> selectorPoints = new();
+        // Get the bounds of the instantiated object
+        Bounds bounds = instantiatedObject.GetComponent<MeshRenderer>().bounds;
+        
+        Vector3Int minBounds = Vector3Int.FloorToInt(VoxelManager.RoundToVoxel(bounds.min) / PrefabsManager.voxelSize);
+        Vector3Int maxBounds = Vector3Int.FloorToInt(VoxelManager.RoundToVoxel(bounds.max) / PrefabsManager.voxelSize);
+        
+        Vector3 voxelSizeVector = Vector3.one * PrefabsManager.voxelSize;
+
+        for (int x = minBounds.x; x <= maxBounds.x; x ++)
+        {
+            for (int y = minBounds.y; y <= maxBounds.y; y ++)
+            {
+                for (int z = minBounds.z; z <= maxBounds.z; z ++)
+                {
+                    Vector3 coliderPose = new Vector3(x, y, z) * PrefabsManager.voxelSize;
+                    
+                    bool checkBoxOverlap = Physics.CheckBox(coliderPose, voxelSizeVector / 2, Quaternion.identity, UILayerMask);
+                    
+                    if (checkBoxOverlap) selectorPoints.Add(coliderPose);
+                }
+            }
+        }
+
+        return selectorPoints;
+    }
+    
     public void Confirm()
     {
-        VoxelizeSelector();
+        List<Vector3> selectorPoints = VoxelizeSelector();
+        if (additionSelected)
+        {
+            foreach (Vector3 point in selectorPoints)
+            {
+                VoxelManager.AddVoxel(point, true);
+            }
+        }
+        else if (deletionSelected)
+        {
+            foreach (Vector3 point in selectorPoints)
+            {
+                VoxelManager.RemoveVoxel(point, true);
+            }
+        }
+        else if (labelingSelected)
+        {
+            foreach (Vector3 point in selectorPoints)
+            {
+                VoxelManager.AddVoxel(point, true);
+            }
+        }
         Destroy(instantiatedObject);
         instantiatedObject = null;
         doneInstantiaion = false;
@@ -166,39 +209,18 @@ public class EditsManager : MonoBehaviour
         doneInstantiaion = false;
     }
 
-    void VoxelizeSelector()
+    public void OnAdditionSelected(bool state)
     {
-        int layerMask = 1 << 6;
-        // Get the bounds of the instantiated object
-        Bounds bounds = instantiatedObject.GetComponent<MeshRenderer>().bounds;
-        
-        Vector3 minBounds = VoxelManager.RoundToVoxel(bounds.min) / PrefabsManager.voxelSize;
-        Vector3 maxBounds = VoxelManager.RoundToVoxel(bounds.max) / PrefabsManager.voxelSize;
-        
-        Vector3 voxelSizeVector = Vector3.one * PrefabsManager.voxelSize;
+        additionSelected = state;
+    }
 
-        for (int x = (int)minBounds.x; x <= maxBounds.x; x ++)
-        {
-            for (int y = (int)minBounds.y; y <= maxBounds.y; y ++)
-            {
-                for (int z = (int)minBounds.z; z <= maxBounds.z; z ++)
-                {
-                    Vector3 coliderPose = new Vector3(x, y, z) * PrefabsManager.voxelSize;
-                    Collider[] overlaps = Physics.OverlapBox(coliderPose, voxelSizeVector / 2, Quaternion.identity, layerMask);
-                    if (overlaps != null)
-                    {
-                        foreach (Collider overlap in overlaps)
-                        {
-                            VoxelManager.AddVoxel(coliderPose, true);
-                        }
-                    }
+    public void OnDeletionSelected(bool state)
+    {
+        deletionSelected = state;
+    }
 
-                }
-            }
-        }
-        
-
-        
-
+    public void OnLabelingSelected(bool state)
+    {
+        labelingSelected = state;
     }
 }

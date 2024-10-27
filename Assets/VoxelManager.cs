@@ -39,11 +39,13 @@ public class VoxelManager : MonoBehaviour
         if(!tempChunk.VoxelsDict.ContainsKey(voxelVector))
         {
             tempChunk.VoxelsDict.Add(voxelVector, new Voxel(voxelVector, humanEdited));
+            //Debug.Log("Added");
         }
         else
         {
             Voxel tempVoxel = tempChunk.VoxelsDict[voxelVector];
             tempVoxel.IncreaseProba(humanEdited);
+            //Debug.Log("Increased");
         }
     }
     public static void RemoveVoxel(Vector3 RandomVector, bool humanEdited = false)
@@ -51,8 +53,28 @@ public class VoxelManager : MonoBehaviour
 
         Vector3 chunkVector = RoundToChunk(RandomVector);
         //Vector3 voxelVector = RoundToVoxel(RandomVector);
-        ChunksDict[chunkVector].VoxelsDict[RandomVector].DecrementProba(humanEdited);
+        if (!humanEdited)
+        {
+            ChunksDict[chunkVector].VoxelsDict[RandomVector].DecrementProba();
+        }
+        else
+        {
+            if (!ChunksDict.ContainsKey(chunkVector))
+            {
+                ChunksDict.Add(chunkVector, new Chunk(RandomVector));
+            }
         
+            Chunk tempChunk = ChunksDict[chunkVector];
+            
+            if(!tempChunk.VoxelsDict.ContainsKey(RandomVector))
+            {
+                tempChunk.VoxelsDict.Add(RandomVector, new Voxel(RandomVector));
+            }
+
+            Voxel tempVoxel = tempChunk.VoxelsDict[RandomVector];
+            tempVoxel.DecrementProba(humanEdited);
+            
+        }
     }
 
     public static Vector3 RoundToChunk(Vector3 v)

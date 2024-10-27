@@ -31,6 +31,7 @@ public class PrefabsManager : MonoBehaviour
         voxelPrefabParent = new GameObject("VoxelParent");
         addedVoxelPrefabParent = new GameObject("AddedVoxelParent");
         deletedVoxelPrefabParent = new GameObject("DeletedVoxelParent");
+        deletedVoxelPrefabParent.SetActive(false);
         voxelPrefab.transform.localScale = new Vector3(voxelSize, voxelSize, voxelSize);
 
         SelectorPrefab = CubeSelector;

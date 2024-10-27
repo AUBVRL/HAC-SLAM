@@ -36,26 +36,36 @@ public class Voxel
         if (!humanEdited)
         {
             if (Proba < 0.75 && Proba >= 0) Proba += 0.25f;
-            if (!State && Proba >= 0.6f) create();
+            if (!State && Proba >= 0.6f ) create();
         }
         else
         {
             Proba = 2;
             create(humanEdited);
+            //Debug.Log("Adding");
         }
         
     }
 
     public void DecrementProba(bool humanEdited = false)
     {
-        int layerMask = 1 << 31;
-        bool checkBoxOverlap = Physics.CheckBox(Position, prefab.transform.localScale, Quaternion.identity, layerMask);
-        if(!checkBoxOverlap)
+        if(!humanEdited)
         {
-            Debug.Log("Removing");
-            if (Proba <= 1 && Proba > 0.3) Proba -= 0.3f;
-            if (State && Proba < 0.6f) destroy();
+            int layerMask = 1 << 31;
+            bool checkBoxOverlap = Physics.CheckBox(Position, prefab.transform.localScale, Quaternion.identity, layerMask);
+            if(!checkBoxOverlap)
+            {
+                Debug.Log("Removing");
+                if (Proba <= 1 && Proba > 0.3) Proba -= 0.3f;
+                if (State && Proba < 0.6f) destroy();
+            }
         }
+        else
+        {
+            Proba = -2;
+            destroy(humanEdited);
+        }
+        
         
     }
 
@@ -75,10 +85,19 @@ public class Voxel
         
     }
 
-    private void destroy()
+    private void destroy(bool humanEdited = false)
     {
-        UnityEngine.Object.Destroy(prefab);
-        State = false;
+        if(!humanEdited)
+        {
+            UnityEngine.Object.Destroy(prefab);
+        }
+        else
+        {
+            if (prefab != null) UnityEngine.Object.Destroy(prefab);
+            prefab = UnityEngine.Object.Instantiate(PrefabsManager.deletedVoxelPrefab, Position, Quaternion.identity,PrefabsManager.deletedVoxelPrefabParent.transform);     
+        }
+
+        State = false; 
     }
 
     public byte[] ToByteArray()
