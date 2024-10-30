@@ -15,7 +15,7 @@ public class VoxelManager : MonoBehaviour
     public float ChunkSize = 3f;
     public static float chunkSize;
     
-    static Dictionary<Vector3, Chunk> ChunksDict = new Dictionary<Vector3, Chunk>();
+    public static Dictionary<Vector3, Chunk> ChunksDict = new();
     static Dictionary<Vector3, byte[]> VoxelByteDict = new();
 
     void Start()
@@ -32,6 +32,8 @@ public class VoxelManager : MonoBehaviour
         if (!ChunksDict.ContainsKey(chunkVector))
         {
             ChunksDict.Add(chunkVector, new Chunk(voxelVector));
+            Debug.Log("Added new chunk");
+            Debug.Log("Added new voxel");
         }
         
         Chunk tempChunk = ChunksDict[chunkVector];
@@ -39,7 +41,7 @@ public class VoxelManager : MonoBehaviour
         if(!tempChunk.VoxelsDict.ContainsKey(voxelVector))
         {
             tempChunk.VoxelsDict.Add(voxelVector, new Voxel(voxelVector, humanEdited));
-            //Debug.Log("Added");
+            Debug.Log("Added new voxel");
         }
         else
         {

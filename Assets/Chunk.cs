@@ -14,22 +14,22 @@ public class Chunk
 
     public Chunk(Vector3 position)
     {
-        Position = position;
-        Voxels.Add(new Voxel(position));
+        Position = position; // Redundant since the chunk position is the key in the dictionary
+        VoxelsDict.Add(position, new Voxel(position));
         //VoxelsDict.Add(position, new Voxel())
     }
 
-    public byte[] GetChunkByteData()
+    public List<byte> GetChunkByteData()
     {
-        List<byte> byteList = new List<byte>();
-
+        List<byte> byteList = new();
+        
         // Iterate over the voxels in the chunk
-        foreach (var voxelEntry in Voxels)
+        foreach (var voxelEntry in VoxelsDict.Values)
         {
             byteList.AddRange(voxelEntry.ToByteArray());  // Use Voxel's ToByteArray method
         }
-
-        return byteList.ToArray();  // Return byte array for the whole chunk
+        
+        return byteList;  // Return byte array for the whole chunk
     }
 
     //There should be a function that resets the byte array

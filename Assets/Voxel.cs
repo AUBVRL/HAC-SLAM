@@ -81,7 +81,7 @@ public class Voxel
             prefab = UnityEngine.Object.Instantiate(PrefabsManager.addedVoxelPrefab, Position, Quaternion.identity,PrefabsManager.addedVoxelPrefabParent.transform);
 
         }
-            State = true;
+        State = true;
         
     }
 
@@ -100,20 +100,22 @@ public class Voxel
         State = false; 
     }
 
-    public byte[] ToByteArray()
+    public List<byte> ToByteArray()
     {
         if(!State)
         {
-            return null;
+            Debug.Log("Empty");
+            return new List<byte>();
+            
         }
-        List<byte> byteList = new List<byte>();
+        List<byte> byteList = new();
 
         // Convert position to bytes
         byteList.AddRange(BitConverter.GetBytes(Position.x));
-        byteList.AddRange(BitConverter.GetBytes(Position.y));
         byteList.AddRange(BitConverter.GetBytes(Position.z));
+        byteList.AddRange(BitConverter.GetBytes(Position.y));
 
-        return byteList.ToArray();
+        return byteList;
     }
 
     public void AddVoxel()
