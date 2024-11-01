@@ -12,13 +12,23 @@ public class Chunk
     public List<Voxel> Voxels = new List<Voxel>();
     public Dictionary<Vector3, Voxel> VoxelsDict = new Dictionary<Vector3, Voxel>();
 
+    public GameObject ChunkGameObject;
+
     public Chunk(Vector3 position)
     {
-        Position = position; // Redundant since the chunk position is the key in the dictionary
-        VoxelsDict.Add(position, new Voxel(position));
+        Position = VoxelManager.RoundToChunk(position);
+        ChunkGameObject = new("Chunk" + Position);
+        ChunkGameObject.transform.parent = PrefabsManager.voxelPrefabParent.transform;
+        ChunkGameObject.transform.position = Position;
+        VoxelsDict.Add(position, new Voxel(position, ChunkGameObject));
         //VoxelsDict.Add(position, new Voxel())
     }
 
+    public void AddVoxel(Vector3 position)
+    {
+        VoxelsDict.Add(position, new Voxel(position, ChunkGameObject));
+    }
+    
     public List<byte> GetChunkByteData()
     {
         List<byte> byteList = new();

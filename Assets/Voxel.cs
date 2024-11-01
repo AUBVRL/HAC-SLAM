@@ -5,20 +5,21 @@ using System.Collections.Generic;
 public class Voxel
 {
     public Vector3 Position;
-    private float Proba;
+    float Proba;
     public bool State;
     public byte[] PoseInBytes;
 
     public GameObject prefab;
-
+    GameObject voxelParent;
     private void Converter() 
     {
         PoseInBytes = BitConverter.GetBytes(Position.x);
     }
     
-    public Voxel(Vector3 vecto, bool humanEdited = false)
+    public Voxel(Vector3 vecto, GameObject parent, bool humanEdited = false)
     {
         Position = vecto;
+        voxelParent = parent;
         if(humanEdited)
         {
             IncreaseProba(humanEdited);
@@ -73,12 +74,12 @@ public class Voxel
     {
         if(!humanEdited)
         {
-            prefab = UnityEngine.Object.Instantiate(PrefabsManager.voxelPrefab, Position, Quaternion.identity,PrefabsManager.voxelPrefabParent.transform);
+            prefab = UnityEngine.Object.Instantiate(PrefabsManager.voxelPrefab, Position, Quaternion.identity,voxelParent.transform);
         }
         else
         {
             if (prefab != null) UnityEngine.Object.Destroy(prefab);
-            prefab = UnityEngine.Object.Instantiate(PrefabsManager.addedVoxelPrefab, Position, Quaternion.identity,PrefabsManager.addedVoxelPrefabParent.transform);
+            prefab = UnityEngine.Object.Instantiate(PrefabsManager.addedVoxelPrefab, Position, Quaternion.identity,voxelParent.transform);
 
         }
         State = true;

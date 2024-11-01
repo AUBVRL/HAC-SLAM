@@ -40,7 +40,7 @@ public class VoxelManager : MonoBehaviour
         
         if(!tempChunk.VoxelsDict.ContainsKey(voxelVector))
         {
-            tempChunk.VoxelsDict.Add(voxelVector, new Voxel(voxelVector, humanEdited));
+            tempChunk.AddVoxel(voxelVector);
             Debug.Log("Added new voxel");
         }
         else
@@ -70,7 +70,7 @@ public class VoxelManager : MonoBehaviour
             
             if(!tempChunk.VoxelsDict.ContainsKey(RandomVector))
             {
-                tempChunk.VoxelsDict.Add(RandomVector, new Voxel(RandomVector));
+                tempChunk.AddVoxel(RandomVector);
             }
 
             Voxel tempVoxel = tempChunk.VoxelsDict[RandomVector];
