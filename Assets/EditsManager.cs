@@ -27,7 +27,7 @@ public class EditsManager : MonoBehaviour
     void Update()
     {
         //HandleTouchInput();
-        HandleHandGestureInput();
+        //HandleHandGestureInput();
     }
 
     void HandleTouchInput()
