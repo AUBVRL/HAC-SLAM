@@ -128,6 +128,40 @@ namespace RuntimeGizmos
 		static Material lineMaterial;
 		static Material outlineMaterial;
 
+		public enum AdjustType { Move, Rotate, Scale};
+		public enum SpaceType { Global, Local};
+
+		public void SetAdjustType(int type)
+        {
+			AdjustType adjustType = (AdjustType)type;
+			switch(adjustType)
+            {
+				case AdjustType.Move:
+					transformType = TransformType.Move;
+					break;
+				case AdjustType.Rotate:
+					transformType = TransformType.Rotate;
+					break;
+				case AdjustType.Scale:
+					transformType = TransformType.Scale;
+					break;
+			}
+        }
+
+		public void SetSpaceType(int type)
+        {
+			SpaceType spaceType = (SpaceType)type;
+            switch (spaceType)
+            {
+				case SpaceType.Global:
+					space = TransformSpace.Global;
+					break;
+				case SpaceType.Local:
+					space = TransformSpace.Local;
+					break;
+            }
+		}
+
 		void Awake()
 		{
 			myCamera = GetComponent<Camera>();
