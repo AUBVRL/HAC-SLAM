@@ -15,7 +15,7 @@ public class EditsManager : MonoBehaviour
     // Distance to instantiate the prefab in front of the camera
     public float distanceFromCamera = 0.5f;
 
-    GameObject instantiatedObject;
+    public static GameObject instantiatedObject;
 
     bool doneInstantiaion = false;
     bool additionSelected, deletionSelected, labelingSelected;
@@ -27,7 +27,7 @@ public class EditsManager : MonoBehaviour
     void Update()
     {
         //HandleTouchInput();
-        //HandleHandGestureInput();
+        HandleHandGestureInput();
     }
 
     void HandleTouchInput()
