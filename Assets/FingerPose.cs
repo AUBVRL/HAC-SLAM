@@ -20,7 +20,7 @@ public class FingerPose : MonoBehaviour
     public GameObject[] VuforiaTargets = new GameObject[6];
     public LabelerFingerPose Labeler;
     public MinecraftBuilder _MinecraftBuilder;
-    public RosPublisherExample _RosPublisher;
+    // public RosPublisherExample _RosPublisher;
     float cubesize;
     public GameObject Selector;
     bool EditorActivator, selectorInstantiated, doneInstantiation, ConvexityState, DeletingVoxels, AddingAssets;
@@ -33,14 +33,14 @@ public class FingerPose : MonoBehaviour
     Collider[] overlaps;
     public GameObject appBar;
     byte AssetLabel, AssetInstance;
- 
+
     //MixedRealityInputAction selectAction;
     bool EnablePrism;
     MeshCollider _meshCollider;
     InputActionHandler _inputActionHandler;
     string AssetName;
     Vector3 mousePosition;
-    
+
     private void Start()
     {
         instantiatedIndicator = false;
@@ -55,7 +55,7 @@ public class FingerPose : MonoBehaviour
         Prism = Selectors[3];
         _meshCollider = Prism.GetComponent<MeshCollider>();
         _inputActionHandler = gameObject.GetComponent<InputActionHandler>();
-        
+
         Debug.Log("start");
 
         //_meshCollider.convex = true;  // We need to make this as a kabse later.
@@ -173,23 +173,23 @@ public class FingerPose : MonoBehaviour
     {
         EditorActivator = state;
     }
-    
+
     public void officialVoxelizer()
     {
         selectorMesh = Selector.GetComponent<Renderer>();
 
         //Rounding of the bounds to units of cubes:
-        minbound_inCubes.Set(Mathf.RoundToInt(selectorMesh.bounds.min.x / cubesize), 
-                             Mathf.RoundToInt(selectorMesh.bounds.min.y / cubesize), 
+        minbound_inCubes.Set(Mathf.RoundToInt(selectorMesh.bounds.min.x / cubesize),
+                             Mathf.RoundToInt(selectorMesh.bounds.min.y / cubesize),
                              Mathf.RoundToInt(selectorMesh.bounds.min.z / cubesize));
-        
+
         maxbound_inCubes.Set(Mathf.RoundToInt(selectorMesh.bounds.max.x / cubesize),
                              Mathf.RoundToInt(selectorMesh.bounds.max.y / cubesize),
                              Mathf.RoundToInt(selectorMesh.bounds.max.z / cubesize));
 
 
         //Loop from min to max bound:
-        for(int i = minbound_inCubes.x; i <= maxbound_inCubes.x; i++)
+        for (int i = minbound_inCubes.x; i <= maxbound_inCubes.x; i++)
         {
             //test
             for (int j = minbound_inCubes.y; j <= maxbound_inCubes.y; j++)
@@ -197,14 +197,14 @@ public class FingerPose : MonoBehaviour
                 for (int k = minbound_inCubes.z; k <= maxbound_inCubes.z; k++)
                 {
                     coliderPose.Set(i, j, k);
-                    coliderPose = coliderPose * cubesize; 
+                    coliderPose = coliderPose * cubesize;
 
                     overlaps = Physics.OverlapBox(coliderPose, cubesizeScale / 2);
                     if (overlaps != null)
                     {
-                        foreach(Collider overlap in overlaps)
+                        foreach (Collider overlap in overlaps)
                         {
-                            if(overlap.gameObject.name == "Prism")
+                            if (overlap.gameObject.name == "Prism")
                             {
                                 //coliderPose = coliderPose / cubesize;
                                 //coliderPose = coliderPose * 0.0499f;
@@ -215,8 +215,8 @@ public class FingerPose : MonoBehaviour
                                 }
                                 else
                                 {
-                                    VoxelManager.AddVoxel(coliderPose,true);
-                                    if (AddingAssets) _RosPublisher.LabeledPointCloudPopulater(coliderPose, AssetLabel, AssetInstance);
+                                    VoxelManager.AddVoxel(coliderPose, true);
+                                    // if (AddingAssets) _RosPublisher.LabeledPointCloudPopulater(coliderPose, AssetLabel, AssetInstance);
                                 }
                                 break;
                             }
@@ -388,8 +388,8 @@ public class FingerPose : MonoBehaviour
             Labeler.AssetToolTip(Selector.transform.position, AssetName, AssetLabel, AssetInstance);
             _MinecraftBuilder.AddedVoxelByte.Clear();
             officialVoxelizer();
-            _RosPublisher.PublishEditedPointCloudMsg();
-            _RosPublisher.LabelPublisher();
+            // _RosPublisher.PublishEditedPointCloudMsg();
+            // _RosPublisher.LabelPublisher();
         }
 
         else if (DeletingVoxels)
@@ -397,7 +397,7 @@ public class FingerPose : MonoBehaviour
             DeleteVoxelsMenu.SetActive(true);
             _MinecraftBuilder.DeletedVoxelByte.Clear();
             officialVoxelizer();
-            _RosPublisher.PublishDeletedVoxels();
+            //  _RosPublisher.PublishDeletedVoxels();
         }
 
         else
@@ -405,13 +405,13 @@ public class FingerPose : MonoBehaviour
             AddVoxelsMenu.SetActive(true);
             _MinecraftBuilder.AddedVoxelByte.Clear();
             officialVoxelizer();
-            _RosPublisher.PublishEditedPointCloudMsg();
-            
+            //  _RosPublisher.PublishEditedPointCloudMsg();
+
         }
-        
+
         Destroy(Selector);
         appBar.SetActive(false);
-        
+
     }
 
     public void requestSelectorShape(int index)
@@ -431,7 +431,7 @@ public class FingerPose : MonoBehaviour
     public void EnableAssetAddition(bool state)
     {
         AddingAssets = state;
-       // _inputActionHandler.enabled = state;          NO NEED ON DESKTOP APPLICATION!
+        // _inputActionHandler.enabled = state;          NO NEED ON DESKTOP APPLICATION!
     }
 
     public void AssetLabelNumber(int label)

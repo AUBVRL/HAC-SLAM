@@ -43,16 +43,16 @@ public class MergedVoxelDisplay : MonoBehaviour
             point.x = System.BitConverter.ToSingle(pointcloud.data, j);
             point.z = System.BitConverter.ToSingle(pointcloud.data, j + 4);
             point.y = System.BitConverter.ToSingle(pointcloud.data, j + 8);
-            VoxelManager.AddVoxel(point,false);
+            VoxelManager.AddVoxel(point, false);
             countTillYield++;
             if (countTillYield % 500 == 0) yield return null;
         }
         Debug.Log("Done");
-        VoxelManager.done = true;
+        ViewManager.ViewInitialChunks();
     }
 
 
-    
+
 
     public void Clean()
     {
@@ -73,7 +73,7 @@ public class MergedVoxelDisplay : MonoBehaviour
         rx = (float)Sub.rx;
         ry = (float)Sub.ry;
         rz = (float)Sub.rz;
-        Parent.transform.rotation = Quaternion.identity; 
+        Parent.transform.rotation = Quaternion.identity;
         Parent.transform.position = Vector3.zero;
         Parent.transform.Rotate(new Vector3(0, ry, 0), Space.Self);
         Parent.transform.Translate(new Vector3(x, y, z), Space.Self);
