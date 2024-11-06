@@ -8,17 +8,17 @@ public class MergedVoxelDisplay : MonoBehaviour
 {
     public GameObject cubz;
     public RosSubscriberExample Sub;
-    public GameObject Parent;
+    public GameObject Parent, ImageTarget;
     [NonSerialized]
     public float x, y, z, rx, ry, rz;
     bool once = true;
     Vector3 transformed;
     GameObject kuby;
-
     public Material SelectedMaterial;
     MeshRenderer VoxelMeshRenderer;
     public MinecraftBuilder mcb;
     Coroutine FillIncomingCoroutine;
+    Vector3 cameraPosition;
 
 
     // Start is called before the first frame update
@@ -32,56 +32,31 @@ public class MergedVoxelDisplay : MonoBehaviour
         rz = 0;
     }
 
- 
     IEnumerator FillIncoming(pc2 pointcloud)
     {
-
-        Vector3 cubePose;
+        Vector3 point;
         int j;
         int countTillYield = 0;
-
+        Debug.Log("BEGAN VOXELIZING POINT CLOUD");
         for (int i = 0; i < pointcloud.width; i++)
         {
             j = i * Mathf.RoundToInt(pointcloud.point_step);
-            cubePose.x = System.BitConverter.ToSingle(pointcloud.data, j);
-            cubePose.z = System.BitConverter.ToSingle(pointcloud.data, j + 4);
-            cubePose.y = System.BitConverter.ToSingle(pointcloud.data, j + 8);
-            transformed = mcb.TransformPCL(Camera.main.transform.localPosition);
-            if (Vector3.Distance(cubePose,transformed) < 30)
-            {
-                kuby = Instantiate(cubz, cubePose, Quaternion.identity);
-                kuby.transform.SetParent(Parent.transform, false);
-                kuby.gameObject.name = "MergedVoxel";
-                if (pointcloud.data[j + 17] != 0)
-                {
-                    VoxelMeshRenderer = kuby.gameObject.GetComponent<MeshRenderer>();
-                    VoxelMeshRenderer.material = SelectedMaterial;
-                    Debug.Log("Oui");
-                }
-
-            }
-
-            
-
+            point.x = System.BitConverter.ToSingle(pointcloud.data, j);
+            point.z = System.BitConverter.ToSingle(pointcloud.data, j + 4);
+            point.y = System.BitConverter.ToSingle(pointcloud.data, j + 8);
+            VoxelManager.AddVoxel(point, false);
             countTillYield++;
-            
-
-            if (countTillYield % 500 == 0) // Spawn 10 voxels each frame
-            {
-                yield return null;
-            }
-            
+            if (countTillYield % 500 == 0) yield return null;
         }
         Debug.Log("Done");
-        //this.transform.rotation = Quaternion.Euler(rx, ry, rz);
-        //this.transform.position = new Vector3(x, y, z);
-
-
-
+        VoxelManager.done = true;
+        PrefabsManager.chunkParentPrefab.transform.position = new Vector3(1.85f, -1.65f, -3.6f);
+        PrefabsManager.chunkParentPrefab.transform.eulerAngles = new Vector3(0, 90, 0);
+        PrefabsManager.chunkParentPrefab.transform.parent = ImageTarget.transform;
     }
 
 
-    
+
 
     public void Clean()
     {
@@ -102,12 +77,10 @@ public class MergedVoxelDisplay : MonoBehaviour
         rx = (float)Sub.rx;
         ry = (float)Sub.ry;
         rz = (float)Sub.rz;
-        Parent.transform.rotation = Quaternion.identity; 
+        Parent.transform.rotation = Quaternion.identity;
         Parent.transform.position = Vector3.zero;
         Parent.transform.Rotate(new Vector3(0, ry, 0), Space.Self);
         Parent.transform.Translate(new Vector3(x, y, z), Space.Self);
-        
-        
         Clean();
         FillIncomingCoroutine = StartCoroutine(FillIncoming(Sub.incomingPointCloudLive));
     }
