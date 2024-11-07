@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using pc2 = RosMessageTypes.Sensor.PointCloud2Msg;
 using System;
+using TMPro;
 
 public class MergedVoxelDisplay : MonoBehaviour
 {
     public GameObject cubz;
     public RosSubscriberExample Sub;
     public GameObject Parent, ImageTarget;
+    public static GameObject imageTarget;
     [NonSerialized]
     public float x, y, z, rx, ry, rz;
     bool once = true;
@@ -19,11 +21,13 @@ public class MergedVoxelDisplay : MonoBehaviour
     public MinecraftBuilder mcb;
     Coroutine FillIncomingCoroutine;
     Vector3 cameraPosition;
+    public TextMeshPro TextMeshPro;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        imageTarget = ImageTarget;
         x = 0;
         y = 0;
         z = 0;
@@ -49,10 +53,10 @@ public class MergedVoxelDisplay : MonoBehaviour
             if (countTillYield % 500 == 0) yield return null;
         }
         Debug.Log("Done");
-        VoxelManager.done = true;
         PrefabsManager.chunkParentPrefab.transform.position = new Vector3(1.85f, -1.65f, -3.6f);
         PrefabsManager.chunkParentPrefab.transform.eulerAngles = new Vector3(0, 90, 0);
         PrefabsManager.chunkParentPrefab.transform.parent = ImageTarget.transform;
+        TextMeshPro.text = "DONE!!";
     }
 
 
