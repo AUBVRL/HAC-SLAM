@@ -22,12 +22,18 @@ public class EditsManager : MonoBehaviour
 
     Vector3 initialWorldPosition;
 
-    int UILayerMask = 1 << 6;
+    int UILayerMask = 1 << 5;
+    int SelectorLayerMask = 1 << 6;
 
     void Update()
     {
+        #if UNITY_EDITOR 
+        HandleHandGestureInput(); 
+        #else
+        HandleTouchInput();
+        #endif
         //HandleTouchInput();
-        HandleHandGestureInput();
+        //HandleHandGestureInput();
     }
 
     void HandleTouchInput()
@@ -162,7 +168,7 @@ public class EditsManager : MonoBehaviour
                 {
                     Vector3 coliderPose = new Vector3(x, y, z) * PrefabsManager.voxelSize;
                     
-                    bool checkBoxOverlap = Physics.CheckBox(coliderPose, voxelSizeVector / 2, Quaternion.identity, UILayerMask);
+                    bool checkBoxOverlap = Physics.CheckBox(coliderPose, voxelSizeVector / 2, Quaternion.identity, SelectorLayerMask);
                     
                     if (checkBoxOverlap) selectorPoints.Add(coliderPose);
                 }

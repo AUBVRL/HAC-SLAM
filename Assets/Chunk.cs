@@ -25,9 +25,9 @@ public class Chunk
         //VoxelsDict.Add(position, new Voxel())
     }
 
-    public void AddVoxel(Vector3 position)
+    public void AddVoxel(Vector3 position, bool humanEdited = false)
     {
-        VoxelsDict.Add(position, new Voxel(position, ChunkGameObject));
+        VoxelsDict.Add(position, new Voxel(position, ChunkGameObject, humanEdited));
     }
     
     public List<byte> GetChunkByteData()

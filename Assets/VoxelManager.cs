@@ -40,7 +40,7 @@ public class VoxelManager : MonoBehaviour
         
         if(!tempChunk.VoxelsDict.ContainsKey(voxelVector))
         {
-            tempChunk.AddVoxel(voxelVector);
+            tempChunk.AddVoxel(voxelVector, humanEdited);
             Debug.Log("Added new voxel");
         }
         else
