@@ -26,6 +26,7 @@ public class MergedVoxelDisplay : MonoBehaviour
     public Vector3 rotation,pose, orientation;
     public GameObject iwhub;
     public TextMeshPro teext;
+    public GameObject redCube, greenCube, blueCube;
 
     // Start is called before the first frame update
     void Start()
@@ -40,30 +41,32 @@ public class MergedVoxelDisplay : MonoBehaviour
         PointCloudTranslation = new(1.85f, -1.65f, -3.6f);
         PointCloudRotation = new(0, 90f, 0);
         InitialPose = iwhub.transform.position;
+        Debug.Log(InitialPose);
     }
 
     private void Update()
     {
-        ImageTargetTranslation = imageTarget.transform.position;
+        /*ImageTargetTranslation = imageTarget.transform.position;*/
         
         //Debug.Log(ImageTargetTranslation);
         //Quaternion r = imageTarget.transform.rotation;
 
-        Vector3 flatten = new(imageTarget.transform.up.x, 0f, imageTarget.transform.up.z);
+        /*Vector3 flatten = new(imageTarget.transform.up.x, 0f, imageTarget.transform.up.z);*/
 
 
         //print(imageTarget.transform.rotation.eulerAngles.y);
         //print(imageTarget.transform.localEulerAngles.y);
         //ImageTargetRotation.Set(ImageTarget.transform.eulerAngles.x, ImageTarget.transform.eulerAngles.z, -ImageTarget.transform.eulerAngles.y);
-        Debug.Log(Vector3.Angle(flatten, Vector3.forward));
+/*        Debug.Log(Vector3.Angle(flatten, Vector3.forward));
         float angle = Vector3.Angle(flatten,Vector3.forward);
         float angle2 = Mathf.Atan2(imageTarget.transform.up.x, imageTarget.transform.up.z) * Mathf.Rad2Deg;
-        ImageTargetRotation = new(0f, angle2, 0f);
+        ImageTargetRotation = new(0f, angle2, 0f);*/
         //float angle = Mathf.Atan2(imageTarget.transform.up.z, imageTarget.transform.up.x);
         //Debug.Log(angle * Mathf.Rad2Deg);
         //imageTarget.transform.forward = v;
-        iwhub.transform.position = TransformToImageTarget(InitialPose);
-        teext.text = imageTarget.transform.eulerAngles.ToString();
+        // iwhub.transform.position = TransformToImageTarget(InitialPose);
+
+        /*teext.text = imageTarget.transform.eulerAngles.ToString();*/
         /*Vector3 hamburger = TransformToImageTarget(HamburgerPosition);
         Vector3 iamgetargetrotnew = new Vector3(0, imageTarget.transform.eulerAngles.z, 0);
         PointCloudTranslation.Set(hamburger.x + PointCloudTranslation.x * Mathf.Cos(imageTarget.transform.eulerAngles.z) - PointCloudTranslation.z * Mathf.Sin(imageTarget.transform.eulerAngles.z),
@@ -100,29 +103,49 @@ public class MergedVoxelDisplay : MonoBehaviour
 
     IEnumerator FillIncoming(pc2 pointcloud)
     {
-        Vector3 point;
+        GameObject dummyObject = new GameObject("dummyObject");
+        GameObject newImage = new GameObject("newImage");
+        dummyObject.transform.position = new Vector3(1.85f, -1.65f, -3.6f);
+        dummyObject.transform.eulerAngles = new Vector3(0, 90, 0);
+        newImage.transform.position = ImageTarget.transform.position;
+        newImage.transform.up = ImageTarget.transform.forward;
+        newImage.transform.right = ImageTarget.transform.right;
+        newImage.transform.forward = -ImageTarget.transform.up;
+        Vector3 point, globalPoint;
         int j;
         int countTillYield = 0;
         Debug.Log("BEGAN VOXELIZING POINT CLOUD");
+
         for (int i = 0; i < pointcloud.width; i++)
         {
             j = i * Mathf.RoundToInt(pointcloud.point_step);
             point.x = System.BitConverter.ToSingle(pointcloud.data, j);
             point.z = System.BitConverter.ToSingle(pointcloud.data, j + 4);
             point.y = System.BitConverter.ToSingle(pointcloud.data, j + 8);
-            VoxelManager.AddVoxel(point, false);
+            globalPoint = dummyObject.transform.TransformPoint(point); // local coordinates of point with respect to image target
+            globalPoint = newImage.transform.TransformPoint(globalPoint); // global coordinates of point
+            VoxelManager.AddVoxel(globalPoint, false);
             countTillYield++;
             if (countTillYield % 500 == 0) yield return null;
         }
         Debug.Log("Done");
-        PrefabsManager.chunkParentPrefab.transform.position = new Vector3(1.85f, -1.65f, -3.6f);
-        PrefabsManager.chunkParentPrefab.transform.eulerAngles = new Vector3(0, 90, 0);
-        PrefabsManager.chunkParentPrefab.transform.parent = ImageTarget.transform;
+        // PrefabsManager.chunkParentPrefab.transform.position = new Vector3(1.85f, -1.65f, -3.6f);
+        // PrefabsManager.chunkParentPrefab.transform.eulerAngles = new Vector3(0, 90, 0);
+        // PrefabsManager.chunkParentPrefab.transform.parent = ImageTarget.transform;
         TextMeshPro.text = "DONE!!";
     }
 
 
-
+    public void Debugging()
+    {
+        GameObject newImage = new GameObject("newImage");
+        newImage.transform.position = ImageTarget.transform.position;
+        newImage.transform.up = ImageTarget.transform.forward;
+        newImage.transform.right = ImageTarget.transform.right;
+        greenCube.transform.position = newImage.transform.position + newImage.transform.up * 0.5f;
+        redCube.transform.position = newImage.transform.position + newImage.transform.right * 0.5f;
+        blueCube.transform.position = newImage.transform.position + newImage.transform.forward * 0.5f;
+    }
 
     public void Clean()
     {

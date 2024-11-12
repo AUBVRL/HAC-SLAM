@@ -34,7 +34,6 @@ public class PrefabsManager : MonoBehaviour
         deletedVoxelPrefabParent.SetActive(false);
         chunkPrefab = new GameObject("Chunk");
         chunkParentPrefab = new GameObject("chunkParent");
-        chunkParentPrefab.SetActive(false);
 
         Selector = CubeSelector;
     }

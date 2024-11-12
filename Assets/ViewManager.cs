@@ -14,8 +14,6 @@ public class ViewManager : MonoBehaviour
     void checkCameraPosition()
     {
         Vector3 cameraPosition = Camera.main.transform.position;
-        cameraPosition += MergedVoxelDisplay.imageTarget.transform.position + new Vector3(-1.85f, +1.65f, +3.6f);
-        cameraPosition = Quaternion.Euler(new Vector3(0, -90, 0)) * cameraPosition;
         Vector3Int cameraChunk = Vector3Int.RoundToInt(VoxelManager.RoundToChunk(cameraPosition));        
         if (cameraChunk != currentChunk)
         {
@@ -53,8 +51,6 @@ public class ViewManager : MonoBehaviour
     public void ViewInitialChunks()
     {
         Vector3 cameraPosition = Camera.main.transform.position;
-        cameraPosition += MergedVoxelDisplay.imageTarget.transform.position + new Vector3(-1.85f, +1.65f, +3.6f);
-        cameraPosition = Quaternion.Euler(new Vector3(0,-90,0)) * cameraPosition;
         cameraPosition = VoxelManager.RoundToChunk(cameraPosition);
         Vector3 increment = new Vector3();
         for (float i = -PrefabsManager.chunkSize; i <= PrefabsManager.chunkSize; i += PrefabsManager.chunkSize)
