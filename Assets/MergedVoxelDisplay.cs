@@ -134,7 +134,7 @@ public class MergedVoxelDisplay : MonoBehaviour
         originForward = originForward - originPosition;
 
         GameObject manualAlign = new GameObject("manualAlign");
-        // rotate in the right order
+        // rotate in the right order z x y
         manualAlign.transform.Rotate(originForward, -2f);
         manualAlign.transform.Rotate(originRight, -2f);
         manualAlign.transform.Rotate(originUp, -2f);
