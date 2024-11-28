@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6584508117127368665}
   - component: {fileID: 3778655985200508847}
   - component: {fileID: 4980880436028026437}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Charging Station
   m_TagString: Untagged
   m_Icon: {fileID: 0}

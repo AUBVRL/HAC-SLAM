@@ -17,13 +17,13 @@ TagManager:
   - voxel
   - Water
   - UI
-  - axesLocal
-  - circlesLocal
-  - circlesGlobal
-  - axesGlobal
-  - axesScale
-  - axes
-  - circles
+  - selector
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 

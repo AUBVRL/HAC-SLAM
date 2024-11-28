@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -4261000860282172038}
   - component: {fileID: 4264477349918492369}
   - component: {fileID: 6139991874204391213}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dolly2
   m_TagString: Untagged
   m_Icon: {fileID: 0}

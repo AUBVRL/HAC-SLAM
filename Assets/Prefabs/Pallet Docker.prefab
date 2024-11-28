@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -7283549008794745039}
   - component: {fileID: -8421638657362344543}
   - component: {fileID: -3488523845248222207}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Pallet Docker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
