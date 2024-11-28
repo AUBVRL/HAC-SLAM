@@ -31,11 +31,17 @@ public class VoxelManager : MonoBehaviour
         if (Physics.CheckBox(voxelVector, boxSize / 2, Quaternion.identity, 1 << 3))
         {
             Vector3 chunkVector = RoundToChunk(voxelVector);
-            Chunk chunk = ChunksDict[chunkVector];
-            Voxel voxel = chunk.VoxelsDict[voxelVector];
-            Destroy(voxel.gameobject);
-            Instantiate(PrefabsManager.deletedVoxelPrefab, voxel.position, Quaternion.identity, PrefabsManager.deletedVoxelPrefabParent.transform);
-            chunk.VoxelsDict.Remove(voxelVector);
+            if (ChunksDict.ContainsKey(chunkVector))
+            {
+                Chunk chunk = ChunksDict[chunkVector];
+                if (chunk.VoxelsDict.ContainsKey(voxelVector))
+                {
+                    Voxel voxel = chunk.VoxelsDict[voxelVector];
+                    Destroy(voxel.gameobject);
+                    Instantiate(PrefabsManager.deletedVoxelPrefab, voxel.position, Quaternion.identity, PrefabsManager.deletedVoxelPrefabParent.transform);
+                    chunk.VoxelsDict.Remove(voxelVector);
+                }
+            }
         }
     }
 
