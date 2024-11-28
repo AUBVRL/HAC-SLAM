@@ -22,7 +22,7 @@ public class FingerPose : MonoBehaviour
     public MinecraftBuilder _MinecraftBuilder;
     // public RosPublisherExample _RosPublisher;
     float cubesize;
-    public GameObject Selector;
+    public static GameObject Selector;
     bool EditorActivator, selectorInstantiated, doneInstantiation, ConvexityState, DeletingVoxels, AddingAssets;
 
     Renderer selectorMesh;
