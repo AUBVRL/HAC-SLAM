@@ -52,42 +52,6 @@ public class MergedVoxelDisplay : MonoBehaviour
 
     private void Update()
     {
-        /*ImageTargetTranslation = imageTarget.transform.position;*/
-        
-        //Debug.Log(ImageTargetTranslation);
-        //Quaternion r = imageTarget.transform.rotation;
-
-        /*Vector3 flatten = new(imageTarget.transform.up.x, 0f, imageTarget.transform.up.z);*/
-
-
-        //print(imageTarget.transform.rotation.eulerAngles.y);
-        //print(imageTarget.transform.localEulerAngles.y);
-        //ImageTargetRotation.Set(ImageTarget.transform.eulerAngles.x, ImageTarget.transform.eulerAngles.z, -ImageTarget.transform.eulerAngles.y);
-/*        Debug.Log(Vector3.Angle(flatten, Vector3.forward));
-        float angle = Vector3.Angle(flatten,Vector3.forward);
-        float angle2 = Mathf.Atan2(imageTarget.transform.up.x, imageTarget.transform.up.z) * Mathf.Rad2Deg;
-        ImageTargetRotation = new(0f, angle2, 0f);*/
-        //float angle = Mathf.Atan2(imageTarget.transform.up.z, imageTarget.transform.up.x);
-        //Debug.Log(angle * Mathf.Rad2Deg);
-        //imageTarget.transform.forward = v;
-        // iwhub.transform.position = TransformToImageTarget(InitialPose);
-
-        /*teext.text = imageTarget.transform.eulerAngles.ToString();*/
-        /*Vector3 hamburger = TransformToImageTarget(HamburgerPosition);
-        Vector3 iamgetargetrotnew = new Vector3(0, imageTarget.transform.eulerAngles.z, 0);
-        PointCloudTranslation.Set(hamburger.x + PointCloudTranslation.x * Mathf.Cos(imageTarget.transform.eulerAngles.z) - PointCloudTranslation.z * Mathf.Sin(imageTarget.transform.eulerAngles.z),
-                                  hamburger.y + PointCloudTranslation.y,
-                                  hamburger.z + PointCloudTranslation.z * Mathf.Sin(imageTarget.transform.eulerAngles.z) + PointCloudTranslation.x * Mathf.Cos(imageTarget.transform.eulerAngles.z));
-
-        Hamburger.transform.position = TransformToPointCloud(HamburgerPosition);
-        //Vector3 pose = iwhub.transform.position;
-        Vector3 rot = Quaternion.Euler(rotation) * pose;
-        Vector3 orient = Quaternion.Euler(rotation) * orientation;
-        print(orient);
-        //iwhub.transform.position = rot;
-        iwhub.transform.rotation = Quaternion.Euler(orient); // Quaternion.Euler(orient.x, orient.y, orient.z);*/
-
-
 
     }
 
@@ -118,7 +82,7 @@ public class MergedVoxelDisplay : MonoBehaviour
         newImage.transform.up = ImageTarget.transform.forward;
         newImage.transform.right = ImageTarget.transform.right;
         newImage.transform.forward = -ImageTarget.transform.up;
-        originPosition = dummyObject.transform.TransformPoint(new Vector3(0,0,0)); // local coordinates of point cloud origin wrt to image target
+        originPosition = dummyObject.transform.TransformPoint(new Vector3(0, 0, 0)); // local coordinates of point cloud origin wrt to image target
         originPosition = newImage.transform.TransformPoint(originPosition); // global coordinates of point cloud origin
 
         originRight = dummyObject.transform.TransformPoint(new Vector3(1, 0, 0));
@@ -133,13 +97,13 @@ public class MergedVoxelDisplay : MonoBehaviour
         originForward = newImage.transform.TransformPoint(originForward);
         originForward = originForward - originPosition;
 
-        GameObject manualAlign = new GameObject("manualAlign");
+/*        GameObject manualAlign = new GameObject("manualAlign");
         // rotate in the right order z x y
         manualAlign.transform.Rotate(originForward, -2f);
         manualAlign.transform.Rotate(originRight, -2f);
         manualAlign.transform.Rotate(originUp, -2f);
 
-        manualAlign.transform.Translate(-0.3f * originUp);
+        manualAlign.transform.Translate(-0.3f * originUp);*/
 
         Vector3 point, globalPoint;
         int j;
@@ -152,7 +116,7 @@ public class MergedVoxelDisplay : MonoBehaviour
             point.y = System.BitConverter.ToSingle(pointcloud.data, j + 8);
             globalPoint = dummyObject.transform.TransformPoint(point); // local coordinates of point with respect to image target
             globalPoint = newImage.transform.TransformPoint(globalPoint); // global coordinates of point
-            globalPoint = manualAlign.transform.TransformPoint(globalPoint); 
+            // globalPoint = manualAlign.transform.TransformPoint(globalPoint); 
             
             VoxelManager.AddVoxel(globalPoint, false);
             countTillYield++;
