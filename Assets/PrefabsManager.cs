@@ -22,7 +22,7 @@ public class PrefabsManager : MonoBehaviour
 
     private void Start()
     {
-        VoxelSize = 0.05f;
+        VoxelSize = 0.1f;
         ChunkSize = 3f;
         voxelPrefab = VoxelPrefab;
         addedVoxelPrefab = AddedVoxelPrefab;
