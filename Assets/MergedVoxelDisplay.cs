@@ -55,22 +55,6 @@ public class MergedVoxelDisplay : MonoBehaviour
 
     }
 
-    public Vector3 TransformToImageTarget(Vector3 Point)
-    {
-        Quaternion rotationQuaternion = Quaternion.Euler(ImageTargetRotation);
-        Point = rotationQuaternion * Point + ImageTargetTranslation;
-        return Point;
-    }
-
-    public Vector3 TransformToPointCloud(Vector3 Point)
-    {
-        Quaternion rotationQuaternion = Quaternion.Euler(PointCloudRotation);
-        Point = rotationQuaternion * Point + PointCloudTranslation;
-        return Point;
-    }
-
-
-
     IEnumerator FillIncoming(pc2 pointcloud)
     {
         TextMeshPro.text = "Loading... 0%";
@@ -97,13 +81,13 @@ public class MergedVoxelDisplay : MonoBehaviour
         originForward = newImage.transform.TransformPoint(originForward);
         originForward = originForward - originPosition;
 
-/*        GameObject manualAlign = new GameObject("manualAlign");
+        GameObject manualAlign = new GameObject("manualAlign");
         // rotate in the right order z x y
         manualAlign.transform.Rotate(originForward, -2f);
         manualAlign.transform.Rotate(originRight, -2f);
         manualAlign.transform.Rotate(originUp, -2f);
 
-        manualAlign.transform.Translate(-0.3f * originUp);*/
+        // manualAlign.transform.Translate(-0.3f * originUp);
 
         Vector3 point, globalPoint;
         int j;
@@ -116,7 +100,7 @@ public class MergedVoxelDisplay : MonoBehaviour
             point.y = System.BitConverter.ToSingle(pointcloud.data, j + 8);
             globalPoint = dummyObject.transform.TransformPoint(point); // local coordinates of point with respect to image target
             globalPoint = newImage.transform.TransformPoint(globalPoint); // global coordinates of point
-            // globalPoint = manualAlign.transform.TransformPoint(globalPoint); 
+            globalPoint = manualAlign.transform.TransformPoint(globalPoint); 
             
             VoxelManager.AddVoxel(globalPoint, false);
             countTillYield++;
@@ -131,7 +115,7 @@ public class MergedVoxelDisplay : MonoBehaviour
     }
 
 
-    public void Debugging()
+/*    public void Debugging()
     {
         GameObject newImage = new GameObject("newImage");
         newImage.transform.position = ImageTarget.transform.position;
@@ -140,7 +124,7 @@ public class MergedVoxelDisplay : MonoBehaviour
         greenCube.transform.position = newImage.transform.position + newImage.transform.up * 0.5f;
         redCube.transform.position = newImage.transform.position + newImage.transform.right * 0.5f;
         blueCube.transform.position = newImage.transform.position + newImage.transform.forward * 0.5f;
-    }
+    }*/
 
     public void Clean()
     {
@@ -169,7 +153,7 @@ public class MergedVoxelDisplay : MonoBehaviour
         FillIncomingCoroutine = StartCoroutine(FillIncoming(Sub.incomingPointCloudLive));
     }
 
-    public void x_MoveCloud(bool state)
+/*    public void x_MoveCloud(bool state)
     {
         Vector3 cloudIncrement = 0.1f * originRight;
         float xIncrement = 0.1f;
@@ -212,9 +196,9 @@ public class MergedVoxelDisplay : MonoBehaviour
         PrefabsManager.chunkParentPrefab.transform.position += cloudIncrement;
         Vector3 display = new Vector3(xTotal, yTotal, zTotal);
         TextMeshPro.text = display.ToString();
-    }
+    }*/
 
-    public void x_RotateCloud(bool state)
+/*    public void x_RotateCloud(bool state)
     {
         float degree = 0.1f;
         if (!state) degree = -degree;
@@ -251,7 +235,7 @@ public class MergedVoxelDisplay : MonoBehaviour
         PrefabsManager.chunkParentPrefab.transform.Rotate(originUp, yRotationTotal);
         Vector3 display = new Vector3(xRotationTotal, yRotationTotal, zRotationTotal);
         TextMeshPro.text = display.ToString();
-    }
+    }*/
 
 
 }
