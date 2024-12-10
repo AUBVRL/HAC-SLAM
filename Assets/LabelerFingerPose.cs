@@ -327,7 +327,7 @@ public class LabelerFingerPose : MonoBehaviour
         LabelInstance = tool.GetComponent<LabelAndInstance>();
         LabelInstance.label = Label;
         LabelInstance.instance = Instance;
-        tooltipText.ToolTipText = name;
+        tooltipText.ToolTipText = pose.ToString();
     }
 
     public void PreviouslyLabeled(int i)

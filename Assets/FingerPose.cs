@@ -346,9 +346,10 @@ public class FingerPose : MonoBehaviour
             AssetInstance = Labeler.AssetInstance(AssetLabel);
             Labeler.AssetToolTip(Selector.transform.position, AssetName, AssetLabel, AssetInstance);
             _MinecraftBuilder.AddedVoxelByte.Clear();
-            officialVoxelizer();
+            // officialVoxelizer();
             _RosPublisher.PublishEditedPointCloudMsg();
             _RosPublisher.LabelPublisher();
+            Selector = null;
 
         }
         else if (DeletingVoxels)
@@ -364,7 +365,7 @@ public class FingerPose : MonoBehaviour
             AssetInstance = Labeler.AssetInstance(AssetLabel);
             Labeler.AssetToolTip(Selector.transform.position, AssetName, AssetLabel, AssetInstance);
             _MinecraftBuilder.AddedVoxelByte.Clear();
-            officialVoxelizer();
+            // officialVoxelizer();
             _RosPublisher.PublishEditedPointCloudMsg();
             _RosPublisher.LabelPublisher();
             VuforiaFound = false;
@@ -379,7 +380,7 @@ public class FingerPose : MonoBehaviour
             doneInstantiation = false;
         }
         
-        Destroy(Selector);
+        if (!AddingAssets) Destroy(Selector);
         appBar.SetActive(false);
         
     }
