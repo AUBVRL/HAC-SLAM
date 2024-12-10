@@ -6,6 +6,7 @@ using Microsoft.MixedReality.Toolkit.Experimental.SpatialAwareness;
 using Microsoft.MixedReality.Toolkit.SpatialAwareness;
 using Microsoft.MixedReality.Toolkit.UI;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
@@ -13,39 +14,49 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
     /// <summary>
     /// Demo class to show different ways of visualizing the space using scene understanding.
     /// </summary>
-
     public class DemoSceneUnderstandingController : DemoSpatialMeshHandler, IMixedRealitySpatialAwarenessObservationHandler<SpatialAwarenessSceneObject>
     {
-        #region Public Variables
 
-        // by hasan sayour
-
-        [Header("Layers")]
-        [Tooltip("Layer for the Scene Understanding Wall objects")]
-        public int LayerForWallObjects = 10;
-        [Tooltip("Layer for the Scene Understanding Floor objects")]
-        public int LayerForFloorObjects = 9;
-        [Tooltip("Layer for the Scene Understanding Ceiling objects")]
-        public int LayerForCeilingObjects = 7;
-        [Tooltip("Layer for the Scene Understanding World objects")]
-        public int LayerForWorldObjects = 12;
-
-        [Tooltip("string")]
-        public string  testt;
-
-        [Tooltip("Display Quads")]
-        public bool DisplayQuads = false;
-
-        bool ss = true;
-
-        #endregion
-
+        public TextMeshPro text;
+        int count = 0;
         #region Private Fields
 
         #region Serialized Fields
 
         [SerializeField]
         private string SavedSceneNamePrefix = "DemoSceneUnderstanding";
+        [SerializeField]
+        private bool InstantiatePrefabs = false;
+        [SerializeField]
+        private GameObject InstantiatedPrefab = null;
+        [SerializeField]
+        private Transform InstantiatedParent = null;
+
+        [Header("UI")]
+        [SerializeField]
+        private Interactable autoUpdateToggle = null;
+        [SerializeField]
+        private Interactable quadsToggle = null;
+        [SerializeField]
+        private Interactable inferRegionsToggle = null;
+        [SerializeField]
+        private Interactable meshesToggle = null;
+        [SerializeField]
+        private Interactable maskToggle = null;
+        [SerializeField]
+        private Interactable platformToggle = null;
+        [SerializeField]
+        private Interactable wallToggle = null;
+        [SerializeField]
+        private Interactable floorToggle = null;
+        [SerializeField]
+        private Interactable ceilingToggle = null;
+        [SerializeField]
+        private Interactable worldToggle = null;
+        [SerializeField]
+        private Interactable completelyInferred = null;
+        [SerializeField]
+        private Interactable backgroundToggle = null;
 
         #endregion Serialized Fields
 
@@ -62,6 +73,7 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
         protected override void Start()
         {
             observer = CoreServices.GetSpatialAwarenessSystemDataProvider<IMixedRealitySceneUnderstandingObserver>();
+            Debug.Log(observer.QueryRadius);
 
             if (observer == null)
             {
@@ -69,10 +81,9 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
                     + "Visit https://docs.microsoft.com/windows/mixed-reality/mrtk-unity/features/spatial-awareness/scene-understanding for more information.");
                 return;
             }
-
+            InitToggleButtonState();
             instantiatedPrefabs = new List<GameObject>();
             observedSceneObjects = new Dictionary<SpatialAwarenessSurfaceTypes, Dictionary<int, SpatialAwarenessSceneObject>>();
-
         }
 
         protected override void OnEnable()
@@ -97,11 +108,12 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
         /// <inheritdoc />
         public void OnObservationAdded(MixedRealitySpatialAwarenessEventData<SpatialAwarenessSceneObject> eventData)
         {
+            count++;
+            text.text = count.ToString();
             // This method called everytime a SceneObject created by the SU observer
             // The eventData contains everything you need do something useful
 
             AddToData(eventData.Id);
-            
 
             if (observedSceneObjects.TryGetValue(eventData.SpatialObject.SurfaceType, out Dictionary<int, SpatialAwarenessSceneObject> sceneObjectDict))
             {
@@ -112,54 +124,26 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
                 observedSceneObjects.Add(eventData.SpatialObject.SurfaceType, new Dictionary<int, SpatialAwarenessSceneObject> { { eventData.Id, eventData.SpatialObject } });
             }
 
-            foreach (var quad in eventData.SpatialObject.Quads)
-             {
-
-                // by hasan sayour 
-
-
-                //quad.GameObject.GetComponent<Renderer>().material.color = ColorForSurfaceType(eventData.SpatialObject.SurfaceType);
-                //quad.GameObject.GetComponent<Renderer>().material.color = new Color32(38, 139, 210, 255); // blue
-                quad.GameObject.layer = LayerForSurfaceType(eventData.SpatialObject.SurfaceType);  // giving every quad a layer based on its type
-                quad.GameObject.GetComponent<Renderer>().material.color = ColorLayer(quad.GameObject.layer);  // coloring every quad based on its layer
-                if (!DisplayQuads) 
-                 {
-                     quad.GameObject.GetComponent<MeshRenderer>().enabled = false;     // disabling all quads mesh renderers (removing them from the users scene, keeping them in bg)
-                 }
-                var quadn = quad.GameObject.transform.localScale;
-                quad.GameObject.transform.localScale = new Vector3(quadn.x, quadn.y, 1);   // creating an invisible barrier blocking world mesh from enabled quads
-                quad.GameObject.GetComponent<BoxCollider>().size = new Vector3(1,1,0.2f);  // creating an invisible barrier blocking world mesh from enabled quads
-                if (ss)
+            if (InstantiatePrefabs && eventData.SpatialObject.Quads.Count > 0)
+            {
+                var prefab = Instantiate(InstantiatedPrefab);
+                prefab.transform.SetPositionAndRotation(eventData.SpatialObject.Position, eventData.SpatialObject.Rotation);
+                float sx = eventData.SpatialObject.Quads[0].Extents.x;
+                float sy = eventData.SpatialObject.Quads[0].Extents.y;
+                prefab.transform.localScale = new Vector3(sx, sy, .1f);
+                if (InstantiatedParent)
                 {
-                    testt = quad.GameObject.transform.parent.name + ",   Pos : (" + quad.GameObject.transform.parent.position.x + ", " + quad.GameObject.transform.parent.position.y + ", " + quad.GameObject.transform.parent.position.z
-                        + ")  ,   Rotation :" + quad.GameObject.transform.parent.rotation.eulerAngles + ",    scale : (" + quad.GameObject.transform.localScale.x + ", " + quad.GameObject.transform.localScale.y + ")";
-
-                    Debug.Log(quad.GameObject.transform.parent.name + ",   Pos : (" + quad.GameObject.transform.parent.position.x + ", " + quad.GameObject.transform.parent.position.y + ", " + quad.GameObject.transform.parent.position.z
-                        + ")  ,   Rotation :" + quad.GameObject.transform.parent.rotation.eulerAngles + ",    scale : (" + quad.GameObject.transform.localScale.x + ", " + quad.GameObject.transform.localScale.y + ")");
-                    quad.GameObject.GetComponent<MeshRenderer>().enabled = true;
-                    ss = false;
+                    prefab.transform.SetParent(InstantiatedParent);
                 }
+                instantiatedPrefabs.Add(prefab);
             }
-            foreach (var mesh in eventData.SpatialObject.Meshes)
+            else
             {
-                // if (!mesh.GameObject.transform.parent.name.Contains("World"))             this if condition makes only world mesh visible 
-                    mesh.GameObject.GetComponent<MeshRenderer>().enabled = false;  // disabling all world mesh renderers (removing the mesh from the users scene, keeping them in bg)
-            }
-        }
-        private Color ColorLayer(int layer)   // by hasan sayour
-        {
-            // coloring quads based on its layer
+                foreach (var quad in eventData.SpatialObject.Quads)
+                {
+                    quad.GameObject.GetComponent<Renderer>().material.color = ColorForSurfaceType(eventData.SpatialObject.SurfaceType);
+                }
 
-            switch (layer)
-            {
-                case 7:
-                    return new Color32(38, 139, 210, 255); // blue
-                case 10:
-                    return new Color32(133, 153, 0, 255); // green                                   
-                case 9:
-                    return new Color32(181, 137, 0, 255); // yellow
-                default:
-                    return new Color32(220, 50, 47, 255); // red
             }
         }
 
@@ -181,6 +165,8 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
         /// <inheritdoc />
         public void OnObservationRemoved(MixedRealitySpatialAwarenessEventData<SpatialAwarenessSceneObject> eventData)
         {
+            count--;
+            text.text = count.ToString();
             RemoveFromData(eventData.Id);
 
             foreach (var sceneObjectDict in observedSceneObjects.Values)
@@ -220,11 +206,25 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
 
         #region UI Functions
 
-        public void ToggleDisplayQuads() // by hasan sayour
+        /// <summary>
+        /// Request the observer to update the scene
+        /// </summary>
+        public void UpdateScene()
         {
-            DisplayQuads = !DisplayQuads;
-            ClearAndUpdateObserver();
+            observer.UpdateOnDemand();
         }
+
+        /// <summary>
+        /// Request the observer to save the scene
+        /// </summary>
+        public void SaveScene()
+        {
+            observer.SaveScene(SavedSceneNamePrefix);
+        }
+
+        /// <summary>
+        /// Request the observer to clear the observations in the scene
+        /// </summary>
         public void ClearScene()
         {
             foreach (GameObject gameObject in instantiatedPrefabs)
@@ -235,37 +235,205 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
             observer.ClearObservations();
         }
 
+        /// <summary>
+        /// Change the auto update state of the observer
+        /// </summary>
+        public void ToggleAutoUpdate()
+        {
+            observer.AutoUpdate = !observer.AutoUpdate;
+        }
+
+        /// <summary>
+        /// Change whether to request occlusion mask from the observer followed by
+        /// clearing existing observations and requesting an update
+        /// </summary>
+        public void ToggleOcclusionMask()
+        {
+            var observerMask = observer.RequestOcclusionMask;
+            observer.RequestOcclusionMask = !observerMask;
+            if (observer.RequestOcclusionMask)
+            {
+                if (!(observer.RequestPlaneData || observer.RequestMeshData))
+                {
+                    observer.RequestPlaneData = true;
+                    quadsToggle.IsToggled = true;
+                }
+            }
+            ClearAndUpdateObserver();
+        }
+
+        /// <summary>
+        /// Change whether to request plane data from the observer followed by
+        /// clearing existing observations and requesting an update
+        /// </summary>
+        public void ToggleGeneratePlanes()
+        {
+            observer.RequestPlaneData = !observer.RequestPlaneData;
+            if (observer.RequestPlaneData)
+            {
+                observer.RequestMeshData = false;
+                meshesToggle.IsToggled = false;
+            }
+            ClearAndUpdateObserver();
+        }
+
+        /// <summary>
+        /// Change whether to request mesh data from the observer followed by
+        /// clearing existing observations and requesting an update
+        /// </summary>
+        public void ToggleGenerateMeshes()
+        {
+            observer.RequestMeshData = !observer.RequestMeshData;
+            if (observer.RequestMeshData)
+            {
+                observer.RequestPlaneData = false;
+                quadsToggle.IsToggled = false;
+            }
+            ClearAndUpdateObserver();
+        }
+
+        /// <summary>
+        /// Change whether to request floor data from the observer followed by
+        /// clearing existing observations and requesting an update
+        /// </summary>
+        public void ToggleFloors()
+        {
+            ToggleObservedSurfaceType(SpatialAwarenessSurfaceTypes.Floor);
+            ClearAndUpdateObserver();
+        }
+
+        /// <summary>
+        /// Change whether to request wall data from the observer followed by
+        /// clearing existing observations and requesting an update
+        /// </summary>
+        public void ToggleWalls()
+        {
+            ToggleObservedSurfaceType(SpatialAwarenessSurfaceTypes.Wall);
+            ClearAndUpdateObserver();
+        }
+
+        /// <summary>
+        /// Change whether to request ceiling data from the observer followed by
+        /// clearing existing observations and requesting an update
+        /// </summary>
+        public void ToggleCeilings()
+        {
+            ToggleObservedSurfaceType(SpatialAwarenessSurfaceTypes.Ceiling);
+            ClearAndUpdateObserver();
+        }
+
+        /// <summary>
+        /// Change whether to request platform data from the observer followed by
+        /// clearing existing observations and requesting an update
+        /// </summary>
+        public void TogglePlatforms()
+        {
+            ToggleObservedSurfaceType(SpatialAwarenessSurfaceTypes.Platform);
+            ClearAndUpdateObserver();
+        }
+
+        /// <summary>
+        /// Change whether to request inferred region data from the observer followed by
+        /// clearing existing observations and requesting an update
+        /// </summary>
+        public void ToggleInferRegions()
+        {
+            observer.InferRegions = !observer.InferRegions;
+            ClearAndUpdateObserver();
+        }
+
+        /// <summary>
+        /// Change whether to request world mesh data from the observer followed by
+        /// clearing existing observations and requesting an update
+        /// </summary>
+        public void ToggleWorld()
+        {
+            ToggleObservedSurfaceType(SpatialAwarenessSurfaceTypes.World);
+
+            if (observer.SurfaceTypes.IsMaskSet(SpatialAwarenessSurfaceTypes.World))
+            {
+                // Ensure we requesting meshes
+                observer.RequestMeshData = true;
+                meshesToggle.GetComponent<Interactable>().IsToggled = true;
+            }
+            ClearAndUpdateObserver();
+        }
+
+        /// <summary>
+        /// Change whether to request background data from the observer followed by
+        /// clearing existing observations and requesting an update
+        /// </summary>
+        public void ToggleBackground()
+        {
+            ToggleObservedSurfaceType(SpatialAwarenessSurfaceTypes.Background);
+            ClearAndUpdateObserver();
+        }
+
+        /// <summary>
+        /// Change whether to request completely inferred data from the observer followed by
+        /// clearing existing observations and requesting an update
+        /// </summary>
+        public void ToggleCompletelyInferred()
+        {
+            ToggleObservedSurfaceType(SpatialAwarenessSurfaceTypes.Inferred);
+            ClearAndUpdateObserver();
+        }
+
         #endregion UI Functions
 
         #endregion Public Functions
 
         #region Helper Functions
 
-       
+        private void InitToggleButtonState()
+        {
+            // Configure observer
+            autoUpdateToggle.IsToggled = observer.AutoUpdate;
+            quadsToggle.IsToggled = observer.RequestPlaneData;
+            meshesToggle.IsToggled = observer.RequestMeshData;
+            maskToggle.IsToggled = observer.RequestOcclusionMask;
+            inferRegionsToggle.IsToggled = observer.InferRegions;
+
+            // Filter display
+            platformToggle.IsToggled = observer.SurfaceTypes.IsMaskSet(SpatialAwarenessSurfaceTypes.Platform);
+            wallToggle.IsToggled = observer.SurfaceTypes.IsMaskSet(SpatialAwarenessSurfaceTypes.Wall);
+            floorToggle.IsToggled = observer.SurfaceTypes.IsMaskSet(SpatialAwarenessSurfaceTypes.Floor);
+            ceilingToggle.IsToggled = observer.SurfaceTypes.IsMaskSet(SpatialAwarenessSurfaceTypes.Ceiling);
+            worldToggle.IsToggled = observer.SurfaceTypes.IsMaskSet(SpatialAwarenessSurfaceTypes.World);
+            completelyInferred.IsToggled = observer.SurfaceTypes.IsMaskSet(SpatialAwarenessSurfaceTypes.Inferred);
+            backgroundToggle.IsToggled = observer.SurfaceTypes.IsMaskSet(SpatialAwarenessSurfaceTypes.Background);
+        }
 
         /// <summary>
-        /// Gets the layer of the given surface type
+        /// Gets the color of the given surface type
         /// </summary>
-        /// <param name="surfaceType">The surface type to get layer for</param>
-        /// <returns>The layer of the type</returns>
-        /// 
-        private int LayerForSurfaceType(SpatialAwarenessSurfaceTypes surfaceType)    //by hasan sayour
+        /// <param name="surfaceType">The surface type to get color for</param>
+        /// <returns>The color of the type</returns>
+        private Color ColorForSurfaceType(SpatialAwarenessSurfaceTypes surfaceType)
         {
+            // shout-out to solarized!
+
             switch (surfaceType)
             {
+                case SpatialAwarenessSurfaceTypes.Unknown:
+                    return new Color32(220, 50, 47, 255); // red
                 case SpatialAwarenessSurfaceTypes.Floor:
-                    return LayerForFloorObjects;
+                    return new Color32(38, 139, 210, 255); // blue
                 case SpatialAwarenessSurfaceTypes.Ceiling:
-                    return LayerForCeilingObjects;
+                    return new Color32(108, 113, 196, 255); // violet
                 case SpatialAwarenessSurfaceTypes.Wall:
-                    return LayerForWallObjects;
+                    return new Color32(181, 137, 0, 255); // yellow
+                case SpatialAwarenessSurfaceTypes.Platform:
+                    return new Color32(133, 153, 0, 255); // green
+                case SpatialAwarenessSurfaceTypes.Background:
+                    return new Color32(203, 75, 22, 255); // orange
                 case SpatialAwarenessSurfaceTypes.World:
-                    return LayerForWorldObjects;
+                    return new Color32(211, 54, 130, 255); // magenta
+                case SpatialAwarenessSurfaceTypes.Inferred:
+                    return new Color32(42, 161, 152, 255); // cyan
                 default:
-                    return 0;
-                    
+                    return new Color32(220, 50, 47, 255); // red
             }
-
         }
 
         private void ClearAndUpdateObserver()

@@ -34,7 +34,7 @@ MonoBehaviour:
   firstAutoUpdateDelay: 5
   worldMeshLevelOfDetail: 1
   usePersistentObjects: 1
-  queryRadius: 10
+  queryRadius: 20
   requestOcclusionMask: 0
   occlusionMaskResolution: {x: 256, y: 256}
   orientScene: 1

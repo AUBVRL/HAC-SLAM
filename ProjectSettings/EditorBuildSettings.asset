@@ -5,10 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/FinalVerision2.unity
     guid: be151675e782d8a4a969d6075c3528bd
-  - enabled: 0
+  - enabled: 1
     path: Assets/Samples/Mixed Reality Toolkit Examples/2.8.3/Experimental - SceneUnderstanding/Scenes/SceneUnderstandingExample.unity
     guid: d42a352dc9a8c4d4990a924687759199
   m_configObjects:

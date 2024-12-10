@@ -459,9 +459,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41ba1df839f79a14d8f74dc4aacddf91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LayerForWallObjects: 0
-  LayerForFloorObjects: 0
-  LayerForCeilingObjects: 0
+  text: {fileID: 1691080589}
   SavedSceneNamePrefix: Scene
   InstantiatePrefabs: 0
   InstantiatedPrefab: {fileID: 4450459432874784414, guid: da7ef0d2c42bf8f4da89848ed8529a9f, type: 3}
@@ -4599,6 +4597,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7614231225992287547, guid: 18470d71939382448be2ecd06efa9662, type: 3}
   m_PrefabInstance: {fileID: 1672675963}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1691080589 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2204069621878992595, guid: 3f1f46cbecbe08e46a303ccfdb5b498a, type: 3}
+  m_PrefabInstance: {fileID: 1773895769}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1771576072
 GameObject:
   m_ObjectHideFlags: 0
