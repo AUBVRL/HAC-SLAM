@@ -12101,7 +12101,7 @@ GameObject:
   - component: {fileID: 77820374}
   - component: {fileID: 77820373}
   m_Layer: 0
-  m_Name: Stats
+  m_Name: Display IT Coordinates
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12304,9 +12304,9 @@ MonoBehaviour:
   OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 22085819}
-        m_TargetAssemblyTypeName: RosPublisherExample, Assembly-CSharp
-        m_MethodName: HumanLozalizationPublisher
+      - m_Target: {fileID: 264178914}
+        m_TargetAssemblyTypeName: MergedVoxelDisplay, Assembly-CSharp
+        m_MethodName: LabelImageTarget
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -16657,7 +16657,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Stats
+  m_text: 'Image
+
+    Coordinates'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6a84f857bec7e7345843ae29404c57ce, type: 2}
   m_sharedMaterial: {fileID: 21202819797275496, guid: 6a84f857bec7e7345843ae29404c57ce, type: 2}
@@ -34321,6 +34323,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f6a4da4f03cad142858735d37cea66a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  labelerFingerPose: {fileID: 2124585256}
   cubz: {fileID: 3855142852996578538, guid: 466f6fd6417766e4cbb535246d8da6e5, type: 3}
   Sub: {fileID: 1540527462}
   Parent: {fileID: 1155417619}
@@ -248898,7 +248901,19 @@ MonoBehaviour:
     m_RotationOrder: 4
   OnTargetFound:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1311567690}
+        m_TargetAssemblyTypeName: FingerPose, Assembly-CSharp
+        m_MethodName: ModelTracked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 4130489786689630051, guid: c9ce6f2aa741d4d4bb27c9dfa1ca5be3, type: 3}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   OnTargetLost:
     m_PersistentCalls:
       m_Calls: []

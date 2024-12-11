@@ -7,6 +7,7 @@ using TMPro;
 
 public class MergedVoxelDisplay : MonoBehaviour
 {
+    public LabelerFingerPose labelerFingerPose;
     public GameObject cubz;
     public RosSubscriberExample Sub;
     public GameObject Parent, ImageTarget;
@@ -53,6 +54,11 @@ public class MergedVoxelDisplay : MonoBehaviour
     private void Update()
     {
 
+    }
+
+    public void LabelImageTarget()
+    {
+        labelerFingerPose.AssetToolTip2(ImageTarget.transform.position, ImageTarget.transform.eulerAngles);
     }
 
     IEnumerator FillIncoming(pc2 pointcloud)

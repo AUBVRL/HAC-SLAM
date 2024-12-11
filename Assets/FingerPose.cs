@@ -344,7 +344,7 @@ public class FingerPose : MonoBehaviour
         {
             _inputActionHandler.enabled = true;
             AssetInstance = Labeler.AssetInstance(AssetLabel);
-            Labeler.AssetToolTip(Selector.transform.position, AssetName, AssetLabel, AssetInstance);
+            Labeler.AssetToolTip2(Selector.transform.position, Selector.transform.eulerAngles);
             _MinecraftBuilder.AddedVoxelByte.Clear();
             // officialVoxelizer();
             _RosPublisher.PublishEditedPointCloudMsg();
@@ -363,7 +363,7 @@ public class FingerPose : MonoBehaviour
         else if (VuforiaEnabled)
         {
             AssetInstance = Labeler.AssetInstance(AssetLabel);
-            Labeler.AssetToolTip(Selector.transform.position, AssetName, AssetLabel, AssetInstance);
+            Labeler.AssetToolTip2(Selector.transform.position, Selector.transform.eulerAngles);
             _MinecraftBuilder.AddedVoxelByte.Clear();
             // officialVoxelizer();
             _RosPublisher.PublishEditedPointCloudMsg();
