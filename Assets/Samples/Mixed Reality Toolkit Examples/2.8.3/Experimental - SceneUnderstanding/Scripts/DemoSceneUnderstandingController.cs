@@ -106,6 +106,7 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
         #region IMixedRealitySpatialAwarenessObservationHandler Implementations
 
         /// <inheritdoc />
+        /// 
         public void OnObservationAdded(MixedRealitySpatialAwarenessEventData<SpatialAwarenessSceneObject> eventData)
         {
             count++;
