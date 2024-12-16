@@ -7,6 +7,7 @@ using Microsoft.MixedReality.Toolkit.SpatialAwareness;
 using Microsoft.MixedReality.Toolkit.UI;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
@@ -16,9 +17,6 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
     /// </summary>
     public class DemoSceneUnderstandingController : DemoSpatialMeshHandler, IMixedRealitySpatialAwarenessObservationHandler<SpatialAwarenessSceneObject>
     {
-
-        public TextMeshPro text;
-        int count = 0;
         #region Private Fields
 
         #region Serialized Fields
@@ -67,7 +65,7 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
         private Dictionary<SpatialAwarenessSurfaceTypes, Dictionary<int, SpatialAwarenessSceneObject>> observedSceneObjects;
 
         #endregion Private Fields
-
+        
         #region MonoBehaviour Functions
 
         protected override void Start()
@@ -109,8 +107,6 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
         /// 
         public void OnObservationAdded(MixedRealitySpatialAwarenessEventData<SpatialAwarenessSceneObject> eventData)
         {
-            count++;
-            text.text = count.ToString();
             // This method called everytime a SceneObject created by the SU observer
             // The eventData contains everything you need do something useful
 
@@ -124,7 +120,8 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
             {
                 observedSceneObjects.Add(eventData.SpatialObject.SurfaceType, new Dictionary<int, SpatialAwarenessSceneObject> { { eventData.Id, eventData.SpatialObject } });
             }
-
+            Debug.Log(InstantiatePrefabs);
+            Debug.Log(eventData.SpatialObject.Quads.Count);
             if (InstantiatePrefabs && eventData.SpatialObject.Quads.Count > 0)
             {
                 var prefab = Instantiate(InstantiatedPrefab);
@@ -132,6 +129,7 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
                 float sx = eventData.SpatialObject.Quads[0].Extents.x;
                 float sy = eventData.SpatialObject.Quads[0].Extents.y;
                 prefab.transform.localScale = new Vector3(sx, sy, .1f);
+                prefab.GetComponent<Renderer>().material.color = ColorForSurfaceType(eventData.SpatialObject.SurfaceType);
                 if (InstantiatedParent)
                 {
                     prefab.transform.SetParent(InstantiatedParent);
@@ -143,6 +141,7 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
                 foreach (var quad in eventData.SpatialObject.Quads)
                 {
                     quad.GameObject.GetComponent<Renderer>().material.color = ColorForSurfaceType(eventData.SpatialObject.SurfaceType);
+
                 }
 
             }
@@ -166,8 +165,6 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SceneUnderstanding
         /// <inheritdoc />
         public void OnObservationRemoved(MixedRealitySpatialAwarenessEventData<SpatialAwarenessSceneObject> eventData)
         {
-            count--;
-            text.text = count.ToString();
             RemoveFromData(eventData.Id);
 
             foreach (var sceneObjectDict in observedSceneObjects.Values)
