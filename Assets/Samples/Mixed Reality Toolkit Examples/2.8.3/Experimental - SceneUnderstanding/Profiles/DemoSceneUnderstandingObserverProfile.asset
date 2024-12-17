@@ -30,7 +30,7 @@ MonoBehaviour:
   createGameObjects: 1
   requestPlaneData: 1
   requestMeshData: 1
-  inferRegions: 1
+  inferRegions: 0
   firstAutoUpdateDelay: 5
   worldMeshLevelOfDetail: 1
   usePersistentObjects: 1
