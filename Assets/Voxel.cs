@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UIElements;
 
 public class Voxel
 {
@@ -43,6 +44,27 @@ public class Voxel
         }
     }
 
+    public void DecrementProba(bool humanEdited = false)
+    {
+        if (!humanEdited)
+        {
+            int layerMask = 1 << 31;
+            bool checkBoxOverlap = Physics.CheckBox(position, prefab.transform.localScale, Quaternion.identity, layerMask);
+            if (!checkBoxOverlap)
+            {
+                if (probability <= 1 && probability > 0.3) probability -= 0.3f;
+                if (state && probability < 0.6f) destroy();
+            }
+        }
+        else
+        {
+            probability = -2;
+            destroy(humanEdited);
+        }
+    }
+
+
+
     private void create(bool humanEdited = false)
     {
         if (!humanEdited)
@@ -55,6 +77,20 @@ public class Voxel
             prefab = UnityEngine.Object.Instantiate(PrefabsManager.addedVoxelPrefab, position, Quaternion.identity, voxelParent.transform);
         }
         state = true;
+    }
+
+    private void destroy(bool humanEdited = false)
+    {
+        if (!humanEdited)
+        {
+            UnityEngine.Object.Destroy(prefab);
+        }
+        else
+        {
+            if (prefab != null) UnityEngine.Object.Destroy(prefab);
+            prefab = UnityEngine.Object.Instantiate(PrefabsManager.deletedVoxelPrefab, position, Quaternion.identity, PrefabsManager.deletedVoxelPrefabParent.transform);
+        }
+        state = false;
     }
 
 

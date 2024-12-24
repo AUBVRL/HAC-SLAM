@@ -31,6 +31,34 @@ public class VoxelManager : MonoBehaviour
         }
     }
 
+    public static void RemoveVoxel(Vector3 point, bool humanEdited = false)
+    {
+
+        Vector3 chunkVector = RoundToChunk(point);
+        if (!humanEdited)
+        {
+            ChunksDict[chunkVector].VoxelsDict[point].DecrementProba();
+        }
+        else
+        {
+            if (!ChunksDict.ContainsKey(chunkVector))
+            {
+                ChunksDict.Add(chunkVector, new Chunk(point));
+            }
+
+            Chunk tempChunk = ChunksDict[chunkVector];
+
+            if (!tempChunk.VoxelsDict.ContainsKey(point))
+            {
+                tempChunk.AddVoxel(point);
+            }
+
+            Voxel tempVoxel = tempChunk.VoxelsDict[point];
+            tempVoxel.DecrementProba(humanEdited);
+
+        }
+    }
+
     public static Vector3 RoundToVoxel(Vector3 point)
     {
         Vector3 roundedVector = new Vector3();
