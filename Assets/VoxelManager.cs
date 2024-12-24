@@ -5,40 +5,29 @@ using UnityEngine;
 public class VoxelManager : MonoBehaviour
 {
     public static Dictionary<Vector3, Chunk> ChunksDict;
-    static Vector3 cameraPosition;
-    public static bool done;
     // Start is called before the first frame update
     void Start()
     {
         ChunksDict = new Dictionary<Vector3, Chunk>();
     }
 
-    public static void AddVoxel(Vector3 point, bool state)
+    public static void AddVoxel(Vector3 point, bool humanEdited = false)
     {
         Vector3 voxelVector = RoundToVoxel(point);
         Vector3 chunkVector = RoundToChunk(voxelVector);
+
         if (!ChunksDict.ContainsKey(chunkVector))
         {
-            ChunksDict.Add(chunkVector, new Chunk(chunkVector, state));
+            ChunksDict.Add(chunkVector, new Chunk(voxelVector));
         }
+
         if (!ChunksDict[chunkVector].VoxelsDict.ContainsKey(voxelVector))
         {
-            ChunksDict[chunkVector].VoxelsDict.Add(voxelVector, new Voxel(state ? PrefabsManager.addedVoxelPrefab : PrefabsManager.voxelPrefab, voxelVector, ChunksDict[chunkVector].gameobject));
+            ChunksDict[chunkVector].AddVoxel(voxelVector, humanEdited);
         }
-    }
-
-    public static void DeleteVoxel(Vector3 point)
-    {
-        Vector3 voxelVector = RoundToVoxel(point);
-        Vector3 boxSize = new Vector3(PrefabsManager.voxelSize - 0.001f, PrefabsManager.voxelSize - 0.001f, PrefabsManager.voxelSize - 0.001f);
-        if (Physics.CheckBox(voxelVector, boxSize / 2, Quaternion.identity, 1 << 3))
+        else
         {
-            Vector3 chunkVector = RoundToChunk(voxelVector);
-            Chunk chunk = ChunksDict[chunkVector];
-            Voxel voxel = chunk.VoxelsDict[voxelVector];
-            Destroy(voxel.gameobject);
-            Instantiate(PrefabsManager.deletedVoxelPrefab, voxel.position, Quaternion.identity, PrefabsManager.deletedVoxelPrefabParent.transform);
-            chunk.VoxelsDict.Remove(voxelVector);
+            ChunksDict[chunkVector].VoxelsDict[voxelVector].IncreaseProba(humanEdited);
         }
     }
 
