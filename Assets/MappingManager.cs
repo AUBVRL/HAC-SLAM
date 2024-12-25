@@ -66,7 +66,6 @@ public class MappingManager : MonoBehaviour
 
     void VoxelCleanse()
     {
-        Debug.Log("cleaning");
         List<Vector3> VoxelsPosition = StateCheckerParallel();
         foreach (Vector3 v in VoxelsPosition)
         {

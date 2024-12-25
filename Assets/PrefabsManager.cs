@@ -38,6 +38,23 @@ public class PrefabsManager : MonoBehaviour
         Selector = CubeSelector;
     }
 
+    public void SelectObject(int shape)
+    {
+        ShapeType shapeType = (ShapeType)shape;
+        switch (shapeType)
+        {
+            case ShapeType.Cube:
+                Selector = CubeSelector;
+                break;
+            case ShapeType.Sphere:
+                Selector = SphereSelector;
+                break;
+            case ShapeType.Cylinder:
+                Selector = CylinderSelector;
+                break;
+        }
+    }
+
     public void SetChunkParent(bool state)
     {
         chunkParentPrefab.SetActive(state);
