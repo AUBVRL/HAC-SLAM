@@ -10,12 +10,14 @@ using static System.ComponentModel.Design.ObjectSelectorEditor;
 public class EditsManager : MonoBehaviour
 {
     bool doneInstantiation, selectorInstantiated, fingersClosed;
-    bool deletingVoxels;
+    bool additionSelected, deletionSelected, labelingSelected;
     Vector3 initialPoseInCubes;
     public static GameObject instantiatedObject;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseRightIndex;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseRightThumb;
     IMixedRealityHandJointService handJointService;
+    int SelectorLayerMask = 1 << 6;
+
     void Start()
     {
         doneInstantiation = false;
@@ -58,7 +60,7 @@ public class EditsManager : MonoBehaviour
             center = new();
             initialPose = poseRightIndex.Position;
             initialPoseInCubes.Set(Mathf.RoundToInt(initialPose.x / PrefabsManager.voxelSize), Mathf.RoundToInt(initialPose.y / PrefabsManager.voxelSize), Mathf.RoundToInt(initialPose.z / PrefabsManager.voxelSize));
-            center.Set(initialPoseInCubes.x * PrefabsManager.voxelSize, initialPoseInCubes.y * PrefabsManager.voxelSize, initialPoseInCubes.z * PrefabsManager.voxelSize);
+            center = Vector3.one * PrefabsManager.voxelSize;
             instantiatedObject = Instantiate(PrefabsManager.Selector, center, Quaternion.identity);
             instantiatedObject.transform.localScale = new Vector3(PrefabsManager.voxelSize, PrefabsManager.voxelSize, PrefabsManager.voxelSize);
             selectorInstantiated = true;
@@ -86,7 +88,67 @@ public class EditsManager : MonoBehaviour
         else
         {
             doneInstantiation = true;
+            additionSelected = true; // remove this
+            Confirm(); // remove this
         }
+    }
+
+    List<Vector3> VoxelizeSelector()
+    {
+        List<Vector3> selectorPoints = new();
+        // Get the bounds of the instantiated object
+        Bounds bounds = instantiatedObject.GetComponent<MeshRenderer>().bounds;
+
+        Vector3Int minBounds = Vector3Int.FloorToInt(VoxelManager.RoundToVoxel(bounds.min) / PrefabsManager.voxelSize);
+        Vector3Int maxBounds = Vector3Int.FloorToInt(VoxelManager.RoundToVoxel(bounds.max) / PrefabsManager.voxelSize);
+
+        Vector3 voxelSizeVector = Vector3.one * PrefabsManager.voxelSize;
+
+        for (int x = minBounds.x; x <= maxBounds.x; x++)
+        {
+            for (int y = minBounds.y; y <= maxBounds.y; y++)
+            {
+                for (int z = minBounds.z; z <= maxBounds.z; z++)
+                {
+                    Vector3 coliderPose = new Vector3(x, y, z) * PrefabsManager.voxelSize;
+
+                    bool checkBoxOverlap = Physics.CheckBox(coliderPose, voxelSizeVector / 2, Quaternion.identity, SelectorLayerMask);
+
+                    if (checkBoxOverlap) selectorPoints.Add(coliderPose);
+                }
+            }
+        }
+
+        return selectorPoints;
+    }
+
+    public void Confirm()
+    {
+        List<Vector3> selectorPoints = VoxelizeSelector();
+        if (additionSelected)
+        {
+            foreach (Vector3 point in selectorPoints)
+            {
+                VoxelManager.AddVoxel(point, true);
+            }
+        }
+        else if (deletionSelected)
+        {
+            foreach (Vector3 point in selectorPoints)
+            {
+                VoxelManager.RemoveVoxel(point, true);
+            }
+        }
+        else if (labelingSelected)
+        {
+            foreach (Vector3 point in selectorPoints)
+            {
+                VoxelManager.AddVoxel(point, true);
+            }
+        }
+        Destroy(instantiatedObject);
+        instantiatedObject = null;
+        // doneInstantiation = false;
     }
 
 

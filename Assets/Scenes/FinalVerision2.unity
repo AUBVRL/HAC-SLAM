@@ -162290,8 +162290,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   VoxelPrefab: {fileID: 3855142852996578538, guid: 14eab43a4dbcbac48b2aa122eca392aa, type: 3}
-  AddedVoxelPrefab: {fileID: 0}
-  DeletedVoxelPrefab: {fileID: 0}
+  AddedVoxelPrefab: {fileID: 7843804132198184581, guid: 9dc73129b1f764852826dd11c5194a92, type: 3}
+  DeletedVoxelPrefab: {fileID: 5846410291823786959, guid: e5bb50bd0d7404327a74169676e67783, type: 3}
   CubeSelector: {fileID: 4385382872227521279, guid: ca9b80c230f22e34db0e5d4df7a37f5a, type: 3}
   SphereSelector: {fileID: 0}
   CylinderSelector: {fileID: 0}
