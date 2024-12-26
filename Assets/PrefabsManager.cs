@@ -14,11 +14,19 @@ public class PrefabsManager : MonoBehaviour
     float ChunkSize;
     public static float chunkSize;
 
-    public enum ShapeType { Cube, Sphere, Cylinder }; // what about Assets?
+    public enum ShapeType { Cube, Sphere, Cylinder }; 
     public GameObject CubeSelector;
     public GameObject SphereSelector;
     public GameObject CylinderSelector;
     public static GameObject Selector;
+    
+    public enum AssetType { iwHub, chargingStation, dollyOne, dollyTwo, palletDocker};
+    public GameObject iwHub;
+    public GameObject chargingStation;
+    public GameObject dollyOne;
+    public GameObject dollyTwo;
+    public GameObject palletDocker;
+    public static GameObject Asset;
 
 
     private void Start()
@@ -38,6 +46,29 @@ public class PrefabsManager : MonoBehaviour
         Selector = CubeSelector;
     }
 
+    public void SelectAsset(int shape)
+    {
+        AssetType assetType = (AssetType)shape;
+        switch (assetType)
+        {
+            case AssetType.iwHub:
+                Asset = iwHub;
+                break;
+            case AssetType.chargingStation:
+                Asset = chargingStation;
+                break;
+            case AssetType.dollyOne:
+                Asset = dollyOne;
+                break;
+            case AssetType.dollyTwo:  
+                Asset = dollyTwo;
+                break;
+            case AssetType.palletDocker:
+                Asset = palletDocker;
+                break;
+        }
+    }
+
     public void SelectObject(int shape)
     {
         ShapeType shapeType = (ShapeType)shape;
@@ -55,9 +86,14 @@ public class PrefabsManager : MonoBehaviour
         }
     }
 
-    public void OnConvexityToggle(bool convex)
+    public void SelectorOnConvexityToggle(bool convex)
     {
         Selector.GetComponent<MeshCollider>().convex = convex;
+    }
+
+    public void AssetOnConvexityToggle(bool convex)
+    {
+        Asset.GetComponent<MeshCollider>().convex = convex;
     }
 
     public void SetChunkParent(bool state)

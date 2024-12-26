@@ -6,17 +6,21 @@ using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using Microsoft.MixedReality.Toolkit.UI;
 using static System.ComponentModel.Design.ObjectSelectorEditor;
+using UnityEngine.Assertions;
 
 public class EditsManager : MonoBehaviour
 {
     public GameObject VoxelsMenu, SelectorOptionsMenu;
+    public GameObject AssetsMenu;
     bool doneInstantiation, selectorInstantiated, fingersClosed;
     bool additionSelected, deletionSelected, labelingSelected;
+    bool assetAdditionSelected;
     Vector3 initialPoseInCubes;
     public static GameObject instantiatedObject;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseRightIndex;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseRightThumb;
     IMixedRealityHandJointService handJointService;
+    InputActionHandler inputActionHandler;
     int SelectorLayerMask = 1 << 6;
 
     void Start()
@@ -25,6 +29,7 @@ public class EditsManager : MonoBehaviour
         selectorInstantiated = false; 
         initialPoseInCubes = new();
         handJointService = CoreServices.GetInputSystemDataProvider<IMixedRealityHandJointService>();
+        inputActionHandler = gameObject.GetComponent<InputActionHandler>();
     }
 
     
@@ -126,13 +131,9 @@ public class EditsManager : MonoBehaviour
 
     public void Confirm()
     {
-        Debug.Log("Confirm being executed");
         List<Vector3> selectorPoints = VoxelizeSelector();
-        Debug.Log(selectorPoints.Count);
-        Debug.Log(additionSelected);
-        if (additionSelected)
+        if (additionSelected || assetAdditionSelected)
         {
-            Debug.Log("Addition Selected!");
             foreach (Vector3 point in selectorPoints)
             {
                 VoxelManager.AddVoxel(point, true);
@@ -181,6 +182,37 @@ public class EditsManager : MonoBehaviour
     {
         labelingSelected = state;
     }
+
+    public void OnAssetAdditionSelected(bool state)
+    {
+        assetAdditionSelected = state;
+    }
+
+    public void InstantiateAsset()
+    {
+        Debug.Log("INSTANTIATING ASSET");
+        if (instantiatedObject != null) Destroy(instantiatedObject);
+        Vector3 assetPose = new();
+        assetPose.x = Camera.main.transform.localPosition.x + 2 * Mathf.Sin(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+        assetPose.y = Camera.main.transform.localPosition.y - 1.5f;
+        assetPose.z = Camera.main.transform.localPosition.z + 2 * Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+
+        Vector3 assetRotation = new();
+        assetRotation.Set(0, Camera.main.transform.localRotation.eulerAngles.y, 0);
+
+        instantiatedObject = Instantiate(PrefabsManager.Asset, assetPose, Quaternion.Euler(assetRotation));
+        
+        AssetsMenu.SetActive(false);
+        SelectorOptionsMenu.SetActive(true);
+        // inputActionHandler.enabled = false;
+    }
+
+    public void ChangeMenu()
+    {
+        if (additionSelected || deletionSelected) VoxelsMenu.SetActive(true);
+        else if (assetAdditionSelected) AssetsMenu.SetActive(true);
+    }
+
 
 
 }
