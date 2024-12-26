@@ -9,6 +9,7 @@ using static System.ComponentModel.Design.ObjectSelectorEditor;
 
 public class EditsManager : MonoBehaviour
 {
+    public GameObject VoxelsMenu, SelectorOptionsMenu;
     bool doneInstantiation, selectorInstantiated, fingersClosed;
     bool additionSelected, deletionSelected, labelingSelected;
     Vector3 initialPoseInCubes;
@@ -21,7 +22,7 @@ public class EditsManager : MonoBehaviour
     void Start()
     {
         doneInstantiation = false;
-        selectorInstantiated = false;
+        selectorInstantiated = false; 
         initialPoseInCubes = new();
         handJointService = CoreServices.GetInputSystemDataProvider<IMixedRealityHandJointService>();
     }
@@ -60,9 +61,9 @@ public class EditsManager : MonoBehaviour
             center = new();
             initialPose = poseRightIndex.Position;
             initialPoseInCubes.Set(Mathf.RoundToInt(initialPose.x / PrefabsManager.voxelSize), Mathf.RoundToInt(initialPose.y / PrefabsManager.voxelSize), Mathf.RoundToInt(initialPose.z / PrefabsManager.voxelSize));
-            center = Vector3.one * PrefabsManager.voxelSize;
+            center = initialPoseInCubes * PrefabsManager.voxelSize;
             instantiatedObject = Instantiate(PrefabsManager.Selector, center, Quaternion.identity);
-            instantiatedObject.transform.localScale = new Vector3(PrefabsManager.voxelSize, PrefabsManager.voxelSize, PrefabsManager.voxelSize);
+            instantiatedObject.transform.localScale = Vector3.one * PrefabsManager.voxelSize;
             selectorInstantiated = true;
         }
     }
@@ -88,7 +89,8 @@ public class EditsManager : MonoBehaviour
         else
         {
             doneInstantiation = true;
-            
+            VoxelsMenu.SetActive(false);
+            SelectorOptionsMenu.SetActive(true);
         }
     }
 
@@ -97,6 +99,7 @@ public class EditsManager : MonoBehaviour
         List<Vector3> selectorPoints = new();
         // Get the bounds of the instantiated object
         Bounds bounds = instantiatedObject.GetComponent<MeshRenderer>().bounds;
+        Debug.Log(bounds.ToString());
 
         Vector3Int minBounds = Vector3Int.FloorToInt(VoxelManager.RoundToVoxel(bounds.min) / PrefabsManager.voxelSize);
         Vector3Int maxBounds = Vector3Int.FloorToInt(VoxelManager.RoundToVoxel(bounds.max) / PrefabsManager.voxelSize);
@@ -123,9 +126,13 @@ public class EditsManager : MonoBehaviour
 
     public void Confirm()
     {
+        Debug.Log("Confirm being executed");
         List<Vector3> selectorPoints = VoxelizeSelector();
+        Debug.Log(selectorPoints.Count);
+        Debug.Log(additionSelected);
         if (additionSelected)
         {
+            Debug.Log("Addition Selected!");
             foreach (Vector3 point in selectorPoints)
             {
                 VoxelManager.AddVoxel(point, true);
@@ -147,7 +154,32 @@ public class EditsManager : MonoBehaviour
         }
         Destroy(instantiatedObject);
         instantiatedObject = null;
+        selectorInstantiated = false;
         doneInstantiation = false;
+    }
+
+    public void Cancel()
+    {
+        Destroy(instantiatedObject);
+        instantiatedObject = null;
+        selectorInstantiated = false;
+        doneInstantiation = false;
+    }
+
+    public void OnAdditionSelected(bool state)
+    {
+        additionSelected = state;
+        Debug.Log(additionSelected);
+    }
+
+    public void OnDeletionSelected(bool state)
+    {
+        deletionSelected = state;
+    }
+
+    public void OnLabelingSelected(bool state)
+    {
+        labelingSelected = state;
     }
 
 
