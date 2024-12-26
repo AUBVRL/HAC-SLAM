@@ -55,6 +55,11 @@ public class PrefabsManager : MonoBehaviour
         }
     }
 
+    public void OnConvexityToggle(bool convex)
+    {
+        Selector.GetComponent<MeshCollider>().convex = convex;
+    }
+
     public void SetChunkParent(bool state)
     {
         chunkParentPrefab.SetActive(state);

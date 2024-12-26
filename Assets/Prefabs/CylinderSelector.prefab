@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: -4338663510402198963}
   - component: {fileID: -5161595438324286798}
   - component: {fileID: 2044056066035191321}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: CylinderSelector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
