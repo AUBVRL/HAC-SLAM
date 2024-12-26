@@ -88,8 +88,7 @@ public class EditsManager : MonoBehaviour
         else
         {
             doneInstantiation = true;
-            additionSelected = true; // remove this
-            Confirm(); // remove this
+            
         }
     }
 
@@ -148,7 +147,7 @@ public class EditsManager : MonoBehaviour
         }
         Destroy(instantiatedObject);
         instantiatedObject = null;
-        // doneInstantiation = false;
+        doneInstantiation = false;
     }
 
 
