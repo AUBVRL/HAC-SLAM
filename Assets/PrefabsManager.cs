@@ -31,11 +31,14 @@ public class PrefabsManager : MonoBehaviour
 
     private void Start()
     {
-        VoxelSize = 0.05f;
+        VoxelSize = 0.1f;
         ChunkSize = 3f;
         voxelPrefab = VoxelPrefab;
         addedVoxelPrefab = AddedVoxelPrefab;
         deletedVoxelPrefab = DeletedVoxelPrefab;
+        voxelPrefab.transform.localScale = Vector3.one * VoxelSize;
+        addedVoxelPrefab.transform.localScale = Vector3.one * VoxelSize;
+        deletedVoxelPrefab.transform.localScale = Vector3.one * VoxelSize;
         voxelSize = VoxelSize;
         chunkSize = ChunkSize;
         deletedVoxelPrefabParent = new GameObject("DeletedVoxelParent");

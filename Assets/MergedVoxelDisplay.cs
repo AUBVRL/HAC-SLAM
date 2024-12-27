@@ -108,7 +108,7 @@ public class MergedVoxelDisplay : MonoBehaviour
             globalPoint = newImage.transform.TransformPoint(globalPoint); // global coordinates of point
             globalPoint = manualAlign.transform.TransformPoint(globalPoint); 
             
-            VoxelManager.AddVoxel(globalPoint, false);
+            VoxelManager.AddVoxel(globalPoint, true);
             countTillYield++;
             if (countTillYield % 500 == 0)
             {
