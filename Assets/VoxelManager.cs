@@ -5,7 +5,6 @@ using UnityEngine;
 public class VoxelManager : MonoBehaviour
 {
     public static Dictionary<Vector3, Chunk> ChunksDict;
-    // Start is called before the first frame update
     void Start()
     {
         ChunksDict = new Dictionary<Vector3, Chunk>();

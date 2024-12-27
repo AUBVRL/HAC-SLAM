@@ -93,7 +93,21 @@ public class Voxel
         state = false;
     }
 
+    public List<byte> ToByteArray()
+    {
+        if (!state)
+        {
+            return new List<byte>();
+        }
+        List<byte> byteList = new();
 
+        // Convert position to bytes
+        byteList.AddRange(BitConverter.GetBytes(position.x));
+        byteList.AddRange(BitConverter.GetBytes(position.z));
+        byteList.AddRange(BitConverter.GetBytes(position.y));
+
+        return byteList;
+    }
 
 
 }
