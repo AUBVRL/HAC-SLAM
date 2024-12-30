@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 7666582626058400334}
   - component: {fileID: -8160791827978801239}
   - component: {fileID: -4473119840896875151}
+  - component: {fileID: -6514450727063269105}
   m_Layer: 6
   m_Name: SphereSelector
   m_TagString: Untagged
@@ -255,4 +256,21 @@ MonoBehaviour:
   proximityType: 3
   executionOrder: 0
   constraintOnMovement: 0
+  useLocalSpaceForConstraint: 0
+--- !u!114 &-6514450727063269105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7666582626058400321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b3e6359c9750ad4fb8a05c9b8704d7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handType: 3
+  proximityType: 3
+  executionOrder: 0
+  constraintOnRotation: 0
   useLocalSpaceForConstraint: 0

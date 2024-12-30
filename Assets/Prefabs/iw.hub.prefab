@@ -14,8 +14,8 @@ GameObject:
   - component: {fileID: -6923822807350005938}
   - component: {fileID: 8697372620655505780}
   - component: {fileID: -6377499361996990645}
-  - component: {fileID: 5658259113043922879}
   - component: {fileID: -2011473430261345480}
+  - component: {fileID: 3402437701312782997}
   m_Layer: 6
   m_Name: iw.hub
   m_TagString: Untagged
@@ -103,7 +103,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
-  m_Convex: 1
+  m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -2432090755550338912, guid: 62d7ebfbdd97640469885375dacd60e3, type: 3}
 --- !u!114 &8697372620655505780
@@ -163,23 +163,6 @@ MonoBehaviour:
   onHoverExited:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5658259113043922879
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4130489786689630051}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b3e6359c9750ad4fb8a05c9b8704d7b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  handType: 3
-  proximityType: 3
-  executionOrder: 0
-  constraintOnRotation: 5
-  useLocalSpaceForConstraint: 1
 --- !u!114 &-2011473430261345480
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,4 +179,21 @@ MonoBehaviour:
   proximityType: 3
   executionOrder: 0
   constraintOnMovement: 0
+  useLocalSpaceForConstraint: 0
+--- !u!114 &3402437701312782997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4130489786689630051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b3e6359c9750ad4fb8a05c9b8704d7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handType: 3
+  proximityType: 3
+  executionOrder: 0
+  constraintOnRotation: 0
   useLocalSpaceForConstraint: 0

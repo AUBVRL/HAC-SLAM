@@ -178,8 +178,8 @@ MonoBehaviour:
   handType: 3
   proximityType: 3
   executionOrder: 0
-  constraintOnRotation: 5
-  useLocalSpaceForConstraint: 1
+  constraintOnRotation: 0
+  useLocalSpaceForConstraint: 0
 --- !u!114 &-1166967936279452516
 MonoBehaviour:
   m_ObjectHideFlags: 0
