@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: -7283549008794745039}
   - component: {fileID: -8421638657362344543}
   - component: {fileID: -3488523845248222207}
+  - component: {fileID: -1166967936279452516}
   m_Layer: 6
   m_Name: Pallet Docker
   m_TagString: Untagged
@@ -179,3 +180,20 @@ MonoBehaviour:
   executionOrder: 0
   constraintOnRotation: 5
   useLocalSpaceForConstraint: 1
+--- !u!114 &-1166967936279452516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8958619307389699015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 149fa3ae453128b41940b5caa905f8ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handType: 3
+  proximityType: 3
+  executionOrder: 0
+  constraintOnMovement: 0
+  useLocalSpaceForConstraint: 0

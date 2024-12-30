@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6584508117127368665}
   - component: {fileID: 3778655985200508847}
   - component: {fileID: 4980880436028026437}
+  - component: {fileID: -4334128473789355097}
   m_Layer: 6
   m_Name: Charging Station
   m_TagString: Untagged
@@ -175,3 +176,20 @@ MonoBehaviour:
   executionOrder: 0
   constraintOnRotation: 5
   useLocalSpaceForConstraint: 1
+--- !u!114 &-4334128473789355097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1288811157726647384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 149fa3ae453128b41940b5caa905f8ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handType: 3
+  proximityType: 3
+  executionOrder: 0
+  constraintOnMovement: 0
+  useLocalSpaceForConstraint: 0

@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 7151001558072042451}
   - component: {fileID: 7151001558072042450}
   - component: {fileID: -294252362126133378}
+  - component: {fileID: -1969375201819630499}
   m_Layer: 6
   m_Name: NewSelector3D
   m_TagString: Untagged
@@ -238,3 +239,20 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &-1969375201819630499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4385382872227521279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 149fa3ae453128b41940b5caa905f8ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handType: 3
+  proximityType: 3
+  executionOrder: 0
+  constraintOnMovement: 0
+  useLocalSpaceForConstraint: 0

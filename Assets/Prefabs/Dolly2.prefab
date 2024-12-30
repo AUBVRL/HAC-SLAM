@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: -4261000860282172038}
   - component: {fileID: 4264477349918492369}
   - component: {fileID: 6139991874204391213}
+  - component: {fileID: 6248827973780551983}
   m_Layer: 6
   m_Name: Dolly2
   m_TagString: Untagged
@@ -175,3 +176,20 @@ MonoBehaviour:
   executionOrder: 0
   constraintOnRotation: 5
   useLocalSpaceForConstraint: 1
+--- !u!114 &6248827973780551983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7719726138299391357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 149fa3ae453128b41940b5caa905f8ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handType: 3
+  proximityType: 3
+  executionOrder: 0
+  constraintOnMovement: 0
+  useLocalSpaceForConstraint: 0

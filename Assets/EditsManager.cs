@@ -7,9 +7,11 @@ using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using Microsoft.MixedReality.Toolkit.UI;
 using static System.ComponentModel.Design.ObjectSelectorEditor;
 using UnityEngine.Assertions;
+using TMPro;
 
 public class EditsManager : MonoBehaviour
 {
+    public TextMeshPro menuText;
     public GameObject VoxelsMenu, SelectorOptionsMenu;
     public GameObject AssetsMenu;
     bool doneInstantiation, selectorInstantiated, fingersClosed;
@@ -96,6 +98,7 @@ public class EditsManager : MonoBehaviour
             doneInstantiation = true;
             VoxelsMenu.SetActive(false);
             SelectorOptionsMenu.SetActive(true);
+            menuText.text = "Selector Options Menu";
         }
     }
 
@@ -104,7 +107,6 @@ public class EditsManager : MonoBehaviour
         List<Vector3> selectorPoints = new();
         // Get the bounds of the instantiated object
         Bounds bounds = instantiatedObject.GetComponent<MeshRenderer>().bounds;
-        Debug.Log(bounds.ToString());
 
         Vector3Int minBounds = Vector3Int.FloorToInt(VoxelManager.RoundToVoxel(bounds.min) / PrefabsManager.voxelSize);
         Vector3Int maxBounds = Vector3Int.FloorToInt(VoxelManager.RoundToVoxel(bounds.max) / PrefabsManager.voxelSize);
@@ -120,7 +122,7 @@ public class EditsManager : MonoBehaviour
                     Vector3 coliderPose = new Vector3(x, y, z) * PrefabsManager.voxelSize;
 
                     bool checkBoxOverlap = Physics.CheckBox(coliderPose, voxelSizeVector / 2, Quaternion.identity, SelectorLayerMask);
-
+                    Debug.Log(checkBoxOverlap);
                     if (checkBoxOverlap) selectorPoints.Add(coliderPose);
                 }
             }
@@ -170,7 +172,6 @@ public class EditsManager : MonoBehaviour
     public void OnAdditionSelected(bool state)
     {
         additionSelected = state;
-        Debug.Log(additionSelected);
     }
 
     public void OnDeletionSelected(bool state)
@@ -209,7 +210,15 @@ public class EditsManager : MonoBehaviour
 
     public void ChangeMenu()
     {
-        if (additionSelected || deletionSelected) VoxelsMenu.SetActive(true);
+        if (additionSelected) {
+            VoxelsMenu.SetActive(true);
+            menuText.text = "Add Voxels";
+        }
+        if (deletionSelected)
+        {
+            VoxelsMenu.SetActive(true);
+            menuText.text = "Delete Voxels";
+        }
         else if (assetAdditionSelected) AssetsMenu.SetActive(true);
     }
 
