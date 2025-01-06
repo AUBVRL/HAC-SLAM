@@ -10,7 +10,6 @@ public class HoloKeyboard : MonoBehaviour
 {
     // Start is called before the first frame update
     MixedRealityKeyboard MRkeyboard;
-    public RosPublisherExample Pub;
     [NonSerialized]
     public string texty;
     public MixedRealityKeyboardPreview mixedRealityKeyboardPreview;
@@ -81,7 +80,6 @@ public class HoloKeyboard : MonoBehaviour
 
     public void SaveName()
     {
-        Pub.PublishSavedMapName(texty);
         //Pub.PublishSavedMapName("HelloMalakkkk");
     }
 
