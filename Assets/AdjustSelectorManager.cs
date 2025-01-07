@@ -20,6 +20,7 @@ public class AdjustSelectorManager : MonoBehaviour
     Vector3 adjustedPose;
     Vector3 adjustedRotation;
     Vector3 adjustedScale;
+    
 
     void Start()
     {
@@ -36,21 +37,33 @@ public class AdjustSelectorManager : MonoBehaviour
 
     void OnEnable()
     {
+        Vector3 newPosition = Camera.main.transform.position + Camera.main.transform.forward * 1.0f;
         // position
         xPosition.text = EditsManager.instantiatedObject.transform.position.x.ToString();
         yPosition.text = EditsManager.instantiatedObject.transform.position.y.ToString();
         zPosition.text = EditsManager.instantiatedObject.transform.position.z.ToString();
         adjustedPose = EditsManager.instantiatedObject.transform.position;
+        xPosition.transform.position = newPosition;
+        yPosition.transform.position = newPosition - 0.1f * Camera.main.transform.up;
+        zPosition.transform.position = newPosition - 0.2f * Camera.main.transform.up;
+
         // rotation
         xAngle.text = EditsManager.instantiatedObject.transform.eulerAngles.x.ToString();
         yAngle.text = EditsManager.instantiatedObject.transform.eulerAngles.y.ToString();
         zAngle.text = EditsManager.instantiatedObject.transform.eulerAngles.z.ToString();
         adjustedRotation = EditsManager.instantiatedObject.transform.eulerAngles;
+        xAngle.transform.position = newPosition;
+        yAngle.transform.position = newPosition - 0.1f * Camera.main.transform.up;
+        zAngle.transform.position = newPosition - 0.2f * Camera.main.transform.up;
+
         // scale
         xScale.text = EditsManager.instantiatedObject.transform.localScale.x.ToString();
         yScale.text = EditsManager.instantiatedObject.transform.localScale.y.ToString();
         zScale.text = EditsManager.instantiatedObject.transform.localScale.z.ToString();
         adjustedScale = EditsManager.instantiatedObject.transform.localScale;
+        xScale.transform.position = newPosition;
+        yScale.transform.position = newPosition - 0.1f * Camera.main.transform.up;
+        zScale.transform.position = newPosition - 0.2f * Camera.main.transform.up;
     }
 
     void HandleInputEndEdit_xPosition(string inputText)

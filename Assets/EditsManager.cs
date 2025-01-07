@@ -56,7 +56,6 @@ public class EditsManager : MonoBehaviour
         {
             HandJointUtils.TryGetJointPose(Microsoft.MixedReality.Toolkit.Utilities.TrackedHandJoint.ThumbTip, Microsoft.MixedReality.Toolkit.Utilities.Handedness.Right, out poseRightThumb);
             fingersClosed = Vector3.Distance(poseRightIndex.Position, poseRightThumb.Position) < 0.04f;
-            Debug.Log(fingersClosed);
         }
     }
 
