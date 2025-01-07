@@ -46,6 +46,9 @@ public class AdjustSelectorManager : MonoBehaviour
         xPosition.transform.position = newPosition;
         yPosition.transform.position = newPosition - 0.1f * Camera.main.transform.up;
         zPosition.transform.position = newPosition - 0.2f * Camera.main.transform.up;
+        xPosition.transform.forward = Camera.main.transform.forward;
+        yPosition.transform.forward = Camera.main.transform.forward;
+        zPosition.transform.forward = Camera.main.transform.forward;
 
         // rotation
         xAngle.text = EditsManager.instantiatedObject.transform.eulerAngles.x.ToString();
@@ -55,6 +58,9 @@ public class AdjustSelectorManager : MonoBehaviour
         xAngle.transform.position = newPosition;
         yAngle.transform.position = newPosition - 0.1f * Camera.main.transform.up;
         zAngle.transform.position = newPosition - 0.2f * Camera.main.transform.up;
+        xAngle.transform.forward = Camera.main.transform.forward;
+        yAngle.transform.forward = Camera.main.transform.forward;
+        zAngle.transform.forward = Camera.main.transform.forward;
 
         // scale
         xScale.text = EditsManager.instantiatedObject.transform.localScale.x.ToString();
@@ -64,6 +70,9 @@ public class AdjustSelectorManager : MonoBehaviour
         xScale.transform.position = newPosition;
         yScale.transform.position = newPosition - 0.1f * Camera.main.transform.up;
         zScale.transform.position = newPosition - 0.2f * Camera.main.transform.up;
+        xScale.transform.forward = Camera.main.transform.forward;
+        yScale.transform.forward = Camera.main.transform.forward;
+        zScale.transform.forward = Camera.main.transform.forward;
     }
 
     void HandleInputEndEdit_xPosition(string inputText)
