@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography.Xml;
 using Unity.Robotics.ROSTCPConnector;
 using UnityEngine;
+//using transformer = RosMessageTypes.CustomInterfaces;
 
 public class RosPublisherManager : MonoBehaviour
 {
@@ -11,12 +13,19 @@ public class RosPublisherManager : MonoBehaviour
     string deletedVoxelsTopic = "human/delete"; //For publishing deleted voxels
     float publishRate = 3f; //Rate at which the point cloud is published
     RosMessageTypes.Sensor.PointCloud2Msg mappedPointCloud;
+    //transformer.InstanceMsg custom;
+    float timeElapsed = 0.0f;
+    int publishMessageFrequency = 3;
+    RosMessageTypes.Std.Int16Msg integer;
+
 
     void Start()
     {
         ros = ROSConnection.GetOrCreateInstance();
 
         ros.RegisterPublisher<RosMessageTypes.Sensor.PointCloud2Msg>(mappedVoxelsTopic);
+        //ros.RegisterPublisher<transformer.InstanceMsg>("/com/delete_instance");
+        ros.RegisterPublisher<RosMessageTypes.Std.Int16Msg>("/integer");
         //Check how to populate the constructor later
         mappedPointCloud = new RosMessageTypes.Sensor.PointCloud2Msg();
         mappedPointCloud.header.frame_id = "map";
@@ -35,6 +44,23 @@ public class RosPublisherManager : MonoBehaviour
         mappedPointCloud.height = 1;
         mappedPointCloud.data = new byte[0];
 
+        //custom = new transformer.InstanceMsg();
+        //custom.label = 1;
+        //custom.instance = 2;
+
+        integer = new RosMessageTypes.Std.Int16Msg(42);
+    }
+
+    private void Update()
+    {
+        timeElapsed += Time.deltaTime;
+
+        if (timeElapsed > publishMessageFrequency) // && yalla == true) //new
+        {
+            // ros.Publish("/com/delete_instance", custom);
+            ros.Publish("/integer", integer);
+            timeElapsed = 0;
+        }
     }
 
     public void PublishMappedVoxels()

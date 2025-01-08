@@ -104,6 +104,7 @@ public class RosPublisherExample : MonoBehaviour
         ros.RegisterPublisher<_int.BoolMsg>(RequestNamesTopic);
         ros.RegisterPublisher<_int.StringMsg>(LoadMapTopic);
         ros.RegisterPublisher<GeometryMsgs.TwistMsg>(localizeHumanTopic);
+        ros.RegisterPublisher<transformer.NumMsg>("/custom_topic");
 
         //The below is for the robot rotation 
         PublishTwist = false;
@@ -215,6 +216,7 @@ public class RosPublisherExample : MonoBehaviour
         pc2l.width = NewWidthforEdited;
         pc2l.height = 1;
         pc2l.data = new byte[0];
+
 
 
 
@@ -443,8 +445,8 @@ public class RosPublisherExample : MonoBehaviour
 
         pc2m.width = (uint)mcb.Papa.transform.childCount;*/
 
-        pc2m.data = mcb.VoxelByte.ToArray();
-        pc2m.width = (uint)(mcb.VoxelByte.Count / 12);
+/*        pc2m.data = mcb.VoxelByte.ToArray();
+        pc2m.width = (uint)(mcb.VoxelByte.Count / 12);*/
     }
 
     public void RequestDownsampledMap(int x)

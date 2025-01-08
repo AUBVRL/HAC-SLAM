@@ -77,6 +77,14 @@ public class RosSubscriberExample : MonoBehaviour
         //ROSConnection.GetOrCreateInstance().Subscribe<OGGM>("occupancy_map", Ocupo);
 
     }
+
+    private void mayaCallback(transformer.NumMsg msg)
+    {
+        Debug.Log(msg.num);
+        Debug.Log(msg.name);
+    }
+
+
     public void Ocupo(OGGM bata)
     {
         resol = bata.info.resolution;
