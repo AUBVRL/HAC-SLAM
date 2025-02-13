@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class CoordinatesManager : MonoBehaviour
 {
-    public GameObject ImageTarget, tooltipPrefab;
+    public GameObject ImageTarget, tooltipPrefab, vuforiaParent;
     public static GameObject imageTarget;
     void Start()
     {
@@ -31,7 +31,32 @@ public class CoordinatesManager : MonoBehaviour
         CreateDebugCube(imageTarget.transform.position + imageTarget.transform.right * 1.0f, Color.red);     // Right (X)
         GameObject tooltip = Instantiate(tooltipPrefab,imageTarget.transform.position + imageTarget.transform.up * 0.2f, Quaternion.identity);
         ToolTip tooltipText = tooltip.GetComponent<ToolTip>();
-        tooltipText.ToolTipText = "World Coordinates: " + imageTarget.transform.position.ToString() + "\n" +
-                          "World Rotation: " + imageTarget.transform.rotation.eulerAngles.y.ToString();
+        tooltipText.ToolTipText = "World Coordinates: (" + (imageTarget.transform.position.x) + ","+ (imageTarget.transform.position.z) + "," + (imageTarget.transform.position.y) + ")" + "\n" +
+                          "World Rotation: " + (180-imageTarget.transform.rotation.eulerAngles.y).ToString();
+    }
+
+    public void displayActiveModelTargetCoordinates()
+    {
+        foreach (Transform child in vuforiaParent.transform)
+        {
+            if (child.gameObject.activeSelf)
+            {
+                displayModelTargetCoordinates(child.gameObject);
+                break;
+            }
+        }
+    }
+
+    public void displayModelTargetCoordinates(GameObject robot)
+    {
+        Vector3 globalPosition = robot.transform.position;
+        Vector3 localPosition = imageTarget.transform.InverseTransformPoint(globalPosition);
+        float y_angle = imageTarget.transform.eulerAngles.y - robot.transform.eulerAngles.y;
+        GameObject tooltip = Instantiate(tooltipPrefab, robot.transform.position + Vector3.up * 0.2f, Quaternion.identity);
+        ToolTip tooltipText = tooltip.GetComponent<ToolTip>();
+        tooltipText.ToolTipText = "Coordinates wrt Image Target: (" + (-localPosition.x) + ","+ (-localPosition.z) + "," + (localPosition.y) + ")" + "\n" + //localPosition.ToString() + "\n" +
+                          "Rotation wrt Image Target: " + (y_angle - 180).ToString() + "\n" +
+                          "World Coordinates: (" + (globalPosition.x) + ","+ (globalPosition.z) + "," + (globalPosition.y) + ")" + "\n" +
+                          "World Rotation: " + (robot.transform.rotation.eulerAngles.y);
     }
 }
