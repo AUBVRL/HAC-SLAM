@@ -2351,7 +2351,7 @@ MonoBehaviour:
   OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6520940761521757197}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: LabelAndInstance, Assembly-CSharp
         m_MethodName: DeleteLabel
         m_Mode: 1
@@ -3145,7 +3145,7 @@ MonoBehaviour:
   OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6520940761521757197}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: LabelAndInstance, Assembly-CSharp
         m_MethodName: DeleteInstance
         m_Mode: 1
@@ -3645,7 +3645,6 @@ GameObject:
   - component: {fileID: 8535477067548705503}
   - component: {fileID: 8536285726646352081}
   - component: {fileID: 8523853181899105477}
-  - component: {fileID: 6520940761521757197}
   m_Layer: 0
   m_Name: ToolTip With Buttons
   m_TagString: Untagged
@@ -4022,20 +4021,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &6520940761521757197
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8638514454484749609}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f33c85a8381a151488e51ef50275276c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  label: 0
-  instance: 0
 --- !u!1 &8639174668586885903
 GameObject:
   m_ObjectHideFlags: 0
