@@ -24,15 +24,16 @@ public class CoordinatesManager : MonoBehaviour
     {
         imageTarget.transform.position = ImageTarget.transform.position;
         imageTarget.transform.up = ImageTarget.transform.forward;
-        imageTarget.transform.right = ImageTarget.transform.right;
-        imageTarget.transform.forward = -ImageTarget.transform.up;
+        imageTarget.transform.right = -ImageTarget.transform.right;
+        imageTarget.transform.forward = ImageTarget.transform.up;
+        Vector3 transformedPosition = new Vector3(imageTarget.transform.position.x, imageTarget.transform.position.z, imageTarget.transform.position.y);
         CreateDebugCube(imageTarget.transform.position + imageTarget.transform.forward * 1.0f, Color.blue);  // Forward (Z)
         CreateDebugCube(imageTarget.transform.position + imageTarget.transform.up * 1.0f, Color.green);      // Up (Y)
         CreateDebugCube(imageTarget.transform.position + imageTarget.transform.right * 1.0f, Color.red);     // Right (X)
-        GameObject tooltip = Instantiate(tooltipPrefab,imageTarget.transform.position + imageTarget.transform.up * 0.2f, Quaternion.identity);
+        GameObject tooltip = Instantiate(tooltipPrefab, imageTarget.transform.position + imageTarget.transform.up * 0.2f, Quaternion.identity);
         ToolTip tooltipText = tooltip.GetComponent<ToolTip>();
-        tooltipText.ToolTipText = "World Coordinates: (" + (imageTarget.transform.position.x) + ","+ (imageTarget.transform.position.z) + "," + (imageTarget.transform.position.y) + ")" + "\n" +
-                          "World Rotation: " + (180-imageTarget.transform.rotation.eulerAngles.y).ToString();
+        tooltipText.ToolTipText = "World Coordinates: "  + transformedPosition.ToString() + "\n" +
+                          "World Rotation: " + (-imageTarget.transform.rotation.eulerAngles.y).ToString();
     }
 
     public void displayActiveModelTargetCoordinates()
@@ -49,14 +50,18 @@ public class CoordinatesManager : MonoBehaviour
 
     public void displayModelTargetCoordinates(GameObject robot)
     {
+        CreateDebugCube(robot.transform.position + robot.transform.forward * 1.0f, Color.blue);  // Forward (Z)
+        CreateDebugCube(robot.transform.position + robot.transform.up * 1.0f, Color.green);      // Up (Y)
+        CreateDebugCube(robot.transform.position + robot.transform.right * 1.0f, Color.red);     // Right (X)
         Vector3 globalPosition = robot.transform.position;
         Vector3 localPosition = imageTarget.transform.InverseTransformPoint(globalPosition);
-        float y_angle = imageTarget.transform.eulerAngles.y - robot.transform.eulerAngles.y;
-        GameObject tooltip = Instantiate(tooltipPrefab, robot.transform.position + Vector3.up * 0.2f, Quaternion.identity);
+        Vector3 transformedGlobalPosition = new Vector3(globalPosition.x, globalPosition.z,globalPosition.y);
+        float y_angle = robot.transform.eulerAngles.y - imageTarget.transform.eulerAngles.y;
+        GameObject tooltip = Instantiate(tooltipPrefab, robot.transform.position + Vector3.up * 0.4f, Quaternion.identity);
         ToolTip tooltipText = tooltip.GetComponent<ToolTip>();
-        tooltipText.ToolTipText = "Coordinates wrt Image Target: (" + (-localPosition.x) + ","+ (-localPosition.z) + "," + (localPosition.y) + ")" + "\n" + //localPosition.ToString() + "\n" +
-                          "Rotation wrt Image Target: " + (y_angle - 180).ToString() + "\n" +
-                          "World Coordinates: (" + (globalPosition.x) + ","+ (globalPosition.z) + "," + (globalPosition.y) + ")" + "\n" +
-                          "World Rotation: " + (robot.transform.rotation.eulerAngles.y);
+        tooltipText.ToolTipText = "Coordinates wrt Image: " + localPosition.ToString() + "\n" +
+                  "Rotation wrt Image: " + (-y_angle).ToString() + "\n" +
+                  "World Coordinates: " + transformedGlobalPosition.ToString() + "\n" +
+                  "World Rotation: " + (-robot.transform.eulerAngles.y).ToString();  
     }
 }
