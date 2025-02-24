@@ -55,6 +55,11 @@ public class FingerPose : MonoBehaviour
         fingersThreshold = 0.04f;
         Prism = Selectors[3];
         _meshCollider = Prism.GetComponent<MeshCollider>();
+        if (!_meshCollider)
+        {
+            MeshCollider[] colliders = Prism.GetComponentsInChildren<MeshCollider>();
+            _meshCollider = colliders[0];
+        }
         _inputActionHandler = gameObject.GetComponent<InputActionHandler>();
 
         
@@ -293,7 +298,7 @@ public class FingerPose : MonoBehaviour
                         foreach(Collider overlap in overlaps)
                         {
                             Debug.Log(overlap.gameObject.name);
-                            if (overlap.gameObject.name == "Mesh")
+                            if (overlap.gameObject.name == "Mesh" || overlap.gameObject.name == "Prism")
                             {
                                 //coliderPose = coliderPose / cubesize;
                                 //coliderPose = coliderPose * 0.0499f;
