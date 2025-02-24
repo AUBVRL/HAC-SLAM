@@ -121,8 +121,8 @@ public class MinecraftBuilder : MonoBehaviour
                     //bool raycastHit = false;
                     Ver_Ray_direction = Quaternion.Euler((Ver_angle_min + (angle_size * j)), 0, 0) * Hor_Ray_direction;
                     raycastHit = Physics.Raycast(Gaze_position, Ver_Ray_direction, out hit, 10f);
-                    
-                    if (raycastHit && hit.transform.name.Contains("SpatialMesh")) //The second condition ensures that only the spatial mesh is mapped
+
+                    if (raycastHit && hit.transform.gameObject.layer == 31) //The second condition ensures that only the spatial mesh is mapped
                     {
                         //txtwrtr.meshName = hit.collider.name;
                         /*distx_in_cubes = Mathf.RoundToInt(hit.point.x / cubesize);
@@ -146,30 +146,30 @@ public class MinecraftBuilder : MonoBehaviour
                         ///////For deleting
                         float Gaze_distance = Vector3.Distance(Gaze_position, hit.point);
 
-                        hits = Physics.RaycastAll(Gaze_position, Ver_Ray_direction, Gaze_distance, 4);
-                        foreach (RaycastHit hity in hits)
-                        {
-                            if (hity.transform.name == "Voxel")
-                            {
-                                overlaps = Physics.OverlapBox(hity.transform.position, cubesizeScale / 2);
-                                foreach (Collider overlap in overlaps)
-                                {
-                                    spatial = false;
-                                    if (overlap.gameObject.name.Contains("SpatialMesh"))
-                                    {
-                                        spatial = true;
-                                        break;
-                                    }
-                                }
-                                if (spatial) continue;
-                                VoxelDestroyer(hity.transform.position);
+                        //hits = Physics.RaycastAll(Gaze_position, Ver_Ray_direction, Gaze_distance, 4);
+                        //foreach (RaycastHit hity in hits)
+                        //{
+                        //    if (hity.transform.name == "Voxel")
+                        //    {
+                        //        overlaps = Physics.OverlapBox(hity.transform.position, cubesizeScale / 2);
+                        //        foreach (Collider overlap in overlaps)
+                        //        {
+                        //            spatial = false;
+                        //            if (overlap.gameObject.name.Contains("SpatialMesh"))
+                        //            {
+                        //                spatial = true;
+                        //                break;
+                        //            }
+                        //        }
+                        //        if (spatial) continue;
+                        //        VoxelDestroyer(hity.transform.position);
 
 
-                                //VoxelDestroyer(hity.transform.position);
-                                //Instantiate(cube222, hity.transform.position, Quaternion.identity);
-                                //Debug.Log(Gaze_distance);
-                            }
-                        }
+                        //        //VoxelDestroyer(hity.transform.position);
+                        //        //Instantiate(cube222, hity.transform.position, Quaternion.identity);
+                        //        //Debug.Log(Gaze_distance);
+                        //    }
+                        //}
                         //////////////////////////// For deleting
 
                         //Rasterizer(Gaze_position, hit.point);
