@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QCARInfo>
+    <TargetSet version="36.0" toolVersion="v7.1.1">
+        <ModelTarget name="RedRobot" targetId="426f4014e84843ffb134426f90f3a1f8" version="14.0" toolVersion="v7.1.1" bbox="-0.450653 -0.000220 -0.260434 0.173030 0.495622 0.240582" trackingMode="scan" upVector="0.0 1.0 0.0" optimizeTrackingFor="default" realisticTextures="yes" />
+    </TargetSet>
+    <Assembly name="RedRobot" assemblyId="92bdae065c9b40e1b56515b43dcfccf9">
+        <Part name="RedRobot" translation="0 0 0" rotation="AD: 0 0 1 0" />
+        <EntryPoint name="(none)" trained="yes" />
+    </Assembly>
+</QCARInfo>

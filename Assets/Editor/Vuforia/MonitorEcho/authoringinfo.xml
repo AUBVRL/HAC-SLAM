@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QCARInfo>
+    <TargetSet version="36.0" toolVersion="v7.1.1">
+        <ModelTarget name="MonitorEcho" targetId="87719649c4e84501ac2a70383c03e1cb" version="14.0" toolVersion="v7.1.1" bbox="-0.580020 -0.000692 -0.406307 0.529611 1.417670 0.431973" trackingMode="scan" upVector="0.0 1.0 0.0" optimizeTrackingFor="default" realisticTextures="yes" />
+    </TargetSet>
+    <Assembly name="MonitorEcho" assemblyId="e6d011bbfab44e5b8ceaf2007ec439ac">
+        <Part name="MonitorEcho" translation="0 0 0" rotation="AD: 0 0 1 0" />
+        <EntryPoint name="(none)" trained="yes" />
+    </Assembly>
+</QCARInfo>

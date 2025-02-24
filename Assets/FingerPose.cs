@@ -264,9 +264,8 @@ public class FingerPose : MonoBehaviour
     
     public void officialVoxelizer()
     {
-        
-        selectorMesh = Selector.GetComponent<Renderer>();
-
+        Renderer[] mesh = Selector.GetComponentsInChildren<Renderer>();
+        selectorMesh = mesh[0];
         //Rounding of the bounds to units of cubes:
         minbound_inCubes.Set(Mathf.RoundToInt(selectorMesh.bounds.min.x / cubesize), 
                              Mathf.RoundToInt(selectorMesh.bounds.min.y / cubesize), 
@@ -293,7 +292,8 @@ public class FingerPose : MonoBehaviour
                     {
                         foreach(Collider overlap in overlaps)
                         {
-                            if(overlap.gameObject.name == "Prism")
+                            Debug.Log(overlap.gameObject.name);
+                            if (overlap.gameObject.name == "Mesh")
                             {
                                 //coliderPose = coliderPose / cubesize;
                                 //coliderPose = coliderPose * 0.0499f;
@@ -401,7 +401,8 @@ public class FingerPose : MonoBehaviour
     public void requestSelectorShape(int index)
     {
         Prism = Selectors[index];
-        _meshCollider = Selectors[index].GetComponent<MeshCollider>();
+        MeshCollider[] colliders = Selectors[index].GetComponentsInChildren<MeshCollider>();
+        _meshCollider = colliders[0];
         _meshCollider.convex = ConvexityState;
     }
 
