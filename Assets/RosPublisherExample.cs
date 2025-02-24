@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Examples.Demos;
+using System.Collections.Generic;
 
 /// <summary>
 /// 
@@ -406,6 +407,8 @@ public class RosPublisherExample : MonoBehaviour
         //PublishTwist = !PublishTwist;
     }
 
+
+
     public void PublishEditedPointCloudMsg()
     {
         pc2e.data = mcb.AddedVoxelByte.ToArray();
@@ -427,24 +430,14 @@ public class RosPublisherExample : MonoBehaviour
 
     public void PopulatePointCloudMsg()
     {
-        /*pc2m.data = new byte[mcb.Papa.transform.childCount * 12];
-
-        for (int i = 0; i < mcb.Papa.transform.childCount; i++)
+        List<byte> byteList = new();
+        foreach (var chunk in VoxelManager.ChunksDict.Values)
         {
-            byte[] xBytes = System.BitConverter.GetBytes(mcb.Papa.transform.GetChild(i).transform.position.x);
-            byte[] yBytes = System.BitConverter.GetBytes(mcb.Papa.transform.GetChild(i).transform.position.z);
-            byte[] zBytes = System.BitConverter.GetBytes(mcb.Papa.transform.GetChild(i).transform.position.y);
-
-            int offset = i * 12;
-            System.Buffer.BlockCopy(xBytes, 0, pc2m.data, offset, 4);
-            System.Buffer.BlockCopy(yBytes, 0, pc2m.data, offset + 4, 4);
-            System.Buffer.BlockCopy(zBytes, 0, pc2m.data, offset + 8, 4);
+            byteList.AddRange(chunk.GetChunkByteData());
         }
-
-        pc2m.width = (uint)mcb.Papa.transform.childCount;*/
-
-        pc2m.data = mcb.VoxelByte.ToArray();
-        pc2m.width = (uint)(mcb.VoxelByte.Count / 12);
+        byteList.AddRange(mcb.VoxelByte);
+        pc2m.data = byteList.ToArray();
+        pc2m.width = (uint)byteList.Count / 12;
     }
 
     public void RequestDownsampledMap(int x)

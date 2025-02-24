@@ -104,7 +104,7 @@ public class MinecraftBuilder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(MappingSwitch)  
+/*        if(MappingSwitch)  
         {
             Vector3 Gaze_direction = Camera.main.transform.forward;
             Vector3 Gaze_position = Camera.main.transform.position;
@@ -125,7 +125,7 @@ public class MinecraftBuilder : MonoBehaviour
                     if (raycastHit && hit.transform.gameObject.layer == 31) //The second condition ensures that only the spatial mesh is mapped
                     {
                         //txtwrtr.meshName = hit.collider.name;
-                        /*distx_in_cubes = Mathf.RoundToInt(hit.point.x / cubesize);
+                        *//*distx_in_cubes = Mathf.RoundToInt(hit.point.x / cubesize);
                         disty_in_cubes = Mathf.RoundToInt(hit.point.y / cubesize);
                         distz_in_cubes = Mathf.RoundToInt(hit.point.z / cubesize);
                         nearest_pt2 = new Vector3(distx_in_cubes, disty_in_cubes, distz_in_cubes);
@@ -135,7 +135,7 @@ public class MinecraftBuilder : MonoBehaviour
                             // VoxelInstantiator(hit.point);
                             // Instantiator(hit.point);
                             // Rasterizer(Gaze_position, hit.point);
-                        }*/
+                        }*//*
                         ///if (hit.point.y >= -1.65)
                         ////{
                             VoxelInstantiator(hit.point);
@@ -176,7 +176,7 @@ public class MinecraftBuilder : MonoBehaviour
                     }
                 }
             }
-        }
+        }*/
     }
 
     public void Rasterizer(Vector3 start, Vector3 end)
@@ -599,7 +599,6 @@ public class MinecraftBuilder : MonoBehaviour
         disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
         distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
         point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
-        
         if (VoxelPose.Contains(point))
         {
             VoxelProba[VoxelPose.IndexOf(point)] = 2f;
@@ -669,7 +668,6 @@ public class MinecraftBuilder : MonoBehaviour
         disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
         distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
         point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
-
         if (VoxelPose.Contains(point))
         {
             VoxelProba[VoxelPose.IndexOf(point)] = 2f;
@@ -736,7 +734,6 @@ public class MinecraftBuilder : MonoBehaviour
         disty_in_cm = Mathf.RoundToInt(point.y / cubesize) * cubesize;
         distz_in_cm = Mathf.RoundToInt(point.z / cubesize) * cubesize;
         point = new Vector3(distx_in_cm, disty_in_cm, distz_in_cm);
-
         if (VoxelPose.Contains(point))
         {
             VoxelProba[VoxelPose.IndexOf(point)] = 2f;
