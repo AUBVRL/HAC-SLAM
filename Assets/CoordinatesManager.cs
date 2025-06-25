@@ -5,10 +5,14 @@ using UnityEngine;
 
 public class CoordinatesManager : MonoBehaviour
 {
-    public GameObject ImageTarget, tooltipPrefab, vuforiaParent;
+    public GameObject ImageTarget, VectorTarget, tooltipPrefab, vuforiaParent;
     public static GameObject imageTarget;
+    public static GameObject originTarget;
+    public static GameObject vectorTarget;
     void Start()
     {
+        originTarget = new GameObject("originTarget");
+        vectorTarget = new GameObject("vectorTarget");
         imageTarget = new GameObject("correctAxesImageTarget");
     }
 
@@ -22,18 +26,19 @@ public class CoordinatesManager : MonoBehaviour
 
     public void displayImageTargetCoordinates()
     {
-        imageTarget.transform.position = ImageTarget.transform.position;
-        imageTarget.transform.up = ImageTarget.transform.forward;
-        imageTarget.transform.right = -ImageTarget.transform.right;
-        imageTarget.transform.forward = ImageTarget.transform.up;
-        Vector3 transformedPosition = new Vector3(imageTarget.transform.position.x, imageTarget.transform.position.z, imageTarget.transform.position.y);
+        //imageTarget.transform.position = ImageTarget.transform.position;
+        //imageTarget.transform.rotation = ImageTarget.transform.rotation;
+        //imageTarget.transform.up = ImageTarget.transform.forward;
+        //imageTarget.transform.right = -ImageTarget.transform.right;
+        //imageTarget.transform.forward = ImageTarget.transform.up;
+        //Vector3 transformedPosition = new Vector3(imageTarget.transform.position.x, imageTarget.transform.position.z, imageTarget.transform.position.y);
         CreateDebugCube(imageTarget.transform.position + imageTarget.transform.forward * 1.0f, Color.blue);  // Forward (Z)
         CreateDebugCube(imageTarget.transform.position + imageTarget.transform.up * 1.0f, Color.green);      // Up (Y)
         CreateDebugCube(imageTarget.transform.position + imageTarget.transform.right * 1.0f, Color.red);     // Right (X)
-        GameObject tooltip = Instantiate(tooltipPrefab, imageTarget.transform.position + imageTarget.transform.up * 0.2f, Quaternion.identity);
-        ToolTip tooltipText = tooltip.GetComponent<ToolTip>();
-        tooltipText.ToolTipText = "World Coordinates: "  + transformedPosition.ToString() + "\n" +
-                          "World Rotation: " + (-imageTarget.transform.rotation.eulerAngles.y).ToString();
+        //GameObject tooltip = Instantiate(tooltipPrefab, imageTarget.transform.position + imageTarget.transform.up * 0.2f, Quaternion.identity);
+        //ToolTip tooltipText = tooltip.GetComponent<ToolTip>();
+        //tooltipText.ToolTipText = "World Coordinates: " + transformedPosition.ToString() + "\n" +
+        //                  "World Rotation: " + (-imageTarget.transform.rotation.eulerAngles.y).ToString();
     }
 
     public void displayActiveModelTargetCoordinates()
@@ -55,13 +60,26 @@ public class CoordinatesManager : MonoBehaviour
         CreateDebugCube(robot.transform.position + robot.transform.right * 1.0f, Color.red);     // Right (X)
         Vector3 globalPosition = robot.transform.position;
         Vector3 localPosition = imageTarget.transform.InverseTransformPoint(globalPosition);
-        Vector3 transformedGlobalPosition = new Vector3(globalPosition.x, globalPosition.z,globalPosition.y);
+        Vector3 transformedGlobalPosition = new Vector3(globalPosition.x, globalPosition.z, globalPosition.y);
         float y_angle = robot.transform.eulerAngles.y - imageTarget.transform.eulerAngles.y;
         GameObject tooltip = Instantiate(tooltipPrefab, robot.transform.position + Vector3.up * 0.4f, Quaternion.identity);
         ToolTip tooltipText = tooltip.GetComponent<ToolTip>();
         tooltipText.ToolTipText = "Coordinates wrt Image: " + localPosition.ToString() + "\n" +
-                  "Rotation wrt Image: " + (-y_angle).ToString() + "\n" +
-                  "World Coordinates: " + transformedGlobalPosition.ToString() + "\n" +
-                  "World Rotation: " + (-robot.transform.eulerAngles.y).ToString();  
+                  "Rotation wrt Image: " + (-y_angle).ToString();
+    }
+
+    public void SaveOriginImageTarget()
+    {
+        originTarget.transform.position = ImageTarget.transform.position;
+    }
+
+    public void SaveVectorImageTarget()
+    {
+        vectorTarget.transform.position = VectorTarget.transform.position;
+        Vector3 z_axis = vectorTarget.transform.position - originTarget.transform.position;
+        z_axis.Normalize();
+        imageTarget.transform.position = originTarget.transform.position;
+        imageTarget.transform.forward = z_axis;
+        displayImageTargetCoordinates();
     }
 }
