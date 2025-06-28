@@ -13,7 +13,7 @@ public class LabelAndInstance : MonoBehaviour
     private void Start()
     {
         publisher = GameObject.Find("Publisher");
-        pub = publisher.GetComponent<RosPublisherExample>();
+        //pub = publisher.GetComponent<RosPublisherExample>();
     }
     public void DeleteLabel()
     {
