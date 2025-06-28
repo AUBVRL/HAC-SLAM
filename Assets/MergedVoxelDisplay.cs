@@ -64,34 +64,35 @@ public class MergedVoxelDisplay : MonoBehaviour
     IEnumerator FillIncoming(pc2 pointcloud)
     {
         TextMeshPro.text = "Loading... 0%";
-        GameObject dummyObject = new GameObject("dummyObject");
-        dummyObject.transform.position = new Vector3(1.85f, -1.65f, -3.6f);
-        dummyObject.transform.eulerAngles = new Vector3(0, 90, 0);        
+        //GameObject dummyObject = new GameObject("dummyObject");
+        //dummyObject.transform.position = new Vector3(1.85f, -1.65f, -3.6f);
+        //dummyObject.transform.eulerAngles = new Vector3(0, 90, 0);        
 
         newImage.transform.position = ImageTarget.transform.position;
-        newImage.transform.up = ImageTarget.transform.forward;
-        newImage.transform.right = ImageTarget.transform.right;
-        newImage.transform.forward = -ImageTarget.transform.up;
-        originPosition = dummyObject.transform.TransformPoint(new Vector3(0, 0, 0)); // local coordinates of point cloud origin wrt to image target
-        originPosition = newImage.transform.TransformPoint(originPosition); // global coordinates of point cloud origin
+        newImage.transform.rotation = ImageTarget.transform.rotation;
+        //newImage.transform.up = ImageTarget.transform.forward;
+        //newImage.transform.right = ImageTarget.transform.right;
+        //newImage.transform.forward = -ImageTarget.transform.up;
+        //originPosition = dummyObject.transform.TransformPoint(new Vector3(0, 0, 0)); // local coordinates of point cloud origin wrt to image target
+        //originPosition = newImage.transform.TransformPoint(originPosition); // global coordinates of point cloud origin
 
-        originRight = dummyObject.transform.TransformPoint(new Vector3(1, 0, 0));
-        originRight = newImage.transform.TransformPoint(originRight);
-        originRight = originRight - originPosition;
+        //originRight = dummyObject.transform.TransformPoint(new Vector3(1, 0, 0));
+        //originRight = newImage.transform.TransformPoint(originRight);
+        //originRight = originRight - originPosition;
 
-        originUp = dummyObject.transform.TransformPoint(new Vector3(0, 1, 0));
-        originUp = newImage.transform.TransformPoint(originUp);
-        originUp = originUp - originPosition;
+        //originUp = dummyObject.transform.TransformPoint(new Vector3(0, 1, 0));
+        //originUp = newImage.transform.TransformPoint(originUp);
+        //originUp = originUp - originPosition;
 
-        originForward = dummyObject.transform.TransformPoint(new Vector3(0, 0, 1));
-        originForward = newImage.transform.TransformPoint(originForward);
-        originForward = originForward - originPosition;
+        //originForward = dummyObject.transform.TransformPoint(new Vector3(0, 0, 1));
+        //originForward = newImage.transform.TransformPoint(originForward);
+        //originForward = originForward - originPosition;
 
-        GameObject manualAlign = new GameObject("manualAlign");
-        // rotate in the right order z x y
-        manualAlign.transform.Rotate(originForward, -2f);
-        manualAlign.transform.Rotate(originRight, -2f);
-        manualAlign.transform.Rotate(originUp, -2f);
+        //GameObject manualAlign = new GameObject("manualAlign");
+        //// rotate in the right order z x y
+        //manualAlign.transform.Rotate(originForward, -2f);
+        //manualAlign.transform.Rotate(originRight, -2f);
+        //manualAlign.transform.Rotate(originUp, -2f);
 
         // manualAlign.transform.Translate(-0.3f * originUp);
 
@@ -104,9 +105,9 @@ public class MergedVoxelDisplay : MonoBehaviour
             point.x = System.BitConverter.ToSingle(pointcloud.data, j);
             point.z = System.BitConverter.ToSingle(pointcloud.data, j + 4);
             point.y = System.BitConverter.ToSingle(pointcloud.data, j + 8);
-            globalPoint = dummyObject.transform.TransformPoint(point); // local coordinates of point with respect to image target
-            globalPoint = newImage.transform.TransformPoint(globalPoint); // global coordinates of point
-            globalPoint = manualAlign.transform.TransformPoint(globalPoint); 
+            //globalPoint = dummyObject.transform.TransformPoint(point); // local coordinates of point with respect to image target
+            globalPoint = newImage.transform.TransformPoint(point); // global coordinates of point
+            //globalPoint = manualAlign.transform.TransformPoint(globalPoint); 
             
             VoxelManager.AddVoxel(globalPoint, true);
             countTillYield++;

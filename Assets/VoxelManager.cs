@@ -8,6 +8,7 @@ public class VoxelManager : MonoBehaviour
     void Start()
     {
         ChunksDict = new Dictionary<Vector3, Chunk>();
+        //PrefabsManager.SaveVRL();
     }
 
     public static void AddVoxel(Vector3 point, bool humanEdited = false)

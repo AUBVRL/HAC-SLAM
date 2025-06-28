@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+//using UnityEditor.Animations;
 using UnityEngine;
 
 public class PrefabsManager : MonoBehaviour
@@ -27,12 +28,13 @@ public class PrefabsManager : MonoBehaviour
     public GameObject dollyTwo;
     public GameObject palletDocker;
     public static GameObject Asset;
-
+    public GameObject VRL;
+    public static GameObject vrl;
 
     private void Start()
     {
         VoxelSize = 0.05f;
-        ChunkSize = 3f;
+        ChunkSize = 4f;
         voxelPrefab = VoxelPrefab;
         addedVoxelPrefab = AddedVoxelPrefab;
         deletedVoxelPrefab = DeletedVoxelPrefab;
@@ -45,8 +47,10 @@ public class PrefabsManager : MonoBehaviour
         deletedVoxelPrefabParent.SetActive(false);
         chunkPrefab = new GameObject("Chunk");
         chunkParentPrefab = new GameObject("chunkParent");
-
         Selector = CubeSelector;
+        vrl = new GameObject("vrl");
+        vrl = VRL;
+        //SaveVRL();
     }
 
     public void SelectAsset(int shape)
@@ -103,4 +107,18 @@ public class PrefabsManager : MonoBehaviour
     {
         chunkParentPrefab.SetActive(state);
     }
+
+    //public static void SaveVRL()
+    //{
+    //    foreach (Transform chunk in vrl.transform)
+    //    {
+    //        foreach (Transform voxel in chunk)
+    //        {
+    //            // Do something with grandChild
+    //            VoxelManager.AddVoxel(voxel.transform.position, true);
+    //        }
+    //    }
+    //    Debug.Log("DONE!!!!");
+    //}
+
 }

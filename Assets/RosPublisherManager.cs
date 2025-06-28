@@ -53,14 +53,14 @@ public class RosPublisherManager : MonoBehaviour
 
     private void Update()
     {
-        timeElapsed += Time.deltaTime;
+        //timeElapsed += Time.deltaTime;
 
-        if (timeElapsed > publishMessageFrequency) // && yalla == true) //new
-        {
-            // ros.Publish("/com/delete_instance", custom);
-            ros.Publish("/integer", integer);
-            timeElapsed = 0;
-        }
+        //if (timeElapsed > publishMessageFrequency) // && yalla == true) //new
+        //{
+        //    // ros.Publish("/com/delete_instance", custom);
+        //    ros.Publish("/integer", integer);
+        //    timeElapsed = 0;
+        //}
     }
 
     public void PublishMappedVoxels()

@@ -8,7 +8,7 @@ public class ViewManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        InvokeRepeating("ViewInitialChunks", 0, 0.1f);
+        InvokeRepeating("checkCameraPosition", 0, 0.1f);
     }
 
     void checkCameraPosition()
@@ -26,21 +26,23 @@ public class ViewManager : MonoBehaviour
     {
         Vector3Int diff = v - currentChunk;
         Vector3Int Absdiff = new(Mathf.Abs(diff.x), Mathf.Abs(diff.y), Mathf.Abs(diff.z));
-        for (int i = Absdiff.x - 3; i <= 3 - Absdiff.x; i += 3)
+        for (int i = Absdiff.x - 4; i <= 4 - Absdiff.x; i += 4)
         {
-            for (int j = Absdiff.y; j <= 6 - Absdiff.y; j += 3)
+            for (int j = Absdiff.y; j <= 8 - Absdiff.y; j += 4)
             {
-                for (int k = Absdiff.z - 3; k <= 3 - Absdiff.z; k += 3)
+                for (int k = Absdiff.z - 4; k <= 4 - Absdiff.z; k += 4)
                 {
                     Vector3 surroundingChunk = new Vector3(i, j, k);
                     Vector3 newChunkToEnable = v + surroundingChunk + diff;
                     Vector3 oldChunkToDisable = currentChunk + surroundingChunk - diff;
                     if (VoxelManager.ChunksDict.ContainsKey(newChunkToEnable))
                     {
+                        Debug.Log("ACTIVATING CHUNK");
                         VoxelManager.ChunksDict[newChunkToEnable].prefab.SetActive(true);
                     }
                     if (VoxelManager.ChunksDict.ContainsKey(oldChunkToDisable))
                     {
+                        Debug.Log("DISABLE CHUNK");
                         VoxelManager.ChunksDict[oldChunkToDisable].prefab.SetActive(false);
                     }
                 }
