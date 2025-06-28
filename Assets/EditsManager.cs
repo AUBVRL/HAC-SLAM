@@ -181,6 +181,7 @@ public class EditsManager : MonoBehaviour
     public void Confirm()
     {
         List<Vector3> selectorPoints = VoxelizeSelector();
+        
         if (additionSelected)
         {
             foreach (Vector3 point in selectorPoints)
@@ -192,16 +193,16 @@ public class EditsManager : MonoBehaviour
         {
             foreach (Vector3 point in selectorPoints)
             {
-                VoxelManager.RemoveVoxel(point, true);
+                VoxelManager.RemoveVoxel(point);
             }
         }
-        else if (labelingSelected)
-        {
-            foreach (Vector3 point in selectorPoints)
-            {
-                VoxelManager.AddVoxel(point, true);
-            }
-        }
+        // else if (labelingSelected)
+        // {
+        //     foreach (Vector3 point in selectorPoints)
+        //     {
+        //         VoxelManager.AddVoxel(point, true);
+        //     }
+        // }
         Destroy(instantiatedObject);
         instantiatedObject = null;
         doneInstantiaion = false;

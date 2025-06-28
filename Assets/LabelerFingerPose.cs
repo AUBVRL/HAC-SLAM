@@ -320,6 +320,7 @@ public class LabelerFingerPose : MonoBehaviour
         
     }
 
+
     public void AssetToolTip(Vector3 pose, string name, byte Label, byte Instance)
     {
         tool = Instantiate(tooltip, pose + new Vector3(0, 0.2f, 0), Quaternion.identity);
@@ -327,7 +328,15 @@ public class LabelerFingerPose : MonoBehaviour
         LabelInstance = tool.GetComponent<LabelAndInstance>();
         LabelInstance.label = Label;
         LabelInstance.instance = Instance;
-        tooltipText.ToolTipText = name;
+        tooltipText.ToolTipText = pose.ToString();
+    }
+    public void AssetToolTip2(Vector3 pose, Vector3 eulerAngles)
+    {
+        Vector3 adjustedPose = new Vector3(pose.x,pose.z,pose.y);
+        Vector3 adjustedEuler = new Vector3(-eulerAngles.x,-eulerAngles.z,-eulerAngles.y);
+        tool = Instantiate(tooltip, pose + new Vector3(0, 0.2f, 0), Quaternion.identity);
+        tooltipText = tool.GetComponent<ToolTip>();
+        tooltipText.ToolTipText = adjustedPose.ToString() + " " + adjustedEuler.ToString();
     }
 
     public void PreviouslyLabeled(int i)

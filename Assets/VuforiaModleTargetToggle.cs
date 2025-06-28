@@ -5,6 +5,11 @@ using Vuforia;
 
 public class VuforiaModleTargetToggle : MonoBehaviour
 {
+    public VuforiaBehaviour Vufo;
+    void Start()
+    {
+        
+    }
     public void ToggleObjectDetection()
     {
         if (GetComponent<VuforiaBehaviour>().enabled == true)
@@ -19,7 +24,8 @@ public class VuforiaModleTargetToggle : MonoBehaviour
 
     public void ToggleUsingState(bool state)
     {
-        GetComponent<VuforiaBehaviour>().enabled = state;
+        // GetComponent<VuforiaBehaviour>().enabled = state;
+        Vufo.enabled = state;
     }
 }
 

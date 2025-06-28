@@ -10,8 +10,6 @@ using Unity.VisualScripting;
 
 public class VoxelManager : MonoBehaviour
 {
-    
-    
     public float ChunkSize = 3f;
     public static float chunkSize;
     
@@ -23,59 +21,40 @@ public class VoxelManager : MonoBehaviour
         chunkSize = ChunkSize;
     }
 
-    public static void AddVoxel(Vector3 randomVector, bool humanEdited = false)
+    public static void AddVoxel(Vector3 randomVector, bool humanAdded = false)
     {
-
         Vector3 voxelVector = RoundToVoxel(randomVector);
         Vector3 chunkVector = RoundToChunk(voxelVector);
         
         if (!ChunksDict.ContainsKey(chunkVector))
         {
-            ChunksDict.Add(chunkVector, new Chunk(voxelVector));
-            Debug.Log("Added new chunk");
-            Debug.Log("Added new voxel");
+            ChunksDict.Add(chunkVector, new Chunk(voxelVector)); // voxelVector is not a typo
         }
         
         Chunk tempChunk = ChunksDict[chunkVector];
         
         if(!tempChunk.VoxelsDict.ContainsKey(voxelVector))
         {
-            tempChunk.AddVoxel(voxelVector, humanEdited);
-            Debug.Log("Added new voxel");
+            tempChunk.AddVoxel(voxelVector, humanAdded);
+            //Debug.Log("Added new voxel");
         }
         else
         {
             Voxel tempVoxel = tempChunk.VoxelsDict[voxelVector];
-            tempVoxel.IncreaseProba(humanEdited);
+            tempVoxel.create(humanAdded);
             //Debug.Log("Increased");
         }
     }
-    public static void RemoveVoxel(Vector3 RandomVector, bool humanEdited = false)
+    public static void RemoveVoxel(Vector3 RandomVector)
     {
-
         Vector3 chunkVector = RoundToChunk(RandomVector);
         //Vector3 voxelVector = RoundToVoxel(RandomVector);
-        if (!humanEdited)
+        if (ChunksDict.ContainsKey(chunkVector))
         {
-            ChunksDict[chunkVector].VoxelsDict[RandomVector].DecrementProba();
-        }
-        else
-        {
-            if (!ChunksDict.ContainsKey(chunkVector))
+            if(ChunksDict[chunkVector].VoxelsDict.ContainsKey(RandomVector))
             {
-                ChunksDict.Add(chunkVector, new Chunk(RandomVector));
+                ChunksDict[chunkVector].VoxelsDict[RandomVector].destroy();
             }
-        
-            Chunk tempChunk = ChunksDict[chunkVector];
-            
-            if(!tempChunk.VoxelsDict.ContainsKey(RandomVector))
-            {
-                tempChunk.AddVoxel(RandomVector);
-            }
-
-            Voxel tempVoxel = tempChunk.VoxelsDict[RandomVector];
-            tempVoxel.DecrementProba(humanEdited);
-            
         }
     }
 
@@ -86,8 +65,8 @@ public class VoxelManager : MonoBehaviour
                           Mathf.RoundToInt(v.y / chunkSize) * chunkSize,
                           Mathf.RoundToInt(v.z / chunkSize) * chunkSize);
         return roundedVector;
-
     }
+    
     public static Vector3 RoundToVoxel(Vector3 v)
     {
         Vector3 roundedVector = new Vector3();

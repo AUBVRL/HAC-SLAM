@@ -20,7 +20,7 @@ public class Chunk
         ChunkGameObject = new("Chunk" + Position);
         ChunkGameObject.transform.parent = PrefabsManager.voxelPrefabParent.transform;
         ChunkGameObject.transform.position = Position;
-        //ChunkGameObject.SetActive(false); // Uncomment this for the comparison app 
+        ChunkGameObject.SetActive(true); // Uncomment this for the comparison app 
         VoxelsDict.Add(position, new Voxel(position, ChunkGameObject));
         //VoxelsDict.Add(position, new Voxel())
     }
