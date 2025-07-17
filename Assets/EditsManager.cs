@@ -5,7 +5,6 @@ using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using Microsoft.MixedReality.Toolkit.UI;
-using static System.ComponentModel.Design.ObjectSelectorEditor;
 using UnityEngine.Assertions;
 using TMPro;
 
