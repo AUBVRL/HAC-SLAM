@@ -44,14 +44,6 @@
         "com.unity.textmeshpro": "2.1.4"
       }
     },
-    "com.ptc.vuforia.engine": {
-      "version": "file:com.ptc.vuforia.engine-10.20.3.tgz",
-      "depth": 0,
-      "source": "local-tarball",
-      "dependencies": {
-        "com.unity.ugui": "1.0.0"
-      }
-    },
     "com.unity.collab-proxy": {
       "version": "1.15.15",
       "depth": 0,
@@ -265,8 +257,8 @@
       "depth": 2,
       "source": "registry",
       "dependencies": {
-        "com.unity.subsystemregistration": "1.1.0",
-        "com.unity.xr.management": "4.0.1"
+        "com.unity.xr.management": "4.0.1",
+        "com.unity.subsystemregistration": "1.1.0"
       },
       "url": "https://packages.unity.com"
     },

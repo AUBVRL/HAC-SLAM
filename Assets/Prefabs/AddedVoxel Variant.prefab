@@ -13,11 +13,23 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 4fce0d2cece1a664a84b5d18ef06dc60, type: 2}
     - target: {fileID: 4736965307183027604, guid: 26b6a21c50dadc744a5cfc9ec42a5eb8, type: 3}
       propertyPath: m_Name
-      value: AddedVoxel
+      value: AddedVoxel Variant
       objectReference: {fileID: 0}
     - target: {fileID: 5068934230896040903, guid: 26b6a21c50dadc744a5cfc9ec42a5eb8, type: 3}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5068934230896040903, guid: 26b6a21c50dadc744a5cfc9ec42a5eb8, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.025
+      objectReference: {fileID: 0}
+    - target: {fileID: 5068934230896040903, guid: 26b6a21c50dadc744a5cfc9ec42a5eb8, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.025
+      objectReference: {fileID: 0}
+    - target: {fileID: 5068934230896040903, guid: 26b6a21c50dadc744a5cfc9ec42a5eb8, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.025
       objectReference: {fileID: 0}
     - target: {fileID: 5068934230896040903, guid: 26b6a21c50dadc744a5cfc9ec42a5eb8, type: 3}
       propertyPath: m_LocalPosition.x
