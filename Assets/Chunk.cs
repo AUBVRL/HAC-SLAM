@@ -12,7 +12,7 @@ public class Chunk
     {
         position = VoxelManager.RoundToChunk(voxelPosition);
         prefab = UnityEngine.Object.Instantiate(PrefabsManager.chunkPrefab,position, Quaternion.identity, PrefabsManager.chunkParentPrefab.transform);
-        prefab.SetActive(false);
+        //prefab.SetActive(false);
         VoxelsDict = new Dictionary<Vector3, Voxel>();
         VoxelsDict.Add(voxelPosition, new Voxel(voxelPosition, prefab));
     }
