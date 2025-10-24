@@ -36,7 +36,7 @@ public class PointCloudLoader : MonoBehaviour
 
     IEnumerator LoadPointCloudAndFill()
     {
-        string fullPath = "C:/Users/Dev-MohamadKY/Desktop/HAC-SLAM/Assets/StreamingAssets/pointclouds/testply.json";
+        string fullPath = "C:/Users/Dev-MohamadKY/Desktop/HAC-SLAM/Assets/Resources/pointclouds/testply.json";
 
         // 1) Load file text cross-platform
         string jsonText = null;

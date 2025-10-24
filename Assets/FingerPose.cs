@@ -56,7 +56,7 @@ public class FingerPose : MonoBehaviour
         _meshCollider = Prism.GetComponent<MeshCollider>();
         _inputActionHandler = gameObject.GetComponent<InputActionHandler>();
 
-        Debug.Log("start");
+        //Debug.Log("start");
 
         //_meshCollider.convex = true;  // We need to make this as a kabse later.
     }
