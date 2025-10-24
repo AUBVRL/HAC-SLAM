@@ -38,12 +38,12 @@ public class ViewManager : MonoBehaviour
                     if (VoxelManager.ChunksDict.ContainsKey(newChunkToEnable))
                     {
                         Debug.Log("ACTIVATING CHUNK");
-                        VoxelManager.ChunksDict[newChunkToEnable].prefab.SetActive(true);
+                        VoxelManager.ChunksDict[newChunkToEnable].gameobject.SetActive(true);
                     }
                     if (VoxelManager.ChunksDict.ContainsKey(oldChunkToDisable))
                     {
                         Debug.Log("DISABLE CHUNK");
-                        VoxelManager.ChunksDict[oldChunkToDisable].prefab.SetActive(false);
+                        VoxelManager.ChunksDict[oldChunkToDisable].gameobject.SetActive(false);
                     }
                 }
             }
@@ -65,7 +65,7 @@ public class ViewManager : MonoBehaviour
                     if (VoxelManager.ChunksDict.ContainsKey(cameraPosition + increment))
                     {
                         Chunk chunk = VoxelManager.ChunksDict[cameraPosition + increment];
-                        if (!chunk.prefab.activeInHierarchy) chunk.prefab.SetActive(true);
+                        if (!chunk.gameobject.activeInHierarchy) chunk.gameobject.SetActive(true);
                     }
                 }
             }

@@ -110,7 +110,7 @@ public class ResourcesPointCloudLoader : MonoBehaviour
                             Vector3 pt = new Vector3(triple[0], triple[1], triple[2]);
                             if (swapYandZ) pt = new Vector3(triple[0], triple[2], triple[1]);
 
-                            VoxelManager.AddVoxel(pt, true);
+                            VoxelManager.AddVoxel(pt, false);
 
                             triple.Clear();
                             added++;

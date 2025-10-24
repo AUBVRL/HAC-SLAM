@@ -11,7 +11,7 @@ using TMPro;
 public class EditsManager : MonoBehaviour
 {
     public TextMeshPro menuText;
-    public GameObject VoxelsMenu, SelectorOptionsMenu;
+    public GameObject VoxelsMenu,DeleteMenu, SelectorOptionsMenu;
     public GameObject AssetsMenu;
     bool doneInstantiation, selectorInstantiated, fingersClosed;
     bool additionSelected, deletionSelected, labelingSelected;
@@ -95,6 +95,7 @@ public class EditsManager : MonoBehaviour
         {
             doneInstantiation = true;
             VoxelsMenu.SetActive(false);
+            DeleteMenu.SetActive(false);
             SelectorOptionsMenu.SetActive(true);
             menuText.text = "Selector Options Menu";
         }
@@ -129,6 +130,7 @@ public class EditsManager : MonoBehaviour
         return selectorPoints;
     }
 
+
     public void Confirm()
     {
         List<Vector3> selectorPoints = VoxelizeSelector();
@@ -143,7 +145,7 @@ public class EditsManager : MonoBehaviour
         {
             foreach (Vector3 point in selectorPoints)
             {
-                VoxelManager.RemoveVoxel(point, true);
+                VoxelManager.DeleteVoxel(point);
             }
         }
         else if (labelingSelected)
@@ -170,11 +172,13 @@ public class EditsManager : MonoBehaviour
     public void OnAdditionSelected(bool state)
     {
         additionSelected = state;
+        PrefabsManager.SelectorOnConvexityToggle(false);
     }
 
     public void OnDeletionSelected(bool state)
     {
         deletionSelected = state;
+        PrefabsManager.SelectorOnConvexityToggle(true);
     }
 
     public void OnLabelingSelected(bool state)
@@ -214,7 +218,7 @@ public class EditsManager : MonoBehaviour
         }
         if (deletionSelected)
         {
-            VoxelsMenu.SetActive(true);
+            DeleteMenu.SetActive(true);
             menuText.text = "Delete Voxels";
         }
         else if (assetAdditionSelected) AssetsMenu.SetActive(true);

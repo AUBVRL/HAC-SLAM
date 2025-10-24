@@ -65,10 +65,10 @@ public class RosPublisherManager : MonoBehaviour
     public void PublishMappedVoxels()
     {
         List<byte> byteList = new();
-        foreach (var chunk in VoxelManager.ChunksDict.Values)
-        {
-            byteList.AddRange(chunk.GetChunkByteData());
-        }
+        //foreach (var chunk in VoxelManager.ChunksDict.Values)
+        //{
+        //    byteList.AddRange(chunk.GetChunkByteData());
+        //}
         mappedPointCloud.data = byteList.ToArray();
         mappedPointCloud.width = (uint)byteList.Count / 12;
         ros.Publish(mappedVoxelsTopic, mappedPointCloud);

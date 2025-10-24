@@ -10,7 +10,7 @@ public class MappingManager : MonoBehaviour
         List<Vector3> VoxelsPosition = MeshToPointCloudParallel();
         foreach (Vector3 v in VoxelsPosition)
         {
-            VoxelManager.AddVoxel(v);
+            VoxelManager.AddVoxel(v,true);
         }
     }
 
@@ -69,7 +69,7 @@ public class MappingManager : MonoBehaviour
         List<Vector3> VoxelsPosition = StateCheckerParallel();
         foreach (Vector3 v in VoxelsPosition)
         {
-            VoxelManager.RemoveVoxel(v);
+            VoxelManager.DeleteVoxel(v);
         }
     }
     void OnDisable()

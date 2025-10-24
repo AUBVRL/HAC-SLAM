@@ -48,8 +48,6 @@ public class PrefabsManager : MonoBehaviour
         chunkPrefab = new GameObject("Chunk");
         chunkParentPrefab = new GameObject("chunkParent");
         Selector = CubeSelector;
-        vrl = new GameObject("vrl");
-        vrl = VRL;
         //SaveVRL();
     }
 
@@ -93,7 +91,7 @@ public class PrefabsManager : MonoBehaviour
         }
     }
 
-    public void SelectorOnConvexityToggle(bool convex)
+    public static void SelectorOnConvexityToggle(bool convex)
     {
         Selector.GetComponent<MeshCollider>().convex = convex;
     }

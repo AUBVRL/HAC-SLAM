@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4438875790648086103}
   - component: {fileID: 165089976706477435}
   - component: {fileID: 4605812799947410232}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Deleted Voxel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 635a27f13b7b26b4483bc1283d04803e, type: 2}
+  - {fileID: 2100000, guid: b2dd1ea0aa5652649a0bb0db374d2cbb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

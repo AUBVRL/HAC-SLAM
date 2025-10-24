@@ -11,51 +11,38 @@ public class VoxelManager : MonoBehaviour
         //PrefabsManager.SaveVRL();
     }
 
-    public static void AddVoxel(Vector3 point, bool humanEdited = false)
+    public static void AddVoxel(Vector3 point, bool state)
     {
         Vector3 voxelVector = RoundToVoxel(point);
         Vector3 chunkVector = RoundToChunk(voxelVector);
-
         if (!ChunksDict.ContainsKey(chunkVector))
         {
-            ChunksDict.Add(chunkVector, new Chunk(voxelVector));
+            ChunksDict.Add(chunkVector, new Chunk(chunkVector, state));
         }
-
         if (!ChunksDict[chunkVector].VoxelsDict.ContainsKey(voxelVector))
         {
-            ChunksDict[chunkVector].AddVoxel(voxelVector, humanEdited);
-        }
-        else
-        {
-            ChunksDict[chunkVector].VoxelsDict[voxelVector].IncreaseProba(humanEdited);
+            ChunksDict[chunkVector].VoxelsDict.Add(voxelVector, new Voxel(state ? PrefabsManager.addedVoxelPrefab : PrefabsManager.voxelPrefab, voxelVector, ChunksDict[chunkVector].gameobject));
         }
     }
 
-    public static void RemoveVoxel(Vector3 point, bool humanEdited = false)
+    public static void DeleteVoxel(Vector3 point)
     {
-
-        Vector3 chunkVector = RoundToChunk(point);
-        if (!humanEdited)
+        Vector3 voxelVector = RoundToVoxel(point);
+        Vector3 boxSize = new Vector3(PrefabsManager.voxelSize - 0.001f, PrefabsManager.voxelSize - 0.001f, PrefabsManager.voxelSize - 0.001f);
+        if (Physics.CheckBox(voxelVector, boxSize / 2, Quaternion.identity, 1 << 3))
         {
-            ChunksDict[chunkVector].VoxelsDict[point].DecrementProba();
-        }
-        else
-        {
-            if (!ChunksDict.ContainsKey(chunkVector))
+            Vector3 chunkVector = RoundToChunk(voxelVector);
+            if (ChunksDict.ContainsKey(chunkVector))
             {
-                ChunksDict.Add(chunkVector, new Chunk(point));
+                Chunk chunk = ChunksDict[chunkVector];
+                if (chunk.VoxelsDict.ContainsKey(voxelVector))
+                {
+                    Voxel voxel = chunk.VoxelsDict[voxelVector];
+                    Destroy(voxel.gameobject);
+                    Instantiate(PrefabsManager.deletedVoxelPrefab, voxel.position, Quaternion.identity, PrefabsManager.deletedVoxelPrefabParent.transform);
+                    chunk.VoxelsDict.Remove(voxelVector);
+                }
             }
-
-            Chunk tempChunk = ChunksDict[chunkVector];
-
-            if (!tempChunk.VoxelsDict.ContainsKey(point))
-            {
-                tempChunk.AddVoxel(point);
-            }
-
-            Voxel tempVoxel = tempChunk.VoxelsDict[point];
-            tempVoxel.DecrementProba(humanEdited);
-
         }
     }
 
