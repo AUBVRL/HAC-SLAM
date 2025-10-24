@@ -136,17 +136,25 @@ public class EditsManager : MonoBehaviour
         List<Vector3> selectorPoints = VoxelizeSelector();
         if (additionSelected || assetAdditionSelected)
         {
-            foreach (Vector3 point in selectorPoints)
-            {
-                VoxelManager.AddVoxel(point, true);
-            }
+            //foreach (Vector3 point in selectorPoints)
+            //{
+            //    //VoxelManager.AddVoxel(point, true);
+            //    VoxelUtilities.AddVoxelsWithUndo(point, true);
+            //}
+            var states = new List<bool>(selectorPoints.Count);
+            for (int i = 0; i < selectorPoints.Count; ++i) states.Add(true);
+
+            // call the batch API once so Undo/Redo treats the whole selection as one action
+            VoxelUtilities.AddVoxelsWithUndo(selectorPoints, states);
         }
         else if (deletionSelected)
         {
-            foreach (Vector3 point in selectorPoints)
-            {
-                VoxelManager.DeleteVoxel(point);
-            }
+            //foreach (Vector3 point in selectorPoints)
+            //{
+            //    //VoxelManager.DeleteVoxel(point);
+            //    VoxelUtilities.DeleteVoxelsWithUndo(point);
+            //}
+            VoxelUtilities.DeleteVoxelsWithUndo(selectorPoints);
         }
         else if (labelingSelected)
         {
@@ -224,6 +232,14 @@ public class EditsManager : MonoBehaviour
         else if (assetAdditionSelected) AssetsMenu.SetActive(true);
     }
 
+    public void UndoAction()
+    {
+        UndoRedoManager2.Undo();
+    }
 
+    public void RedoAction()
+    {
+        UndoRedoManager2.Redo();
+    }
 
 }
