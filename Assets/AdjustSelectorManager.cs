@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Microsoft.MixedReality.Toolkit.Experimental.UI;
+using Microsoft.MixedReality.Toolkit.Extensions.SceneTransitions;
 
 
 public class AdjustSelectorManager : MonoBehaviour
@@ -17,6 +18,7 @@ public class AdjustSelectorManager : MonoBehaviour
     public MRTKUGUIInputField xScale;
     public MRTKUGUIInputField yScale;
     public MRTKUGUIInputField zScale;
+    public GameObject positionQuad, rotationQuad, scaleQuad;
     Vector3 adjustedPose;
     Vector3 adjustedRotation;
     Vector3 adjustedScale;
@@ -49,6 +51,8 @@ public class AdjustSelectorManager : MonoBehaviour
         xPosition.transform.forward = Camera.main.transform.forward;
         yPosition.transform.forward = Camera.main.transform.forward;
         zPosition.transform.forward = Camera.main.transform.forward;
+        positionQuad.transform.position = newPosition - 0.1f * Camera.main.transform.up - 0.3f * Camera.main.transform.right;
+        positionQuad.transform.forward = Camera.main.transform.forward;
 
         // rotation
         xAngle.text = EditsManager.instantiatedObject.transform.eulerAngles.x.ToString();
@@ -61,6 +65,8 @@ public class AdjustSelectorManager : MonoBehaviour
         xAngle.transform.forward = Camera.main.transform.forward;
         yAngle.transform.forward = Camera.main.transform.forward;
         zAngle.transform.forward = Camera.main.transform.forward;
+        rotationQuad.transform.position = newPosition - 0.1f * Camera.main.transform.up - 0.3f * Camera.main.transform.right;
+        rotationQuad.transform.forward = Camera.main.transform.forward;
 
         // scale
         xScale.text = EditsManager.instantiatedObject.transform.localScale.x.ToString();
@@ -73,6 +79,8 @@ public class AdjustSelectorManager : MonoBehaviour
         xScale.transform.forward = Camera.main.transform.forward;
         yScale.transform.forward = Camera.main.transform.forward;
         zScale.transform.forward = Camera.main.transform.forward;
+        scaleQuad.transform.position = newPosition - 0.1f * Camera.main.transform.up - 0.3f * Camera.main.transform.right;
+        scaleQuad.transform.forward = Camera.main.transform.forward;
     }
 
     void HandleInputEndEdit_xPosition(string inputText)

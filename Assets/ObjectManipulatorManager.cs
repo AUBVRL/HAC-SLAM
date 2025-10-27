@@ -1,8 +1,9 @@
 using Microsoft.MixedReality.Toolkit.Utilities;
 using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using UnityEngine;
 
-public class ObjectManipulatorManager: MonoBehaviour
+public class ObjectManipulatorManager : MonoBehaviour
 {
     private MoveAxisConstraint moveConstraint;
     private RotationAxisConstraint rotationConstraint;
@@ -13,7 +14,7 @@ public class ObjectManipulatorManager: MonoBehaviour
         EditsManager.instantiatedObject.GetComponent<ObjectManipulator>().enabled = true;
         moveConstraint = EditsManager.instantiatedObject.GetComponent<MoveAxisConstraint>();
         rotationConstraint = EditsManager.instantiatedObject.GetComponent<RotationAxisConstraint>();
-        
+
     }
 
     private void OnDisable()
@@ -65,7 +66,7 @@ public class ObjectManipulatorManager: MonoBehaviour
         }
 
         moveConstraint.ConstraintOnMovement = combinedAxes;
-        
+
     }
 
     private void UpdateRotation(AxisFlags axis, bool isOn)
@@ -115,5 +116,17 @@ public class ObjectManipulatorManager: MonoBehaviour
         combinedRotations |= AxisFlags.YAxis;
         combinedRotations |= AxisFlags.ZAxis;
         rotationConstraint.ConstraintOnRotation = combinedRotations;
+    }
+
+    public void EnableScaling()
+    {
+        EditsManager.instantiatedObject.GetComponent<BoxCollider>().enabled = true;
+        EditsManager.instantiatedObject.GetComponent<BoundsControl>().enabled = true;
+    }
+
+    public void DisableScaling()
+    {
+        EditsManager.instantiatedObject.GetComponent<BoxCollider>().enabled = false;
+        EditsManager.instantiatedObject.GetComponent<BoundsControl>().enabled = false;
     }
 }
