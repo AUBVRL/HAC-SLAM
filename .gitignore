@@ -12,6 +12,7 @@
 /DeployFile
 /Buildso
 /QCAR
+/Assets/Resources/pointclouds/*
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data

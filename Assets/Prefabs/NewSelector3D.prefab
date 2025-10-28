@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 7151001558072042451}
   - component: {fileID: 7151001558072042450}
   - component: {fileID: -294252362126133378}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: NewSelector3D
   m_TagString: Untagged
   m_Icon: {fileID: 0}

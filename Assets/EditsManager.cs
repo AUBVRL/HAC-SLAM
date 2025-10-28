@@ -184,17 +184,23 @@ public class EditsManager : MonoBehaviour
         
         if (additionSelected)
         {
-            foreach (Vector3 point in selectorPoints)
-            {
-                VoxelManager.AddVoxel(point, true);
-            }
+            // foreach (Vector3 point in selectorPoints)
+            // {
+            //     VoxelManager.AddVoxel(point, true);
+            // }
+            var states = new List<bool>(selectorPoints.Count);
+            for (int i = 0; i < selectorPoints.Count; ++i) states.Add(true);
+
+            // call the batch API once so Undo/Redo treats the whole selection as one action
+            VoxelUtilities.AddVoxelsWithUndo(selectorPoints, states);
         }
         else if (deletionSelected)
         {
-            foreach (Vector3 point in selectorPoints)
-            {
-                VoxelManager.RemoveVoxel(point);
-            }
+            // foreach (Vector3 point in selectorPoints)
+            // {
+            //     VoxelManager.RemoveVoxel(point);
+            // }
+            VoxelUtilities.DeleteVoxelsWithUndo(selectorPoints);
         }
         // else if (labelingSelected)
         // {
@@ -228,5 +234,15 @@ public class EditsManager : MonoBehaviour
     public void OnLabelingSelected(bool state)
     {
         labelingSelected = state;
+    }
+
+    public void UndoAction()
+    {
+        UndoRedoManager2.Undo();
+    }
+
+    public void RedoAction()
+    {
+        UndoRedoManager2.Redo();
     }
 }
