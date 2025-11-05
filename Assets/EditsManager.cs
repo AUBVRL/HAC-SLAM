@@ -13,7 +13,7 @@ public class EditsManager : MonoBehaviour
     public TextMeshPro menuText;
     public GameObject VoxelsMenu,DeleteMenu, SelectorOptionsMenu;
     public GameObject AssetsMenu;
-    bool doneInstantiation, selectorInstantiated, fingersClosed;
+    bool doneInstantiation, selectorInstantiated, fingersClosed, handAngle;
     bool additionSelected, deletionSelected, labelingSelected;
     bool assetAdditionSelected;
     Vector3 initialPoseInCubes;
@@ -23,6 +23,7 @@ public class EditsManager : MonoBehaviour
     IMixedRealityHandJointService handJointService;
     InputActionHandler inputActionHandler;
     int SelectorLayerMask = 1 << 6;
+    float HandAngleThreshold = 15.0f;
 
     void Start()
     {
@@ -55,12 +56,13 @@ public class EditsManager : MonoBehaviour
         {
             HandJointUtils.TryGetJointPose(Microsoft.MixedReality.Toolkit.Utilities.TrackedHandJoint.ThumbTip, Microsoft.MixedReality.Toolkit.Utilities.Handedness.Right, out poseRightThumb);
             fingersClosed = Vector3.Distance(poseRightIndex.Position, poseRightThumb.Position) < 0.04f;
+            handAngle = Vector3.Angle(Camera.main.transform.forward, (poseRightIndex.Position - Camera.main.transform.position)) < HandAngleThreshold;
         }
     }
 
     void InstantiateSelector()
     {
-        if (fingersClosed)
+        if (fingersClosed && handAngle)
         {
             Vector3 initialPose, center;
             center = new();
@@ -121,7 +123,6 @@ public class EditsManager : MonoBehaviour
                     Vector3 coliderPose = new Vector3(x, y, z) * PrefabsManager.voxelSize;
 
                     bool checkBoxOverlap = Physics.CheckBox(coliderPose, voxelSizeVector / 2, Quaternion.identity, SelectorLayerMask);
-                    Debug.Log(checkBoxOverlap);
                     if (checkBoxOverlap) selectorPoints.Add(coliderPose);
                 }
             }
@@ -208,14 +209,14 @@ public class EditsManager : MonoBehaviour
         assetPose.y = Camera.main.transform.localPosition.y - 1.5f;
         assetPose.z = Camera.main.transform.localPosition.z + 2 * Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
 
-        Vector3 assetRotation = new();
-        assetRotation.Set(0, Camera.main.transform.localRotation.eulerAngles.y, 0);
+        //Vector3 assetRotation = new();
+        //assetRotation.Set(0, Camera.main.transform.localRotation.eulerAngles.y, 0);
 
-        instantiatedObject = Instantiate(PrefabsManager.Asset, assetPose, Quaternion.Euler(assetRotation));
+        instantiatedObject = Instantiate(PrefabsManager.Asset, assetPose, Quaternion.identity);
         
         AssetsMenu.SetActive(false);
         SelectorOptionsMenu.SetActive(true);
-        // inputActionHandler.enabled = false;
+        //inputActionHandler.enabled = false;
     }
 
     public void ChangeMenu()

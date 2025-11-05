@@ -31,6 +31,9 @@ public class PrefabsManager : MonoBehaviour
     public GameObject VRL;
     public static GameObject vrl;
 
+    public GameObject ImageTarget;
+    public static GameObject imageTarget;
+
     private void Start()
     {
         VoxelSize = 0.05f;
@@ -48,7 +51,19 @@ public class PrefabsManager : MonoBehaviour
         chunkPrefab = new GameObject("Chunk");
         chunkParentPrefab = new GameObject("chunkParent");
         Selector = CubeSelector;
+        imageTarget = ImageTarget;
+        //imageTarget.transform.SetPositionAndRotation(ImageTarget.transform.position, ImageTarget.transform.rotation);
         //SaveVRL();
+    }
+
+    public void UpdateImageTargetTransform()
+    {
+
+        imageTarget.transform.SetPositionAndRotation(ImageTarget.transform.position, Quaternion.Euler(0, ImageTarget.transform.eulerAngles.y, 0));
+        voxelPrefab.transform.rotation = Quaternion.Euler(new Vector3(0,imageTarget.transform.eulerAngles.y,0));
+        addedVoxelPrefab.transform.forward = voxelPrefab.transform.forward;
+        deletedVoxelPrefab.transform.forward= voxelPrefab.transform.forward;
+        Selector.transform.forward = voxelPrefab.transform.forward;
     }
 
     public void SelectAsset(int shape)

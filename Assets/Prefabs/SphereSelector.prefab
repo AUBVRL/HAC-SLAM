@@ -193,12 +193,12 @@ MonoBehaviour:
   boundsCalculationMethod: 3
   activation: 0
   flattenAxis: 0
-  uniformScaleOnFlattenedAxis: 1
+  uniformScaleOnFlattenedAxis: 0
   boxPadding: {x: 0, y: 0, z: 0}
-  boxDisplayConfiguration: {fileID: 0}
+  boxDisplayConfiguration: {fileID: 11400000, guid: c2b8a0ee1166d2f43a8acffd135b182c, type: 2}
   linksConfiguration: {fileID: 0}
-  scaleHandlesConfiguration: {fileID: 0}
-  rotationHandlesConfiguration: {fileID: 0}
+  scaleHandlesConfiguration: {fileID: 11400000, guid: fa1afca54f413824a8696502d996f40b, type: 2}
+  rotationHandlesConfiguration: {fileID: 11400000, guid: 36705f405e81e9243bddece562684908, type: 2}
   translationHandlesConfiguration: {fileID: 0}
   handleProximityEffectConfiguration: {fileID: 0}
   hideElementsInInspector: 1
