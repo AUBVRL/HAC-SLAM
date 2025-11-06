@@ -38,12 +38,12 @@ public class VoxelManager : MonoBehaviour
             tempChunk.AddVoxel(voxelVector, humanAdded);
             //Debug.Log("Added new voxel");
         }
-        else
-        {
-            Voxel tempVoxel = tempChunk.VoxelsDict[voxelVector];
-            tempVoxel.create(humanAdded);
-            //Debug.Log("Increased");
-        }
+        // else
+        // {
+        //     Voxel tempVoxel = tempChunk.VoxelsDict[voxelVector];
+        //     tempVoxel.create(humanAdded);
+        //     //Debug.Log("Increased");
+        // }
     }
     public static void RemoveVoxel(Vector3 RandomVector)
     {

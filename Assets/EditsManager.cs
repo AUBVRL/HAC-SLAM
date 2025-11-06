@@ -7,6 +7,7 @@ using Microsoft.MixedReality.Toolkit.Experimental.UI;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.XR;
+using Unity.VisualScripting;
 
 public class EditsManager : MonoBehaviour
 {
@@ -18,12 +19,15 @@ public class EditsManager : MonoBehaviour
     public static GameObject instantiatedObject;
 
     bool doneInstantiaion = false;
-    bool additionSelected, deletionSelected, labelingSelected;
+    bool additionSelected, deletionSelected, labelingSelected, assetAdditionSelected;
 
     Vector3 initialWorldPosition;
 
     int UILayerMask = 1 << 5;
     int SelectorLayerMask = 1 << 6;
+
+
+    public GameObject AssetsMenu, SelectorOptionsMenu;
 
     void Update()
     {
@@ -48,12 +52,20 @@ public class EditsManager : MonoBehaviour
 
             if (touch.phase == TouchPhase.Began && !checkUI)
             {
+                if (assetAdditionSelected)
+                {
+                    InstantiateAsset();
+                    doneInstantiaion = true;
+                    OnObjectInstantiated?.Invoke();
+                    return;
+                }
                 Vector3 spawnPosition = GetSpawnPositionFromTouch(touch.position);
                 StartStretching(spawnPosition);
             }
 
             if (touch.phase == TouchPhase.Moved && instantiatedObject != null)
             {
+                if (assetAdditionSelected) return;
                 Vector3 currentWorldPosition = GetCurrentWorldPositionFromTouch(touch.position);
                 StretchObject(currentWorldPosition);
             }
@@ -61,7 +73,7 @@ public class EditsManager : MonoBehaviour
             if (touch.phase == TouchPhase.Ended && instantiatedObject != null)
             {
                 //instantiatedObject = null;
-
+                if (assetAdditionSelected) return;
                 doneInstantiaion = true;
                 OnObjectInstantiated?.Invoke();
             }
@@ -182,7 +194,7 @@ public class EditsManager : MonoBehaviour
     {
         List<Vector3> selectorPoints = VoxelizeSelector();
         
-        if (additionSelected)
+        if (additionSelected || assetAdditionSelected)
         {
             // foreach (Vector3 point in selectorPoints)
             // {
@@ -212,6 +224,11 @@ public class EditsManager : MonoBehaviour
         Destroy(instantiatedObject);
         instantiatedObject = null;
         doneInstantiaion = false;
+
+        // if (assetAdditionSelected)
+        // {
+        //     inputActionHandler.enabled = true;
+        // }
     }
 
     public void Cancel()
@@ -236,6 +253,12 @@ public class EditsManager : MonoBehaviour
         labelingSelected = state;
     }
 
+    public void OnAssetAdditionSelected(bool state)
+    {
+        assetAdditionSelected = state;
+        // inputActionHandler.enabled = state; 
+    }
+
     public void UndoAction()
     {
         UndoRedoManager2.Undo();
@@ -244,5 +267,18 @@ public class EditsManager : MonoBehaviour
     public void RedoAction()
     {
         UndoRedoManager2.Redo();
+    }
+
+    public void InstantiateAsset()
+    {
+        if (instantiatedObject != null) Destroy(instantiatedObject);
+        Vector3 assetPose = new();
+        assetPose.x = Camera.main.transform.localPosition.x + 2 * Mathf.Sin(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+        assetPose.y = Camera.main.transform.localPosition.y - 1.5f;
+        assetPose.z = Camera.main.transform.localPosition.z + 2 * Mathf.Cos(Camera.main.transform.localRotation.eulerAngles.y * Mathf.Deg2Rad);
+        instantiatedObject = Instantiate(PrefabsManager.Asset, assetPose, Quaternion.identity);
+
+        AssetsMenu.SetActive(false);
+        SelectorOptionsMenu.SetActive(true);
     }
 }

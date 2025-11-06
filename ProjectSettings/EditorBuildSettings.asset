@@ -9,9 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/FinalVerision2.unity
     guid: be151675e782d8a4a969d6075c3528bd
   - enabled: 0
-    path: Assets/Scenes/HandInteractionExamples.unity
-    guid: c3db737546b604a60b8d911c87233168
-  - enabled: 0
     path: Assets/Scenes/TestingVufo.unity
     guid: ab6cea7dea1c04c7b9cea47179b6d1be
   m_configObjects:
