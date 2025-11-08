@@ -14,42 +14,53 @@ public class ObjectManipulatorManager : MonoBehaviour
         EditsManager.instantiatedObject.GetComponent<ObjectManipulator>().enabled = true;
         moveConstraint = EditsManager.instantiatedObject.GetComponent<MoveAxisConstraint>();
         rotationConstraint = EditsManager.instantiatedObject.GetComponent<RotationAxisConstraint>();
+        print("Object Manipulator Enabled For: " + EditsManager.instantiatedObject.name);
 
     }
 
     private void OnDisable()
     {
         EditsManager.instantiatedObject.GetComponent<ObjectManipulator>().enabled = false;
+        moveConstraint = null;
+        rotationConstraint = null;
     }
 
     public void ToggleXAxis(bool isOn)
     {
         UpdateAxis(AxisFlags.XAxis, isOn);
+        print("X Axis Toggled: " + isOn);
     }
 
     public void ToggleXRotation(bool isOn)
     {
         UpdateRotation(AxisFlags.XAxis, isOn);
+        print("X Rotation Toggled: " + isOn);
     }
 
     public void ToggleYAxis(bool isOn)
     {
         UpdateAxis(AxisFlags.YAxis, isOn);
+        print("Y Axis Toggled: " + isOn);
     }
 
     public void ToggleYRotation(bool isOn)
     {
         UpdateRotation(AxisFlags.YAxis, isOn);
+        print("Y Rotation Toggled: " + isOn);
+        UpdateRotation(AxisFlags.ZAxis, true);
+        UpdateRotation(AxisFlags.XAxis, true);
     }
 
     public void ToggleZAxis(bool isOn)
     {
         UpdateAxis(AxisFlags.ZAxis, isOn);
+        print("Z Axis Toggled: " + isOn);
     }
 
     public void ToggleZRotation(bool isOn)
     {
         UpdateRotation(AxisFlags.ZAxis, isOn);
+        print("Z Rotation Toggled: " + isOn);
     }
 
     private void UpdateAxis(AxisFlags axis, bool isOn)
@@ -120,13 +131,21 @@ public class ObjectManipulatorManager : MonoBehaviour
 
     public void EnableScaling()
     {
-        EditsManager.instantiatedObject.GetComponent<BoxCollider>().enabled = true;
-        EditsManager.instantiatedObject.GetComponent<BoundsControl>().enabled = true;
+        if (!EditsManager.assetAdditionSelected)
+        {
+            EditsManager.instantiatedObject.GetComponent<BoxCollider>().enabled = true;
+            EditsManager.instantiatedObject.GetComponent<BoundsControl>().enabled = true;
+        }
+        
     }
 
     public void DisableScaling()
     {
-        EditsManager.instantiatedObject.GetComponent<BoxCollider>().enabled = false;
-        EditsManager.instantiatedObject.GetComponent<BoundsControl>().enabled = false;
+        if (!EditsManager.assetAdditionSelected)
+        {
+            EditsManager.instantiatedObject.GetComponent<BoxCollider>().enabled = false;
+            EditsManager.instantiatedObject.GetComponent<BoundsControl>().enabled = false;
+        }
+        
     }
 }

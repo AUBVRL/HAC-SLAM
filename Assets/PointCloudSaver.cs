@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using TMPro;
 using UnityEngine;
 
 #if UNITY_WSA && ENABLE_WINMD_SUPPORT
@@ -49,6 +50,8 @@ public class PointCloudSaver : MonoBehaviour
 
     [Tooltip("Optional note to include in metadata")]
     public string notes = "";
+
+    public TextMeshPro TextMeshPro;
 
     /// <summary>
     /// Call this to start saving
@@ -145,8 +148,9 @@ public class PointCloudSaver : MonoBehaviour
         }
 
         Debug.Log($"[PointCloudSaver] Local save complete. Wrote {meta.num_points:N0} points to: {localOutPath}");
-        
-        
+        TextMeshPro.text = $"Saved {meta.num_points:N0} points.";
+
+
 
 #if UNITY_WSA && ENABLE_WINMD_SUPPORT
         // On UWP/HoloLens, attempt to copy the local file into KnownFolders.DocumentsLibrary

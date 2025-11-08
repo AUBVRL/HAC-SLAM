@@ -33,6 +33,7 @@ public class PrefabsManager : MonoBehaviour
 
     public GameObject ImageTarget;
     public static GameObject imageTarget;
+    static bool Convexity = false;
 
     private void Start()
     {
@@ -104,10 +105,12 @@ public class PrefabsManager : MonoBehaviour
                 Selector = CylinderSelector;
                 break;
         }
+        Selector.GetComponent<MeshCollider>().convex = Convexity;
     }
 
     public static void SelectorOnConvexityToggle(bool convex)
     {
+        Convexity = convex;
         Selector.GetComponent<MeshCollider>().convex = convex;
     }
 

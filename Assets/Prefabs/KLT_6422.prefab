@@ -174,7 +174,7 @@ MonoBehaviour:
   handType: 3
   proximityType: 3
   executionOrder: 0
-  constraintOnRotation: 0
+  constraintOnRotation: -1
   useLocalSpaceForConstraint: 0
 --- !u!114 &-198171403209660128
 MonoBehaviour:
@@ -191,5 +191,5 @@ MonoBehaviour:
   handType: 3
   proximityType: 3
   executionOrder: 0
-  constraintOnMovement: 0
+  constraintOnMovement: -1
   useLocalSpaceForConstraint: 0

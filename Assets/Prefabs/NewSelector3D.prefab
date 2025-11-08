@@ -244,7 +244,7 @@ MonoBehaviour:
   handType: 3
   proximityType: 3
   executionOrder: 0
-  constraintOnMovement: 0
+  constraintOnMovement: -1
   useLocalSpaceForConstraint: 0
 --- !u!65 &7151001558072042461
 BoxCollider:
@@ -274,5 +274,5 @@ MonoBehaviour:
   handType: 3
   proximityType: 3
   executionOrder: 0
-  constraintOnRotation: 0
+  constraintOnRotation: -1
   useLocalSpaceForConstraint: 0

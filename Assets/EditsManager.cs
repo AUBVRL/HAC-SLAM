@@ -15,13 +15,13 @@ public class EditsManager : MonoBehaviour
     public GameObject AssetsMenu;
     bool doneInstantiation, selectorInstantiated, fingersClosed, handAngle;
     bool additionSelected, deletionSelected, labelingSelected;
-    bool assetAdditionSelected;
+    public static bool assetAdditionSelected;
     Vector3 initialPoseInCubes;
     public static GameObject instantiatedObject;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseRightIndex;
     Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose poseRightThumb;
     IMixedRealityHandJointService handJointService;
-    InputActionHandler inputActionHandler;
+    public InputActionHandler inputActionHandler;
     int SelectorLayerMask = 1 << 6;
     float HandAngleThreshold = 15.0f;
 
@@ -31,7 +31,7 @@ public class EditsManager : MonoBehaviour
         selectorInstantiated = false; 
         initialPoseInCubes = new();
         handJointService = CoreServices.GetInputSystemDataProvider<IMixedRealityHandJointService>();
-        inputActionHandler = gameObject.GetComponent<InputActionHandler>();
+        //inputActionHandler = gameObject.GetComponent<InputActionHandler>();
     }
 
     
@@ -168,6 +168,10 @@ public class EditsManager : MonoBehaviour
         instantiatedObject = null;
         selectorInstantiated = false;
         doneInstantiation = false;
+        if (assetAdditionSelected)
+        {
+            inputActionHandler.enabled = true;
+        }
     }
 
     public void Cancel()
@@ -216,7 +220,7 @@ public class EditsManager : MonoBehaviour
         
         AssetsMenu.SetActive(false);
         SelectorOptionsMenu.SetActive(true);
-        //inputActionHandler.enabled = false;
+        inputActionHandler.enabled = false;
     }
 
     public void ChangeMenu()
