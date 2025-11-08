@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using TMPro;
 using UnityEngine;
 
 [Serializable]
@@ -43,6 +44,8 @@ public class PointCloudSaver : MonoBehaviour
 
     [Tooltip("Optional note to include in metadata")]
     public string notes = "";
+
+    public TextMeshPro TextMeshPro;
 
     /// <summary>
     /// Public wrapper to start saving. Call this from your UI after editing finishes.
@@ -154,6 +157,7 @@ public class PointCloudSaver : MonoBehaviour
         }
 
         Debug.Log($"[PointCloudSaver] Save complete. Wrote {meta.num_points:N0} points to: {outPath}");
+        TextMeshPro.text = $"Saved {meta.num_points:N0} points.";
 
         // Optionally: write an accompanying metadata-only JSON for quick inspection
         string metaPath = Path.Combine(fullFolder, Path.GetFileNameWithoutExtension(fileName) + ".meta.json");

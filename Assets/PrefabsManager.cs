@@ -22,7 +22,7 @@ public class PrefabsManager : MonoBehaviour
 
     private void Start()
     {
-        VoxelSize = 0.025f;
+        VoxelSize = 0.05f;
         ChunkSize = 10f;
         voxelPrefab = VoxelPrefab;
         voxelPrefab.transform.localScale = Vector3.one * VoxelSize;

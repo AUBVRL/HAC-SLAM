@@ -4,14 +4,14 @@ using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using Microsoft.MixedReality.Toolkit.UI;
 using UnityEngine.UI;
-using System;
+using System.Collections.Generic;
 using TMPro;
 
 public class FingerPose : MonoBehaviour
 {
     public GameObject IndicatorPrefab, Indicator;
     public GameObject AddVoxelsMenu, DeleteVoxelsMenu, AddAssetsMenu, AdjustConfirmAbortMenu;
-    bool instantiatedIndicator;
+    bool instantiatedIndicator, additionSelected;
     float zDepth;
     Vector3 InitialPose, FinalPose, PrismCenter, Scale_incubes, AssetPose, AssetRot;
     Vector3Int InitialPose_incubes, FinalPose_incubes;
@@ -40,6 +40,7 @@ public class FingerPose : MonoBehaviour
     InputActionHandler _inputActionHandler;
     string AssetName;
     Vector3 mousePosition;
+    int SelectorLayerMask = 1 << 6;
 
     private void Start()
     {
@@ -251,32 +252,57 @@ public class FingerPose : MonoBehaviour
     public void confirmSelector()
     {
         doneInstantiation = false;
-        if (AddingAssets)
-        {
-            AddAssetsMenu.SetActive(true);
-            AssetInstance = Labeler.AssetInstance(AssetLabel);
-            Labeler.AssetToolTip(Selector.transform.position, AssetName, AssetLabel, AssetInstance);
-            _MinecraftBuilder.AddedVoxelByte.Clear();
-            officialVoxelizer();
-            // _RosPublisher.PublishEditedPointCloudMsg();
-            // _RosPublisher.LabelPublisher();
-        }
+        List<Vector3> selectorPoints = VoxelizeSelector();
+        //if (AddingAssets)
+        //{
+        //    AddAssetsMenu.SetActive(true);
+        //    AssetInstance = Labeler.AssetInstance(AssetLabel);
+        //    Labeler.AssetToolTip(Selector.transform.position, AssetName, AssetLabel, AssetInstance);
+        //    _MinecraftBuilder.AddedVoxelByte.Clear();
+        //    officialVoxelizer();
+        //    // _RosPublisher.PublishEditedPointCloudMsg();
+        //    // _RosPublisher.LabelPublisher();
+        //}
 
+        //else if (DeletingVoxels)
+        //{
+        //    DeleteVoxelsMenu.SetActive(true);
+        //    _MinecraftBuilder.DeletedVoxelByte.Clear();
+        //    officialVoxelizer();
+        //    //  _RosPublisher.PublishDeletedVoxels();
+        //}
+
+        //else
+        //{
+        //    AddVoxelsMenu.SetActive(true);
+        //    _MinecraftBuilder.AddedVoxelByte.Clear();
+        //    officialVoxelizer();
+        //    //  _RosPublisher.PublishEditedPointCloudMsg();
+
+        //}
+
+        if (additionSelected)
+        {
+            AddVoxelsMenu.SetActive(true);
+            var states = new List<bool>(selectorPoints.Count);
+            for (int i = 0; i < selectorPoints.Count; ++i) states.Add(true);
+
+            // call the batch API once so Undo/Redo treats the whole selection as one action
+            VoxelUtilities.AddVoxelsWithUndo(selectorPoints, states);
+        }
         else if (DeletingVoxels)
         {
             DeleteVoxelsMenu.SetActive(true);
-            _MinecraftBuilder.DeletedVoxelByte.Clear();
-            officialVoxelizer();
-            //  _RosPublisher.PublishDeletedVoxels();
+            VoxelUtilities.DeleteVoxelsWithUndo(selectorPoints);
         }
-
-        else
+        else if (AddingAssets)
         {
-            AddVoxelsMenu.SetActive(true);
-            _MinecraftBuilder.AddedVoxelByte.Clear();
-            officialVoxelizer();
-            //  _RosPublisher.PublishEditedPointCloudMsg();
+            AddAssetsMenu.SetActive(true);
+            var states = new List<bool>(selectorPoints.Count);
+            for (int i = 0; i < selectorPoints.Count; ++i) states.Add(true);
 
+            // call the batch API once so Undo/Redo treats the whole selection as one action
+            VoxelUtilities.AddVoxelsWithUndo(selectorPoints, states);
         }
 
         Destroy(Selector);
@@ -289,7 +315,14 @@ public class FingerPose : MonoBehaviour
         Debug.Log("CHANGING SHAPE");
         Prism = Selectors[index];
         _meshCollider = Selectors[index].GetComponent<MeshCollider>();
-        _meshCollider.convex = ConvexityState;
+        if (additionSelected || AddingAssets)
+        {
+            Convexity(false);
+        }
+        else
+        {
+            Convexity(true);
+        }
     }
 
     public void Convexity(bool state)
@@ -319,5 +352,49 @@ public class FingerPose : MonoBehaviour
         DeletingVoxels = state;
     }
 
+    public void EnableAddition(bool state)
+    {
+        additionSelected = state;
+    }
+
+    List<Vector3> VoxelizeSelector()
+    {
+        List<Vector3> selectorPoints = new();
+        // Get the bounds of the instantiated object
+        Selector.transform.position = Selector.transform.position + Vector3.one * 0.0001f;
+        Bounds bounds = Selector.GetComponent<MeshRenderer>().bounds;
+
+        Vector3Int minBounds = Vector3Int.FloorToInt(VoxelManager.RoundToVoxel(bounds.min) / PrefabsManager.voxelSize);
+        Vector3Int maxBounds = Vector3Int.CeilToInt(VoxelManager.RoundToVoxel(bounds.max) / PrefabsManager.voxelSize);
+
+        Vector3 voxelSizeVector = Vector3.one * PrefabsManager.voxelSize;
+
+        for (int x = minBounds.x; x <= maxBounds.x; x++)
+        {
+            for (int y = minBounds.y; y <= maxBounds.y; y++)
+            {
+                for (int z = minBounds.z; z <= maxBounds.z; z++)
+                {
+                    Vector3 coliderPose = new Vector3(x, y, z) * PrefabsManager.voxelSize;
+
+                    bool checkBoxOverlap = Physics.CheckBox(coliderPose, voxelSizeVector / 2, Quaternion.identity, SelectorLayerMask);
+                    //Debug.Log(checkBoxOverlap);
+                    if (checkBoxOverlap) selectorPoints.Add(coliderPose);
+                }
+            }
+        }
+
+        return selectorPoints;
+    }
+
+    public void UndoAction()
+    {
+        UndoRedoManager2.Undo();
+    }
+
+    public void RedoAction()
+    {
+        UndoRedoManager2.Redo();
+    }
 
 }
